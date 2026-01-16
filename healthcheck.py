@@ -9,7 +9,7 @@ print("=" * 50)
 
 # Check environment variables
 print("\n1. Environment Variables:")
-print(f"   PORT: {os.getenv('PORT', 'NOT SET')}")
+print(f"   PORT: {os.getenv('PORT', 8000)}")
 print(f"   GEMINI_API_KEY: {'SET ✅' if os.getenv('GEMINI_API_KEY') else 'NOT SET ❌'}")
 
 # Check if app can be imported
