@@ -2,7 +2,7 @@
 
 ## Problem Solved: PORT Variable Expansion
 
-**Issue**: Dockerfile wasn't expanding `$PORT` environment variable
+**Issue**: Dockerfile wasn't expanding `8000` environment variable
 **Solution**: Created `start_server.py` to handle PORT at runtime
 
 ---
@@ -27,9 +27,9 @@ Railway will automatically:
 
 ### Before (Broken):
 ```dockerfile
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
+CMD uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
-❌ Shell doesn't expand `$PORT` in CMD - passed as literal string "$PORT"
+❌ Shell doesn't expand `8000` in CMD - passed as literal string "8000"
 
 ### After (Working):
 ```dockerfile
