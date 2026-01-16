@@ -16,5 +16,5 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Start command - Use Python script to handle PORT variable
-CMD ["python", "start_server.py"]
+# Start command - Direct uvicorn call with hardcoded port
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
