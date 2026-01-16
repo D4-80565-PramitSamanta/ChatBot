@@ -16,5 +16,5 @@ COPY . .
 # Expose port
 EXPOSE 8000
 
-# Start command - Use Railway's PORT environment variable
-CMD uvicorn app.main:app --host 0.0.0.0 --port $PORT
+# Start command - Use Python script to handle PORT variable
+CMD ["python", "start_server.py"]
