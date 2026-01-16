@@ -1,33 +1,31 @@
-# 🚂 Deploy to Railway
+# 🚂 Deploy to Railway - FIXED
 
-## ⚠️ If You Get "uvicorn: command not found" Error:
+## ✅ Using Dockerfile (Simple & Reliable)
 
-Railway needs to install Python dependencies first. Use one of these methods:
+Railway will now use the **Dockerfile** instead of Nixpacks.
 
-### **Method 1: Use nixpacks.toml (Recommended)**
-The `nixpacks.toml` file is already created. Just push and redeploy:
+### **Quick Deploy:**
+
 ```bash
 git add .
-git commit -m "Fix Railway deployment"
+git commit -m "Use Dockerfile for Railway deployment"
 git push
 ```
-Then in Railway dashboard, click **"Redeploy"**
 
-### **Method 2: Manual Start Command**
-In Railway dashboard → **Settings** → **Deploy**:
+Railway will automatically:
+1. Detect the Dockerfile
+2. Build the Docker image
+3. Deploy your app
+4. Assign a public URL
 
-Change start command to:
-```bash
-pip install -r requirements.txt && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
-```
+---
 
-### **Method 3: Use start.sh**
-In Railway dashboard → **Settings** → **Deploy**:
+## 🔧 Files Created:
 
-Change start command to:
-```bash
-bash start.sh
-```
+✅ **Dockerfile** - Defines how to build and run the app
+✅ **.dockerignore** - Speeds up builds by excluding unnecessary files
+✅ **railway.json** - Tells Railway to use Dockerfile
+✅ **requirements.txt** - Python dependencies
 
 ---
 
