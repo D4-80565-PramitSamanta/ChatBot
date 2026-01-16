@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose port
-EXPOSE 8000
+EXPOSE 8080
 
 # Start command - Use new railway startup script
 CMD ["python", "railway_start.py"]

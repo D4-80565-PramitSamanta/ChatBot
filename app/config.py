@@ -28,6 +28,6 @@ class Config:
     
     # Server Configuration
     HOST = "0.0.0.0"
-    PORT = 8000
+    PORT = 8080
 
 config = Config()

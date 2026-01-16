@@ -3,7 +3,7 @@
 import uvicorn
 
 # Hardcoded port
-port = 8000
+port = 8080
 
 print(f"🚀 Starting ZentrumHub server on port {port}...")
 
