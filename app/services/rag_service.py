@@ -140,6 +140,70 @@ ANSWER (provide your response below):"""
         
         return prompt
     
+    def build_explain_prompt(self, error_content: str, context_docs: List[Dict[str, Any]]) -> str:
+        """Build specialized prompt for error code explanations"""
+        context = "\n\n---\n\n".join([
+            f"[Document {i + 1}]\n{doc['text']}"
+            for i, doc in enumerate(context_docs)
+        ])
+        
+        prompt = f"""You are a ZentrumHub Hotel API error diagnostic expert. Your role is to explain error codes and provide actionable solutions.
+
+CONTEXT - RELEVANT DOCUMENTATION:
+{context}
+
+ERROR TO EXPLAIN: {error_content}
+
+CRITICAL INSTRUCTIONS FOR ERROR EXPLANATION:
+
+1. IDENTIFY THE ERROR CODE:
+   - Extract the error code number (e.g., 4001, 4004, 5000)
+   - Look for the error code in the "Error Codes" section of the documentation
+   - Match the exact error code and message
+
+2. PROVIDE STRUCTURED EXPLANATION:
+   
+   **Summary** (1-2 sentences):
+   - What does this error mean?
+   - When does it occur?
+   
+   **Details** (3-5 bullet points):
+   - Root cause of the error
+   - Common scenarios that trigger this error
+   - What went wrong in the API request/response
+   - Impact on the booking flow
+   - Related error codes if any
+   
+   **Recommended Actions** (3-5 specific steps):
+   - Immediate actions to resolve the error
+   - How to prevent this error in future
+   - What to check in the request
+   - When to contact support
+   - Include correlationId usage if mentioned
+
+3. ERROR CODE SPECIFIC GUIDANCE:
+   - **4001**: Focus on request validation, check fields[] array
+   - **4004**: Explain sold out scenario, suggest alternative dates/hotels
+   - **4005**: Price changed, explain re-search requirement
+   - **4006**: Rate expired, explain token expiration
+   - **4007**: Duplicate booking, explain idempotency
+   - **5000-5004**: System/supplier errors, emphasize support contact with correlationId
+
+4. FORMATTING:
+   - Use **bold** for error codes and important terms
+   - Use `code` for field names and parameters
+   - Use bullet points for lists
+   - Be concise but comprehensive
+
+5. ALWAYS INCLUDE:
+   - The exact error code and message from documentation
+   - Whether this is a client error (4xxx) or server error (5xxx)
+   - If correlationId should be provided to support
+
+PROVIDE YOUR ERROR EXPLANATION:"""
+        
+        return prompt
+    
     async def generate_answer(self, question: str) -> Dict[str, Any]:
         """
         Complete RAG pipeline - ALWAYS uses live documentation
@@ -181,6 +245,56 @@ ANSWER (provide your response below):"""
         answer = await self.llm_client.generate(prompt)
         
         # Return response with live documentation source
+        return {
+            "answer": answer,
+            "confidence": "high",
+            "sources": [doc.get("metadata", {}) for doc in context_docs],
+            "relevant_docs": len(context_docs),
+            "source_type": "live_documentation"
+        }
+    
+    async def explain_error(self, error_content: str) -> Dict[str, Any]:
+        """
+        Explain error codes using live documentation
+        
+        Args:
+            error_content: Error message or code to explain
+            
+        Returns:
+            Dictionary with explanation and metadata
+        """
+        # Fetch documentation about errors
+        print(f"🔍 Fetching error documentation for: {error_content}")
+        live_doc = await self.doc_fetcher.fetch_documentation(f"error {error_content}")
+        
+        if not live_doc:
+            return {
+                "answer": "Error code not found in documentation. Please check the error code or visit https://docs-hotel.prod.zentrumhub.com/docs",
+                "confidence": "low",
+                "sources": [],
+                "relevant_docs": 0,
+                "source_type": "none"
+            }
+        
+        print(f"✓ Fetched error documentation from {live_doc['url']}")
+        
+        # Use live documentation as context
+        context_docs = [{
+            "text": f"{live_doc['title']}\n{live_doc['content']}",
+            "metadata": {
+                "source": "live_docs",
+                "url": live_doc['url'],
+                "title": live_doc['title']
+            }
+        }]
+        
+        # Build specialized error explanation prompt
+        prompt = self.build_explain_prompt(error_content, context_docs)
+        
+        # Generate explanation using Gemini 2.5 Pro
+        answer = await self.llm_client.generate(prompt)
+        
+        # Return response
         return {
             "answer": answer,
             "confidence": "high",

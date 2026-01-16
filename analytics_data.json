@@ -1,0 +1,85 @@
+{
+  "query_counter": {
+    "kjb": 1,
+    "what is cancellation policies": 1,
+    "how to cancel a booking": 2,
+    "what is multroom booking": 1,
+    "give me curl request for multiroom booking": 1,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 2,
+    "[EXPLAIN] 500 error": 2,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": 1,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 2,
+    "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 2,
+    "what is revenue management": 1,
+    "hotelapi recommendation": 1
+  },
+  "client_query_counter": {
+    "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
+      "kjb": 1,
+      "what is cancellation policies": 1,
+      "how to cancel a booking": 2,
+      "what is multroom booking": 1,
+      "give me curl request for multiroom booking": 1
+    },
+    "167497b0-5cc0-4525-b45f-1a69641d07e1": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 1
+    },
+    "e4159a50-9ca1-42e8-a219-deb2376d6520": {
+      "[EXPLAIN] 500 error": 1
+    },
+    "d1de2947-de45-4fa5-9486-d8f29726a789": {
+      "[EXPLAIN] 500 error": 1
+    },
+    "59a838b6-1b8b-4aac-9e6c-6ff089cbd590": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 1
+    },
+    "95d74cd7-79ad-4aae-8b22-82d9c4e60086": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": 1
+    },
+    "83516dbc-665b-49a4-b8e8-b2ca38563e32": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 1
+    },
+    "30674174-c27c-4114-8c7a-a113ab30292c": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 1
+    },
+    "87133105-6927-4969-b0f8-5829e526c1a3": {
+      "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 1
+    },
+    "555d4cbe-e490-4b26-a446-1bd42f6f4754": {
+      "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 1
+    },
+    "07ea9810-3b29-4b54-890c-d0acef50f8f7": {
+      "what is revenue management": 1,
+      "hotelapi recommendation": 1
+    }
+  },
+  "unanswered_counter": {
+    "kjb": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:33:26.378565",
+      "last_seen": "2026-01-16T17:33:26.378565"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": {
+      "count": 2,
+      "first_seen": "2026-01-16T17:54:58.398412",
+      "last_seen": "2026-01-16T17:58:56.306821"
+    },
+    "[EXPLAIN] 500 error": {
+      "count": 2,
+      "first_seen": "2026-01-16T17:55:17.475156",
+      "last_seen": "2026-01-16T17:58:15.001240"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:59:34.973757",
+      "last_seen": "2026-01-16T17:59:34.973757"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:59:50.724074",
+      "last_seen": "2026-01-16T17:59:50.724074"
+    }
+  },
+  "feedback_data": [],
+  "last_updated": "2026-01-16T18:29:26.720629"
+}
