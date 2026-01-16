@@ -1,0 +1,249 @@
+{
+  "platform_overview": {
+    "title": "ZentrumHub Platform",
+    "description": "AI-powered hotel booking engine that connects consumers with 100+ suppliers, GDS, bedbanks, and hyperlocal sources worldwide through a single lightweight API.",
+    "key_features": [
+      "Single API interface for multiple suppliers",
+      "99.99% availability rate",
+      "< 1 second typical overhead",
+      "AI-enabled booking engine for relevant hotel suggestions",
+      "Scalable architecture for high traffic",
+      "Comprehensive logging platform for debugging"
+    ],
+    "support_email": "[email protected]"
+  },
+  "authentication": {
+    "title": "Authentication & Credentials",
+    "description": "To access ZentrumHub APIs, you need three key credentials provided when your account is created.",
+    "credentials": {
+      "accountId": "Account identifier for your organization. Separate accounts for testing and production environments.",
+      "apiKey": "Required to authenticate all API requests. Keep this secure.",
+      "channelId": "Point of Sale identifier with specific business configurations (revenue management, content preferences, supplier configuration, relevance rules). Multiple channelIds can be created for different use cases."
+    },
+    "environments": {
+      "test": "Sandbox environment for integration and testing",
+      "production": "Live environment with real supplier credentials"
+    }
+  },
+  "integration_workflow": {
+    "title": "Complete Integration Workflow",
+    "steps": [
+      {
+        "step": 1,
+        "title": "API Integration",
+        "description": "Implement hotel search to book/cancel flow by integrating Autosuggest, Static Content, and Hotel Booking APIs",
+        "apis": ["Autosuggest API", "Static Content API", "Search API", "Booking API", "Cancel API"]
+      },
+      {
+        "step": 2,
+        "title": "Testing & Certification",
+        "description": "Execute test scenarios provided by ZentrumHub integration team and share results for verification"
+      },
+      {
+        "step": 3,
+        "title": "Logging Platform Access",
+        "description": "Get onboarded to logging platform to view API requests/responses, supplier communications, errors, and performance metrics"
+      },
+      {
+        "step": 4,
+        "title": "Go Live",
+        "description": "ZentrumHub configures live supplier credentials for production environment"
+      }
+    ]
+  },
+  "autosuggest_overview": {
+    "title": "ZentrumHub Autosuggest API",
+    "description": "ZentrumHub's Autosuggest enhances user experience by providing intelligent autosuggestions for both location and hotel searches. This API suite includes two key components: Get Suggestions API and Get Location Details API.",
+    "components": [
+      "Get Suggestions API - Dynamically generates relevant suggestions for locations and hotel names as users type",
+      "Get Location Details API - Provides detailed information about a selected suggestion, such as coordinates and other pertinent details"
+    ],
+    "benefits": [
+      "Streamlines the search process and improves accuracy",
+      "Reduces time and effort required to find desired data",
+      "Offers precise, contextually appropriate suggestions",
+      "Facilitates seamless and user-friendly search functionalities"
+    ]
+  },
+  "get_suggestions_api": {
+    "title": "Get Suggestions API",
+    "description": "Returns matching suggestions for user-inputted terms, offering a balanced mix of different location types tailored to specified filters and preferences.",
+    "http_method": "GET",
+    "endpoint": "{baseEndpoint}/api/locations/locationcontent/autosuggest?term={search-keyword}",
+    "base_endpoint": "https://autosuggest.travel.zentrumhub.com",
+    "location_types": [
+      "Airport",
+      "Country",
+      "State",
+      "MultiCity",
+      "City",
+      "Region",
+      "PointOfInterest",
+      "Neighborhood",
+      "Hotel",
+      "TrainStation",
+      "BusStation",
+      "Area"
+    ],
+    "query_parameters": {
+      "term": {
+        "required": true,
+        "description": "The search keyword entered by the user"
+      },
+      "locationTypes": {
+        "required": false,
+        "description": "Comma-separated list of location types to filter results",
+        "example": "Airport,City"
+      }
+    },
+    "usage_examples": [
+      {
+        "description": "Search for locations matching 'LON'",
+        "url": "GET /autosuggest?term=LON"
+      },
+      {
+        "description": "Search for airports and cities matching 'LON'",
+        "url": "GET /autosuggest?term=LON&locationTypes=Airport,City"
+      }
+    ],
+    "location_type_usage": {
+      "Airport": "Use circularRegion parameter in ZentrumHub's Hotel API (single geo-coordinate)",
+      "PointOfInterest": "Use circularRegion parameter in ZentrumHub's Hotel API (single geo-coordinate)",
+      "TrainStation": "Use circularRegion parameter in ZentrumHub's Hotel API (single geo-coordinate)",
+      "Hotel": "Use referenceId field as hotelId in NEXUS Hotel API request",
+      "City": "Use Get Location Details API to retrieve geocodes, then search on ZentrumHub's Hotel API",
+      "MultiCity": "Use Get Location Details API to retrieve geocodes, then search on ZentrumHub's Hotel API",
+      "Region": "Use Get Location Details API to retrieve geocodes, then search on ZentrumHub's Hotel API",
+      "Neighborhood": "Use Get Location Details API to retrieve geocodes, then search on ZentrumHub's Hotel API"
+    }
+  },
+  "get_location_details_api": {
+    "title": "Get Location Details API",
+    "description": "Returns comprehensive details about a location based on the ID selected from the Get Suggestions API. Primarily used for locations of type City, MultiCity, Region, or Neighborhood to obtain their polygonal boundaries.",
+    "http_method": "GET",
+    "endpoint": "{baseEndpoint}/api/locations/locationcontent/location/{locationId}",
+    "base_endpoint": "https://autosuggest.travel.zentrumhub.com",
+    "path_parameters": {
+      "locationId": {
+        "required": true,
+        "description": "The location ID obtained from Get Suggestions API"
+      }
+    },
+    "features": [
+      "Returns polygonal boundaries for precise searches",
+      "Can optionally return sub-locations within the given location",
+      "Provides geographical information for accurate queries to ZentrumHub's Hotel API"
+    ],
+    "use_cases": [
+      "Obtaining boundaries for City, MultiCity, Region, or Neighborhood locations",
+      "Getting detailed geographical information for targeted searches",
+      "Retrieving sub-locations for more granular search options"
+    ]
+  },
+  "workflow": {
+    "title": "Typical Integration Workflow",
+    "steps": [
+      {
+        "step": 1,
+        "action": "User types search term",
+        "api": "Get Suggestions API",
+        "description": "Call autosuggest endpoint with user's input"
+      },
+      {
+        "step": 2,
+        "action": "Display suggestions",
+        "description": "Show returned locations/hotels to user"
+      },
+      {
+        "step": 3,
+        "action": "User selects a suggestion",
+        "description": "Capture the selected location's ID and type"
+      },
+      {
+        "step": 4,
+        "action": "Process based on location type",
+        "options": {
+          "Airport/POI/TrainStation": "Use circularRegion in Hotel API",
+          "Hotel": "Use referenceId as hotelId in Hotel API",
+          "City/MultiCity/Region/Neighborhood": "Call Get Location Details API first, then use geocodes in Hotel API"
+        }
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "What is the ZentrumHub Autosuggest API?",
+      "answer": "It's an API suite that provides intelligent autosuggestions for location and hotel searches, consisting of Get Suggestions API and Get Location Details API."
+    },
+    {
+      "question": "What location types are supported?",
+      "answer": "Airport, Country, State, MultiCity, City, Region, PointOfInterest, Neighborhood, Hotel, TrainStation, BusStation, and Area."
+    },
+    {
+      "question": "How do I filter suggestions by location type?",
+      "answer": "Use the locationTypes query parameter with comma-separated values. Example: ?term=LON&locationTypes=Airport,City"
+    },
+    {
+      "question": "When should I use the Get Location Details API?",
+      "answer": "Use it for City, MultiCity, Region, or Neighborhood locations to get polygonal boundaries and geocodes needed for precise Hotel API searches."
+    },
+    {
+      "question": "What's the base endpoint for the Autosuggest API?",
+      "answer": "https://autosuggest.travel.zentrumhub.com"
+    },
+    {
+      "question": "How do I use hotel suggestions?",
+      "answer": "For Hotel type locations, use the referenceId field as the hotelId in your NEXUS Hotel API request."
+    },
+    {
+      "question": "What about Airport or Point of Interest locations?",
+      "answer": "For Airport, PointOfInterest, or TrainStation (single geo-coordinate locations), use the circularRegion parameter in ZentrumHub's Hotel API."
+    }
+  ],
+  "cancel_api": {
+    "title": "Cancel API",
+    "description": "The Cancel API is used for cancelling the reservations using the bookingId made via ZentrumHub booking API.",
+    "http_method": "POST",
+    "endpoint": "{baseEndpoint}/api/hotel/booking/{bookingId}/cancel",
+    "path_parameters": {
+      "bookingId": {
+        "required": true,
+        "description": "The booking ID of the reservation to cancel"
+      }
+    },
+    "partial_cancellation": {
+      "question": "In case of a multi-room booking, can I cancel specific rooms from the booking?",
+      "answer": "No, we do not support partial booking cancellation."
+    },
+    "error_codes": [
+      {
+        "code": "4001",
+        "message": "Invalid data in request - Please refer to the fields[] for more details."
+      },
+      {
+        "code": "4009",
+        "message": "Booking not found"
+      },
+      {
+        "code": "4010",
+        "message": "Booking is already cancelled"
+      },
+      {
+        "code": "4011",
+        "message": "Booking cannot be cancelled after the check-in date"
+      },
+      {
+        "code": "5005",
+        "message": "Cancellation pending from supplier end"
+      },
+      {
+        "code": "5000",
+        "message": "Your request failed due to an unknown system error. Please contact support team with the correlationId."
+      },
+      {
+        "code": "5001",
+        "message": "Your request failed due to an unknown error returned by the supplier. Please contact support team with the correlationId."
+      }
+    ]
+  }
+}

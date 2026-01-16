@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZentrumHub Docs Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <div class="header-content">
+                <h1>🤖 ZentrumHub AI Assistant</h1>
+                <p>Powered by AI • Ask me anything about Hotel API & Hotel Connect</p>
+            </div>
+        </div>
+        
+        <div class="chat-container" id="chatContainer">
+            <div class="message bot-message">
+                <div class="message-content">
+                    <strong>👋 Welcome to ZentrumHub AI Assistant!</strong><br><br>
+                    I'm an AI-powered assistant trained on ZentrumHub's complete Hotel API documentation. I can help you with:
+                    <ul>
+                        <li>🔍 Autosuggest API - Location & hotel search</li>
+                        <li>📄 Static Content API - Hotel details & images</li>
+                        <li>🔎 Search API - Async & Blocking search</li>
+                        <li>📝 Booking API - Complete booking workflow</li>
+                        <li>❌ Cancel API - Cancellations & penalties</li>
+                        <li>🔗 Hotel Connect - Multi-supplier integration</li>
+                        <li>💡 200+ integration questions answered</li>
+                    </ul>
+                    Try asking: <em>"How do I implement async search for my B2C website?"</em>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-questions">
+            <button class="quick-btn" onclick="sendQuickQuestion('How do I get started with ZentrumHub integration?')">Getting Started</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('What is async vs blocking search?')">Async vs Blocking</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('Show me the complete booking workflow')">Booking Flow</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('How do I implement autosuggest?')">Autosuggest</button>
+            <button class="quick-btn" onclick="sendQuickQuestion('Best practices for mobile apps')">Mobile Best Practices</button>
+        </div>
+        
+        <div class="input-container">
+            <input 
+                type="text" 
+                id="userInput" 
+                placeholder="Ask about Hotel API, booking flow, integration..." 
+                onkeypress="handleKeyPress(event)"
+            >
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>

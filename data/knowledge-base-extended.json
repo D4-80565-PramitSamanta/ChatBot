@@ -1,0 +1,554 @@
+{
+  "static_content_api": {
+    "title": "Static Content API",
+    "description": "Delivers comprehensive static content details about hotel properties including names, facilities, images, star ratings, reviews, addresses, and contact information.",
+    "http_method": "POST",
+    "endpoint": "{baseEndpoint}/api/content/hotelcontent/getHotelContent",
+    "purpose": "Reduce latency during live search by pre-loading hotel static data",
+    "content_fields": {
+      "Basic": "Category, ChainCode, ChainName, Contact, Distance, GeoCode, HeroImage, Id, Language, Name, ProviderHotelId, ProviderId, ProviderName, RelevanceScore, Website, Type, StarRating, ImageCount, RatePlanTypes, Attributes",
+      "All": "Returns all available content (equivalent to combining all other fields)",
+      "Facilities": "Hotel facilities and amenities",
+      "MasterFacilities": "Standardized facility categories",
+      "NearByAttractions": "Points of interest near the hotel",
+      "Policies": "Hotel policies (check-in/out, cancellation, etc.)",
+      "Images": "Hotel images gallery",
+      "CheckInCheckout": "Check-in and check-out times",
+      "Descriptions": "Detailed hotel descriptions",
+      "Neighbourhoods": "Neighborhood information",
+      "Fees": "Additional fees and charges",
+      "Reviews": "Guest reviews and ratings",
+      "Rooms": "Room types and details"
+    },
+    "search_options": [
+      "Polygon search - Define geographical boundaries",
+      "Circular region search - Search within radius",
+      "Multi-polygon search - Complex geographical areas",
+      "Hotel ID search - Specific hotel properties"
+    ],
+    "features": {
+      "relevance_score": "Hotels can be sorted by relevance score based on pre-configured biasing rules",
+      "supplier_preferencing": "Control which supplier's content to display using providerPrefs field",
+      "multi_supplier_handling": "Returns content from single supplier based on configured preferences"
+    },
+    "common_questions": [
+      {
+        "q": "Can I download static content regularly?",
+        "a": "No bulk download API. Use getHotelContent API to fetch hotel details as needed in your booking workflow."
+      },
+      {
+        "q": "How to combine content fields?",
+        "a": "Combine fields in one request: contentFields=Basic,Facilities,Images returns Basic fields plus Facilities and Images."
+      },
+      {
+        "q": "How to handle same hotel from multiple suppliers?",
+        "a": "API returns content from single supplier based on pre-configured supplier preferencing or providerPrefs in request."
+      }
+    ],
+    "error_codes": {
+      "4001": "Invalid data in request - Check fields[] for details",
+      "5000": "Unknown system error - Contact support with correlationId"
+    }
+  },
+  "search_api": {
+    "title": "Hotel Search API",
+    "description": "Streamlines finding suitable accommodations with detailed and customizable searches using various parameters.",
+    "variants": ["Asynchronous Search API", "Blocking Search API"],
+    "search_parameters": [
+      "Check-in and check-out dates",
+      "Multiple rooms support",
+      "Number of guests per room",
+      "Geographical search (polygon, circular region, multi-polygon)",
+      "Specific hotel IDs",
+      "Supplier preferences",
+      "Currency and language"
+    ],
+    "features": [
+      "Aggregates data from multiple suppliers",
+      "Simplifies and normalizes supplier responses",
+      "Comprehensive and up-to-date information",
+      "Flexible search operations (async or blocking)"
+    ]
+  },
+  "async_search_workflow": {
+    "title": "Asynchronous Search API Workflow",
+    "description": "Non-blocking search flow that displays results as they arrive from suppliers. Ideal for B2C websites to keep users engaged.",
+    "benefits": [
+      "Search becomes as fast as your fastest supplier",
+      "Progressive result display",
+      "Better user engagement",
+      "Parallel supplier calls"
+    ],
+    "steps": [
+      {
+        "step": 1,
+        "action": "Initialize Search",
+        "apis": ["Search Init API", "Static Content API"],
+        "description": "Make parallel calls for search initialization and static content",
+        "returns": "Search Init returns token; Static Content returns hotel details"
+      },
+      {
+        "step": 2,
+        "action": "Display Static Content",
+        "description": "Start displaying hotels using static content while rates are being fetched"
+      },
+      {
+        "step": 3,
+        "action": "Poll for Results",
+        "api": "Async Search API",
+        "description": "Call async API with token every 500ms",
+        "returns": "List of hotels with rates + status (InProgress or Completed)"
+      },
+      {
+        "step": 4,
+        "action": "Update Results",
+        "description": "Display newly received rates as they arrive from suppliers"
+      },
+      {
+        "step": 5,
+        "action": "Complete",
+        "description": "Stop polling when status is 'Completed' - all supplier results processed"
+      }
+    ],
+    "polling": {
+      "interval": "500ms",
+      "statuses": {
+        "InProgress": "More results are being processed - continue polling",
+        "Completed": "All hotels processed - stop polling"
+      }
+    }
+  },
+  "blocking_search_workflow": {
+    "title": "Blocking Search API Workflow",
+    "description": "Synchronous search that returns complete results in single response. Useful when user wait time is not a concern.",
+    "use_cases": [
+      "B2B applications",
+      "Backend integrations",
+      "Batch processing",
+      "When complete results are required upfront"
+    ],
+    "difference_from_async": "Returns both token and complete result set in same response, eliminating need for polling",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Search Request",
+        "description": "Make single search API call with all parameters"
+      },
+      {
+        "step": 2,
+        "action": "Wait for Response",
+        "description": "API waits for all suppliers to respond or timeout"
+      },
+      {
+        "step": 3,
+        "action": "Receive Complete Results",
+        "description": "Get token and full result set in single response"
+      },
+      {
+        "step": 4,
+        "action": "Display Results",
+        "description": "Show all hotels and rates to user"
+      }
+    ]
+  },
+  "booking_api": {
+    "title": "Booking API",
+    "description": "Complete booking flow from search to confirmation",
+    "workflow": [
+      "Search hotels for location",
+      "View rooms and rates for selected hotel",
+      "Price different rate options",
+      "Book selected rate",
+      "Receive booking confirmation"
+    ],
+    "required_data": [
+      "Guest details (name, email, phone)",
+      "Payment information",
+      "Special requests (if any)",
+      "Rate key from search results"
+    ],
+    "response_includes": [
+      "Booking ID",
+      "Confirmation number",
+      "Booking status",
+      "Total price",
+      "Cancellation policy"
+    ]
+  },
+  "cancel_api": {
+    "title": "Cancel API",
+    "description": "Cancel reservations made via ZentrumHub Booking API",
+    "http_method": "POST",
+    "endpoint": "/api/hotel/booking/{bookingId}/cancel",
+    "required_parameter": "bookingId - Received from Book API response",
+    "features": [
+      "Cancel confirmed bookings",
+      "Get cancellation penalties",
+      "Automatic refund processing (if applicable)"
+    ],
+    "cancellation_penalty_api": {
+      "description": "Check cancellation charges before canceling",
+      "data_source": "Fetches policies from booking database stored during booking process"
+    }
+  },
+  "hotel_industry_questions": [
+    {
+      "category": "Getting Started",
+      "questions": [
+        "How do I get started with ZentrumHub integration?",
+        "What credentials do I need to access the APIs?",
+        "How long does integration typically take?",
+        "Do you provide a sandbox environment for testing?",
+        "What programming languages are supported?",
+        "Is there an SDK available?",
+        "How do I get API credentials?",
+        "What's the difference between accountId and channelId?"
+      ]
+    },
+    {
+      "category": "Authentication & Security",
+      "questions": [
+        "How do I authenticate API requests?",
+        "Where should I store my API key?",
+        "Can I have multiple API keys?",
+        "How do I rotate API keys?",
+        "What security best practices should I follow?",
+        "Is the API connection encrypted?",
+        "How do I handle API key in mobile apps?"
+      ]
+    },
+    {
+      "category": "Search & Availability",
+      "questions": [
+        "How do I search for hotels in a specific city?",
+        "What's the difference between async and blocking search?",
+        "Which search method should I use for my B2C website?",
+        "How do I search hotels near an airport?",
+        "Can I search multiple cities at once?",
+        "How do I filter search results by star rating?",
+        "Can I search by hotel name?",
+        "How do I implement radius-based search?",
+        "What's the maximum number of rooms I can search?",
+        "How do I handle search timeouts?",
+        "Can I cache search results?",
+        "How often should I poll the async search API?",
+        "What happens if a supplier doesn't respond?",
+        "How do I sort search results by price?",
+        "Can I filter by amenities like pool or WiFi?"
+      ]
+    },
+    {
+      "category": "Hotel Content",
+      "questions": [
+        "How do I get hotel images?",
+        "Can I get hotel descriptions in multiple languages?",
+        "How do I fetch hotel amenities?",
+        "What's included in the Basic content field?",
+        "How do I get hotel reviews?",
+        "Can I get nearby attractions?",
+        "How do I display hotel policies?",
+        "What's the difference between Facilities and MasterFacilities?",
+        "How do I get room type details?",
+        "Can I download all hotel content at once?",
+        "How fresh is the static content data?",
+        "How do I handle hotels from multiple suppliers?"
+      ]
+    },
+    {
+      "category": "Pricing & Rates",
+      "questions": [
+        "How do I get room rates?",
+        "What currencies are supported?",
+        "How do I convert prices to different currencies?",
+        "Are taxes included in the price?",
+        "How do I display price breakdowns?",
+        "What's a rate key?",
+        "How long is a rate valid?",
+        "Can prices change between search and booking?",
+        "How do I handle price changes?",
+        "What are rate plan types?",
+        "How do I show refundable vs non-refundable rates?",
+        "Can I get net rates for B2B?"
+      ]
+    },
+    {
+      "category": "Booking Flow",
+      "questions": [
+        "What's the complete booking workflow?",
+        "What guest information is required for booking?",
+        "How do I make a booking?",
+        "What payment methods are supported?",
+        "Do I need to collect payment or does ZentrumHub?",
+        "How do I handle booking failures?",
+        "What's a booking ID?",
+        "How do I get booking confirmation?",
+        "Can I modify a booking after confirmation?",
+        "How do I handle special requests?",
+        "What happens if booking fails at supplier?",
+        "How do I validate guest details before booking?"
+      ]
+    },
+    {
+      "category": "Cancellations",
+      "questions": [
+        "How do I cancel a booking?",
+        "How do I check cancellation penalties?",
+        "What's the cancellation policy?",
+        "Can I get refund information?",
+        "How long does cancellation take?",
+        "What if cancellation fails?",
+        "How do I handle free cancellation?",
+        "Can I partially cancel a multi-room booking?",
+        "How do I display cancellation deadlines?"
+      ]
+    },
+    {
+      "category": "Location & Geography",
+      "questions": [
+        "How does the autosuggest API work?",
+        "What location types are supported?",
+        "How do I search by coordinates?",
+        "What's a polygon search?",
+        "How do I implement circular region search?",
+        "When should I use Get Location Details API?",
+        "How do I get geocodes for a city?",
+        "Can I search by postal code?",
+        "How do I handle multi-city searches?"
+      ]
+    },
+    {
+      "category": "Suppliers & Inventory",
+      "questions": [
+        "How many suppliers does ZentrumHub connect to?",
+        "Can I choose specific suppliers?",
+        "How do I set supplier preferences?",
+        "What if same hotel is available from multiple suppliers?",
+        "How does supplier failover work?",
+        "Can I see which supplier provided each rate?",
+        "How do I handle supplier-specific requirements?",
+        "What's the supplier response time?"
+      ]
+    },
+    {
+      "category": "Performance & Optimization",
+      "questions": [
+        "What's the typical API response time?",
+        "How can I improve search performance?",
+        "Should I cache static content?",
+        "What's the rate limit for API calls?",
+        "How do I handle high traffic?",
+        "What's the API availability SLA?",
+        "How do I optimize for mobile apps?",
+        "Can I make parallel API calls?"
+      ]
+    },
+    {
+      "category": "Error Handling",
+      "questions": [
+        "What error codes can I expect?",
+        "How do I handle API errors?",
+        "What should I do if search returns no results?",
+        "How do I debug integration issues?",
+        "Where can I see API logs?",
+        "What's a correlationId?",
+        "How do I report API issues?",
+        "What if supplier returns an error?"
+      ]
+    },
+    {
+      "category": "Testing & Certification",
+      "questions": [
+        "How do I test my integration?",
+        "What test scenarios should I cover?",
+        "Do you provide test hotel IDs?",
+        "How do I test booking without real charges?",
+        "What's the certification process?",
+        "How long does certification take?",
+        "Can I test cancellations in sandbox?",
+        "What test data is available?"
+      ]
+    },
+    {
+      "category": "Going Live",
+      "questions": [
+        "What's required to go live?",
+        "How do I switch from test to production?",
+        "Do I need separate credentials for production?",
+        "What's the go-live checklist?",
+        "How do I configure live suppliers?",
+        "Is there a soft launch option?",
+        "What monitoring should I implement?",
+        "How do I handle production issues?"
+      ]
+    },
+    {
+      "category": "Business Logic",
+      "questions": [
+        "How does revenue management work?",
+        "Can I set markup rules?",
+        "How do I implement loyalty programs?",
+        "Can I customize search relevance?",
+        "How do I handle corporate rates?",
+        "Can I implement dynamic pricing?",
+        "How do I manage commissions?",
+        "Can I set different rules per channel?"
+      ]
+    },
+    {
+      "category": "Mobile & Web",
+      "questions": [
+        "How do I integrate in a mobile app?",
+        "Is there a React SDK?",
+        "How do I implement autosuggest in my UI?",
+        "Best practices for mobile integration?",
+        "How do I handle deep linking?",
+        "Can I use webhooks for booking updates?",
+        "How do I implement progressive web app?",
+        "What's the best UX for async search?"
+      ]
+    },
+    {
+      "category": "Advanced Features",
+      "questions": [
+        "How do I implement multi-language support?",
+        "Can I customize hotel ranking?",
+        "How do I implement filters?",
+        "Can I get real-time availability?",
+        "How do I handle group bookings?",
+        "Can I implement package deals?",
+        "How do I add flights or transfers?",
+        "Can I white-label the solution?"
+      ]
+    }
+  ],
+  "common_integration_scenarios": [
+    {
+      "scenario": "B2C Hotel Booking Website",
+      "recommended_flow": "Async Search",
+      "apis_needed": ["Autosuggest", "Static Content", "Async Search", "Booking", "Cancel"],
+      "key_considerations": [
+        "Use async search for better UX",
+        "Cache static content",
+        "Implement progressive result display",
+        "Show loading indicators",
+        "Handle price changes gracefully"
+      ]
+    },
+    {
+      "scenario": "B2B Travel Portal",
+      "recommended_flow": "Blocking Search",
+      "apis_needed": ["Autosuggest", "Static Content", "Blocking Search", "Booking", "Cancel"],
+      "key_considerations": [
+        "Blocking search acceptable for agents",
+        "Focus on comprehensive results",
+        "Implement net rate display",
+        "Support multi-room bookings",
+        "Provide detailed reporting"
+      ]
+    },
+    {
+      "scenario": "Mobile App",
+      "recommended_flow": "Async Search",
+      "apis_needed": ["Autosuggest", "Static Content", "Async Search", "Booking"],
+      "key_considerations": [
+        "Optimize for slow networks",
+        "Cache aggressively",
+        "Minimize API calls",
+        "Handle offline scenarios",
+        "Implement retry logic"
+      ]
+    },
+    {
+      "scenario": "Corporate Booking Tool",
+      "recommended_flow": "Blocking Search",
+      "apis_needed": ["Autosuggest", "Static Content", "Blocking Search", "Booking", "Cancel"],
+      "key_considerations": [
+        "Implement policy compliance",
+        "Support approval workflows",
+        "Track booking analytics",
+        "Handle corporate rates",
+        "Integrate with expense systems"
+      ]
+    }
+  ],
+  "best_practices": [
+    {
+      "category": "API Usage",
+      "practices": [
+        "Always include correlationId for tracking",
+        "Implement exponential backoff for retries",
+        "Cache static content appropriately",
+        "Use appropriate timeout values",
+        "Handle rate limits gracefully",
+        "Log all API interactions",
+        "Monitor API performance"
+      ]
+    },
+    {
+      "category": "User Experience",
+      "practices": [
+        "Show loading indicators during search",
+        "Display partial results as they arrive (async)",
+        "Implement proper error messages",
+        "Handle price changes transparently",
+        "Provide clear cancellation policies",
+        "Show all fees upfront",
+        "Optimize for mobile devices"
+      ]
+    },
+    {
+      "category": "Security",
+      "practices": [
+        "Never expose API keys in client-side code",
+        "Use HTTPS for all communications",
+        "Validate all user inputs",
+        "Implement rate limiting on your end",
+        "Secure payment information",
+        "Follow PCI compliance if handling cards",
+        "Rotate API keys periodically"
+      ]
+    },
+    {
+      "category": "Performance",
+      "practices": [
+        "Cache static content for 24 hours",
+        "Use CDN for hotel images",
+        "Implement lazy loading",
+        "Minimize API calls",
+        "Use async search for B2C",
+        "Optimize database queries",
+        "Monitor response times"
+      ]
+    }
+  ],
+  "troubleshooting": {
+    "no_results": [
+      "Check if location coordinates are correct",
+      "Verify date range is valid",
+      "Ensure suppliers are configured",
+      "Check if location has hotel inventory",
+      "Verify search parameters are correct"
+    ],
+    "slow_response": [
+      "Check supplier response times in logs",
+      "Consider using async search",
+      "Verify network connectivity",
+      "Check if caching is implemented",
+      "Review timeout settings"
+    ],
+    "booking_failure": [
+      "Verify rate is still available",
+      "Check guest details are complete",
+      "Ensure payment info is valid",
+      "Review supplier-specific requirements",
+      "Check correlationId in logs"
+    ],
+    "authentication_error": [
+      "Verify API key is correct",
+      "Check accountId and channelId",
+      "Ensure credentials are for correct environment",
+      "Verify API key hasn't expired",
+      "Check if account is active"
+    ]
+  }
+}

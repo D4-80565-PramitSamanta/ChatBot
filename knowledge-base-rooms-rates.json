@@ -1,0 +1,186 @@
+{
+  "rooms_and_rates_api": {
+    "title": "Get Rooms and Rates API",
+    "http_method": "GET",
+    "endpoint": "{baseEndpoint}/api/v1/hotels/{{hotel_id}}/rooms?searchResponseToken={{search_response_token}}",
+    "description": "Fetches comprehensive details for various room options provided by the hotel. In Search API response, you receive room info for minimum rate, but hotels offer multiple rooms with varying rates.",
+    "provides": {
+      "rooms": "Details about room such as name, description, facilities, bed info, area of the room",
+      "rates": "Details about rates including total rate, base rate, taxes, fee, refundability info, cancellation policies and more",
+      "recommendations": "Grouped combinations of rates that can be booked together, especially useful for multi-room searches"
+    },
+    "recommendations": {
+      "description": "Recommendations are pre-grouped combinations of rates that the booking engine has determined can be booked together based on rate combinability rules",
+      "purpose": "Simplifies the booking process by providing ready-to-book rate combinations instead of requiring manual rate combination logic",
+      "structure": {
+        "recommendationId": "Unique identifier for the recommendation",
+        "rates": "Array of rateIds that belong to this recommendation"
+      },
+      "mapping_with_room_service": {
+        "single_room": {
+          "step1": "Each recommendation has an array of rates. Find the recommendation by recommendationId",
+          "step2": "Get the rateId from the recommendation's rates array",
+          "step3": "Match the rateId to the id in the rates array at response level",
+          "step4": "In the rate's occupancies array, find the stdRoomId",
+          "step5": "Match stdRoomId to the standardizedRooms array to get room details"
+        },
+        "multi_room": {
+          "step1": "Each recommendation contains rates for all rooms (e.g., 2 rateIds for 2 rooms)",
+          "step2": "Get all rateIds from the recommendation's rates array",
+          "step3": "Match each rateId to corresponding rate objects in the rates array",
+          "step4": "For each rate, find stdRoomId in the occupancies array",
+          "step5": "Match each stdRoomId to standardizedRooms array to get room details for each room",
+          "note": "The booking engine groups rates based on combinability rules from suppliers"
+        }
+      },
+      "mapping_without_room_service": {
+        "single_room": {
+          "step1": "Find recommendation by recommendationId",
+          "step2": "Get rateId from recommendation's rates array",
+          "step3": "Match rateId to rate object in rates array",
+          "step4": "In rate's occupancies array, find roomId (not stdRoomId)",
+          "step5": "Match roomId to rooms array to get room details",
+          "note": "No standardizedRooms array when room mapping service is not opted"
+        },
+        "multi_room": {
+          "step1": "Each recommendation contains rates for all rooms",
+          "step2": "Get all rateIds from recommendation's rates array",
+          "step3": "Match each rateId to rate objects in rates array",
+          "step4": "For each rate, find roomId in occupancies array",
+          "step5": "Match each roomId to rooms array to get room details",
+          "note": "Booking engine handles rate combinability and groups recommendations accordingly"
+        }
+      }
+    },
+    "faqs": [
+      {
+        "question": "Does the API return images for rooms?",
+        "answer": "Yes, the API provides images for rooms if suppliers provide this data."
+      },
+      {
+        "question": "Does the API return information about charges to be paid at property?",
+        "answer": "Yes, the API provides information about additional charges that need to be paid at the property if suppliers provide this data."
+      },
+      {
+        "question": "What is the use of recommendations in RoomsAndRates API?",
+        "answer": "Recommendations are pre-grouped combinations of rates that can be booked together. They simplify the booking process by providing ready-to-book rate combinations based on supplier combinability rules, especially useful for multi-room searches."
+      }
+    ],
+    "rate_combinability": {
+      "description": "Rate combinability types determine how different hotel rates can be combined based on their RateCombinabilityId",
+      "types": {
+        "None": "Ignore these rates; they should not be combined with any other rates",
+        "GroupDifferentId": "Combine rates with different RateCombinabilityIds",
+        "GroupWithinSameId": "Combine rates with the same RateCombinabilityId, excluding itself",
+        "GroupSameId": "Combine rates with the same RateCombinabilityId, including itself"
+      }
+    },
+    "error_codes": [
+      {"code": "401", "message": "'{{Field}}' must not be empty"},
+      {"code": "4004", "message": "The hotel you selected is sold out"},
+      {"code": "500", "message": "Your request failed due to an unknown system error. Please contact support team with the correlationId"}
+    ]
+  },
+  "direct_rooms_and_rates_api": {
+    "title": "Direct Rooms and Rates API",
+    "http_method": "GET",
+    "endpoint": "{baseEndpoint}/api/v1/hotels/{{hotel_id}}/directrooms",
+    "description": "Use when you already know the hotelId. No need to start from Search API. Pass search criteria like checkin-date, checkout-date, occupancy info. Response structure similar to RoomRates API.",
+    "use_case": "When you already know the hotelId for which you want to perform the search",
+    "required_parameters": ["checkin-date", "checkout-date", "occupancy info"],
+    "provides": {
+      "rooms": "Details about room such as name, description, facilities, bed info, area of the room",
+      "rates": "Details about rates including total rate, base rate, taxes, fee, refundability info, cancellation policies and more"
+    },
+    "error_codes": [
+      {"code": "401", "message": "'{{Field}}' must not be empty"},
+      {"code": "4004", "message": "The hotel you selected is sold out"},
+      {"code": "500", "message": "Your request failed due to an unknown system error. Please contact support team with the correlationId"}
+    ]
+  },
+  "static_content_api": {
+    "title": "Static Content API",
+    "http_method": "POST",
+    "endpoint": "{baseEndpoint}/api/content/hotelcontent/getHotelContent",
+    "description": "Delivers comprehensive static content details about hotel properties including names, facilities, images, star ratings, review ratings, addresses, contact information and more.",
+    "features": [
+      "Advanced geographical search: polygon, circular region, multi-polygon searches",
+      "Search using specific hotel IDs",
+      "Supplier preferencing for static content",
+      "Relevance score based biasing"
+    ],
+    "content_fields": {
+      "Basic": "Category, ChainCode, ChainName, Contact, Distance, GeoCode, HeroImage, Id, Language, Name, ProviderHotelId, ProviderId, ProviderName, RelevanceScore, Website, Type, StarRating, ImageCount, RatePlanTypes, Attributes",
+      "All": "Returns all available content for a hotel. Equivalent to combining all other contentFields values",
+      "Other_Options": ["Facilities", "MasterFacilities", "NearByAttractions", "Policies", "Images", "CheckInCheckout", "Descriptions", "Neighbourhoods", "Fees", "Reviews", "Rooms"]
+    },
+    "faqs": [
+      {
+        "question": "Can I download static content on a regular basis?",
+        "answer": "No, there is no API to download static content. You must use getHotelContent API to fetch hotel content details as part of booking workflow."
+      },
+      {
+        "question": "Does the API support biasing of search results?",
+        "answer": "Yes, Content API returns relevance score for each hotel based on pre-configured biasing rules. Results can be sorted based on relevance score."
+      },
+      {
+        "question": "If same hotel is available from multiple suppliers, how to display static content?",
+        "answer": "API returns static content from single supplier decided based on pre-configured supplier preferencing. You can also provide supplier preferences in request using providerPrefs field."
+      }
+    ],
+    "error_codes": [
+      {"code": "4001", "message": "Invalid data in request - Please refer to the fields[] for more details"},
+      {"code": "5000", "message": "Your request failed due to an unknown system error. Please contact support team with the correlationId"}
+    ]
+  },
+  "search_api": {
+    "title": "Search API",
+    "description": "Streamlines the process of finding suitable accommodations. Allows detailed and customizable searches using various parameters.",
+    "features": [
+      "Specify check-in and check-out dates",
+      "Support searches for multiple rooms",
+      "Advanced geographical search: polygon, circular region, multi-polygon searches",
+      "Search using specific hotel IDs",
+      "Collects data from multiple suppliers and aggregates it"
+    ],
+    "variants": [
+      "Asynchronous Search API - non-blocking search operations",
+      "Blocking Search API - synchronous search operations"
+    ]
+  },
+  "book_api": {
+    "title": "Book API",
+    "http_method": "POST",
+    "endpoint": "{baseEndpoint}/api/hotel/{hotelId}/{token}/book",
+    "description": "Final step in search-to-book flow. Requires passenger information, contact information, and payment information to facilitate booking at quoted price.",
+    "faqs": [
+      {
+        "question": "Do I need to pass credit card to complete booking?",
+        "answer": "Depends on payment terms and account configurations with supplier. If supplier needs credit card, pass it in Booking API. ZentrumHub forwards to supplier but does not store or charge the card."
+      },
+      {
+        "question": "Do I need to pass details of all guests during booking?",
+        "answer": "Depends on allGuestInfoRequired field in Price API response. If true, pass all guest details. Otherwise, type and age (for children) is enough."
+      },
+      {
+        "question": "What to do in case of timeout error or non-confirmed booking status?",
+        "answer": "Implement polling mechanism: Make successive calls to getBookingDetails API at 10 second intervals for maximum 5 minutes (30 attempts). If status confirmed, proceed. If unconfirmed after 5 minutes, implement error handling."
+      }
+    ],
+    "error_codes": [
+      {"code": "4000", "message": "Mandatory fields are missing in the request"},
+      {"code": "4001", "message": "Invalid data in request - Please refer to the fields[] for more details"},
+      {"code": "4004", "message": "The hotel you selected is sold out"},
+      {"code": "4005", "message": "Price for the selected room(s) has changed"},
+      {"code": "4006", "message": "The rate you tried to book has expired. Please try again with a new search"},
+      {"code": "4007", "message": "Booking with same details already exists"},
+      {"code": "4008", "message": "Booking due to insufficient funds in credit card"},
+      {"code": "4012", "message": "Booking failed due to insufficient funds in account"},
+      {"code": "5000", "message": "Your request failed due to an unknown system error. Please contact support team with the correlationId"},
+      {"code": "5001", "message": "Your request failed due to an unknown error returned by the supplier. Please contact support team with the correlationId"},
+      {"code": "5002", "message": "Timeout occurred while processing your booking request. Please contact support team with the correlationId"},
+      {"code": "5003", "message": "Booking failed due to credit card error"},
+      {"code": "5004", "message": "Booking confirmation pending from supplier end"}
+    ]
+  }
+}
