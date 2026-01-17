@@ -68,23 +68,30 @@ class RAGService:
     
     def _search_local_knowledge_base(self, question: str) -> List[Dict[str, Any]]:
         """
-        Search local knowledge base files with improved scoring
-        
-        NEW SCORING SYSTEM:
-        - 2 points per word match (was 1)
-        - 20 points for exact phrase match (was 10)  
-        - 15 points if document KEY matches query (e.g., "cancel_api")
-        - 10 points if document TITLE matches query
+        NO RULES, NO SCORES - SEARCH EVERYWHERE
         """
         question_lower = question.lower()
-        question_words = question_lower.split()
+        
+        # Extract key terms from the question (more flexible)
+        search_terms = []
+        
+        # Remove common words and extract meaningful terms
+        words = question_lower.replace('what is ', '').replace('how do i ', '').replace('?', '').strip().split()
+        meaningful_words = [w for w in words if w not in ['the', 'a', 'an', 'and', 'or', 'but', 'use', 'do', 'i']]
+        
+        # Add the full cleaned question as one search term
+        full_term = ' '.join(meaningful_words)
+        search_terms.append(full_term)
+        
+        # Add individual meaningful words
+        search_terms.extend(meaningful_words)
         
         results = []
         
-        # Knowledge base files to search - SEARCH ALL FILES
+        # Search ALL knowledge base files
         kb_files = [
             'knowledge-base.json',
-            'knowledge-base-extended.json',
+            'knowledge-base-extended.json', 
             'knowledge-base-dynamic.json',
             'knowledge-base-rooms-rates.json',
             'data/knowledge-base.json',
@@ -92,76 +99,38 @@ class RAGService:
             'data/complete-documentation.json'
         ]
         
+        print(f"🔍 SEARCHING EVERYWHERE for terms: {search_terms}")
+        
         for kb_file in kb_files:
             try:
-                print(f"🔍 Searching in {kb_file}")
                 with open(kb_file, 'r', encoding='utf-8') as f:
                     kb_data = json.load(f)
-                    print(f"✓ Loaded {len(kb_data)} entries from {kb_file}")
                     
-                    # Handle different file structures
-                    if kb_file == 'data/complete-documentation.json':
-                        # Complete documentation has nested structure
-                        if 'documentation' in kb_data:
-                            kb_data = kb_data['documentation']
+                    # Handle nested structures
+                    if kb_file == 'data/complete-documentation.json' and 'documentation' in kb_data:
+                        kb_data = kb_data['documentation']
                     
                     for key, value in kb_data.items():
                         if not isinstance(value, dict):
                             continue
                             
                         title = value.get('title', key)
-                        description = value.get('description', '')
                         content = json.dumps(value, indent=2)
+                        content_lower = content.lower()
                         
-                        # Normalize text for searching
-                        key_normalized = key.lower().replace('_', ' ').replace('-', ' ')
-                        title_normalized = title.lower()
+                        # FLEXIBLE SEARCH: Check if ANY search term appears in content
+                        found_match = False
+                        for term in search_terms:
+                            if term in content_lower:
+                                found_match = True
+                                break
                         
-                        # Calculate score with COMPREHENSIVE SEARCH
-                        score = 0
-                        
-                        # Search in ALL content, not just keys and titles
-                        search_text = f"{key_normalized} {title_normalized} {description.lower()} {content.lower()}"
-                        
-                        # 15 points if document KEY matches query (e.g., "cancel_api")
-                        if any(word in key_normalized for word in question_words):
-                            score += 15
-                            
-                        # 10 points if document TITLE matches query
-                        if any(word in title_normalized for word in question_words):
-                            score += 10
-                            
-                        # 2 points per word match in any field
-                        for word in question_words:
-                            if word in search_text:
-                                score += 2
-                                
-                        # 20 points for exact phrase match anywhere in content
-                        if question_lower in search_text:
-                            score += 20
-                            
-                        # PRIORITY OVERRIDE: For field queries, heavily prioritize api_field_definitions
-                        if any(field_term in question_lower for field_term in ['what is', 'commission', 'taxes', 'publishedrate', 'baserate', 'totalrate', 'isincludedinbaserate']):
-                            if key == 'api_field_definitions':
-                                score += 1000  # Massive boost to ensure this wins
-                            elif 'field' in key_normalized or 'definition' in key_normalized:
-                                score += 500  # High boost for other field-related docs
-                        
-                        # PRIORITY OVERRIDE: For workflow/API queries, prioritize workflow documents
-                        if any(workflow_term in question_lower for workflow_term in ['blocking search', 'async search', 'search workflow', 'polling', 'search init']):
-                            if any(workflow_key in key_normalized for workflow_key in ['blocking_search', 'async_search', 'search_workflow', 'polling', 'search_init']):
-                                score += 1000  # Massive boost for workflow documents
-                            
-                        # Special boost for cancel-related queries
-                        if 'cancel' in question_lower and 'cancel' in search_text:
-                            score += 25
-                            
-                        if score > 0:
+                        if found_match:
+                            print(f"✅ FOUND match in {key}")
                             results.append({
                                 'key': key,
                                 'title': title,
                                 'content': content,
-                                'score': score,
                                 'file': kb_file
                             })
                             
@@ -169,17 +138,101 @@ class RAGService:
                 print(f"✗ Error loading {kb_file}: {e}")
                 continue
         
-        # Sort by score (highest first)
-        results.sort(key=lambda x: x['score'], reverse=True)
+        print(f"📚 Found {len(results)} total matches")
+        return results
+    
+    def _emergency_search_everywhere(self, search_term: str) -> List[Dict[str, Any]]:
+        """
+        EMERGENCY SEARCH: Search EVERY SINGLE FILE in the solution for the search term
+        SIMPLE RULE: If the term appears anywhere, include it
+        """
+        import os
+        
+        results = []
+        
+        # SEARCH ALL JSON FILES IN THE ENTIRE SOLUTION
+        json_files = []
+        for root, dirs, files in os.walk('.'):
+            for file in files:
+                if file.endswith('.json'):
+                    json_files.append(os.path.join(root, file))
+        
+        print(f"🔍 EMERGENCY SEARCH: Found {len(json_files)} JSON files to search")
+        
+        for file_path in json_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    
+                    # Check if our search term appears ANYWHERE in this file
+                    if search_term in content.lower():
+                        print(f"🎯 FOUND '{search_term}' in {file_path}")
+                        
+                        # Try to parse as JSON and extract relevant sections
+                        try:
+                            data = json.loads(content)
+                            
+                            # Search through all keys and values
+                            for key, value in self._recursive_search(data, search_term):
+                                results.append({
+                                    'key': f"EMERGENCY_FIND_{key}",
+                                    'title': f"Found in {file_path}",
+                                    'content': json.dumps(value, indent=2),
+                                    'score': 100,  # All emergency finds get equal score
+                                    'file': file_path
+                                })
+                                
+                        except json.JSONDecodeError:
+                            # If not valid JSON, just include the raw content
+                            results.append({
+                                'key': f"EMERGENCY_RAW_{os.path.basename(file_path)}",
+                                'title': f"Raw content from {file_path}",
+                                'content': content,
+                                'score': 100,
+                                'file': file_path
+                            })
+                            
+            except Exception as e:
+                print(f"⚠️ Error searching {file_path}: {e}")
+                continue
         
         if results:
-            print(f"📚 Local KB search results:")
-            for i, result in enumerate(results[:5]):  # Show top 5 results
-                print(f"  {i+1}. {result['key']} (score: {result['score']}) from {result['file']}")
+            print(f"🚨 EMERGENCY SEARCH SUCCESSFUL: Found {len(results)} matches!")
         else:
-            print(f"📚 No local KB results found for: {question}")
-        
+            print(f"💀 EMERGENCY SEARCH FAILED: '{search_term}' not found anywhere in solution")
+            
         return results
+    
+    def _recursive_search(self, data, search_term, path=""):
+        """
+        Recursively search through nested JSON data for the search term
+        """
+        matches = []
+        
+        if isinstance(data, dict):
+            for key, value in data.items():
+                current_path = f"{path}.{key}" if path else key
+                
+                # Check if key matches our search term
+                if search_term in key.lower():
+                    matches.append((current_path, {key: value}))
+                
+                # Check if value contains our search term
+                if isinstance(value, str) and search_term in value.lower():
+                    matches.append((current_path, {key: value}))
+                
+                # Recurse into nested structures
+                matches.extend(self._recursive_search(value, search_term, current_path))
+                
+        elif isinstance(data, list):
+            for i, item in enumerate(data):
+                current_path = f"{path}[{i}]" if path else f"[{i}]"
+                matches.extend(self._recursive_search(item, search_term, current_path))
+                
+        elif isinstance(data, str) and search_term in data.lower():
+            matches.append((path, data))
+            
+        return matches
     
     def build_prompt(self, question: str, context_docs: List[Dict[str, Any]]) -> str:
         """Build enhanced prompt for LLM with retrieved context"""
@@ -382,13 +435,13 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         # First, search local knowledge base files with improved scoring
         local_docs = self._search_local_knowledge_base(question)
         
-        # ALWAYS use local knowledge base if ANY results found, ignore scoring threshold
+        # ALWAYS use local knowledge base if ANY results found
         if local_docs:
-            print(f"✓ Found in local knowledge base: {local_docs[0]['title']} (score: {local_docs[0]['score']})")
+            print(f"✓ Using all found documents: {len(local_docs)} matches")
             
-            # Use ALL top results for better context, not just the first one
+            # Use ALL results for context
             context_docs = []
-            for i, doc in enumerate(local_docs[:3]):  # Use top 3 results
+            for doc in local_docs:
                 context_docs.append({
                     "text": f"{doc['title']}\n{doc['content']}",
                     "metadata": {

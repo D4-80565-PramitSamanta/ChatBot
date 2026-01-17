@@ -64,5 +64,27 @@
       "source": "live_recipes",
       "score": 545
     }
+  },
+  "bb3c815ab9c7bcf08e12963a5d67c553": {
+    "timestamp": 1768653414.945504,
+    "query": "How do I use the Blocking Search API Workflow?",
+    "data": {
+      "title": "Search Init",
+      "url": "https://docs-hotel.prod.zentrumhub.com/recipes/search-init",
+      "content": "ZentrumHub Hotel API\nJump to Content\nHome\nGuides\nSamples\nAPI Reference\nDiscussions\nv\n1.0\nLog In\nLog In\nv1.0\nHome\nGuides\nSamples\nAPI Reference\nDiscussions\nAll\nPages\nStart typing to search…\nRecipes",
+      "source": "live_recipes",
+      "score": 120
+    }
+  },
+  "8ac503bc79b8a62ee502298e4fac8176": {
+    "timestamp": 1768653449.964972,
+    "query": "How do I use the Blocking Search API Workflow",
+    "data": {
+      "title": "Search Init",
+      "url": "https://docs-hotel.prod.zentrumhub.com/recipes/search-init",
+      "content": "ZentrumHub Hotel API\nJump to Content\nHome\nGuides\nSamples\nAPI Reference\nDiscussions\nv\n1.0\nLog In\nLog In\nv1.0\nHome\nGuides\nSamples\nAPI Reference\nDiscussions\nAll\nPages\nStart typing to search…\nRecipes",
+      "source": "live_recipes",
+      "score": 120
+    }
   }
 }

@@ -40,8 +40,23 @@
     "what is publishedRate": 1,
     "what is search polling": 1,
     "what is baseRate": 1,
-    "what is blocking search": 1,
-    "what is allGuestsInfoRequired": 1
+    "what is blocking search": 2,
+    "what is allGuestsInfoRequired": 1,
+    "what is discounts?": 8,
+    "what is discounts": 1,
+    "what is hotelconnect?": 1,
+    "what is inincludedinbaserate?": 1,
+    "what is providerCancellationNumber?": 4,
+    "providerCancellationNumber cancel booking": 1,
+    "what is discounts??": 1,
+    "what is baserate??": 1,
+    "what is publishedrate?": 1,
+    "what is facility?": 1,
+    "what is markup?": 1,
+    "what is additional charges?": 1,
+    "How do I use the Blocking Search API Workflow?": 2,
+    "How do I use the Blocking Search API Workflow": 2,
+    "In case of multiroom how can i handle cancellation policies in price response?": 1
   },
   "client_query_counter": {
     "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
@@ -110,7 +125,19 @@
       "what is taxes?": 4,
       "what is IsPassportMandatory?": 5,
       "How do I cancel reservation?": 1,
-      "What is publishedRate?": 2
+      "What is publishedRate?": 2,
+      "what is discounts?": 7,
+      "what is hotelconnect?": 1,
+      "what is inincludedinbaserate?": 1,
+      "what is providerCancellationNumber?": 1,
+      "what is discounts??": 1,
+      "what is baserate??": 1,
+      "what is publishedrate?": 1,
+      "what is facility?": 1,
+      "what is markup?": 1,
+      "what is additional charges?": 1,
+      "How do I use the Blocking Search API Workflow?": 2,
+      "In case of multiroom how can i handle cancellation policies in price response?": 1
     },
     "test-123": {
       "How do I cancel booking?": 1
@@ -147,8 +174,25 @@
       "what is publishedRate": 1,
       "what is search polling": 1,
       "what is baseRate": 1,
-      "what is blocking search": 1,
-      "what is allGuestsInfoRequired": 1
+      "what is blocking search": 2,
+      "what is allGuestsInfoRequired": 1,
+      "what is discounts": 1,
+      "what is discounts?": 1
+    },
+    "debug-test": {
+      "what is providerCancellationNumber?": 1
+    },
+    "debug-test-2": {
+      "providerCancellationNumber cancel booking": 1
+    },
+    "simplified-test": {
+      "what is providerCancellationNumber?": 2
+    },
+    "blocking-search-test": {
+      "How do I use the Blocking Search API Workflow": 1
+    },
+    "blocking-search-test-2": {
+      "How do I use the Blocking Search API Workflow": 1
     }
   },
   "unanswered_counter": {
@@ -246,6 +290,21 @@
       "count": 1,
       "first_seen": "2026-01-17T11:10:11.640614",
       "last_seen": "2026-01-17T11:10:11.640614"
+    },
+    "what is providerCancellationNumber?": {
+      "count": 3,
+      "first_seen": "2026-01-17T11:36:22.017167",
+      "last_seen": "2026-01-17T11:41:55.918451"
+    },
+    "How do I use the Blocking Search API Workflow?": {
+      "count": 1,
+      "first_seen": "2026-01-17T12:37:01.062170",
+      "last_seen": "2026-01-17T12:37:01.062170"
+    },
+    "How do I use the Blocking Search API Workflow": {
+      "count": 1,
+      "first_seen": "2026-01-17T12:37:37.213088",
+      "last_seen": "2026-01-17T12:37:37.213088"
     }
   },
   "feedback_data": [
@@ -286,5 +345,5 @@
       "timestamp": "2026-01-16T19:46:04.009Z"
     }
   ],
-  "last_updated": "2026-01-17T11:10:11.640662"
+  "last_updated": "2026-01-17T12:42:50.560702"
 }

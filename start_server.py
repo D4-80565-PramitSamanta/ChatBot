@@ -2,8 +2,8 @@
 """Start script for Railway deployment"""
 import uvicorn
 
-# Hardcoded port
-port = 8080
+# Port for Lovable frontend compatibility
+port = 8000
 
 print(f"🚀 Starting ZentrumHub server on port {port}...")
 

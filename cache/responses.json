@@ -186,5 +186,1683 @@
       "relevant_docs": 3,
       "source_type": "local_knowledge_base"
     }
+  },
+  "00222ec0bc14999a1c266a6b80de857e": {
+    "timestamp": 1768648366.8053079,
+    "question": "what is blocking search",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, there is no information available about a \"blocking search\" API.\n\nThe documentation extensively details a non-blocking, asynchronous search process called **Search Results Polling**. This mechanism is designed to progressively retrieve search results as they become available from multiple suppliers without making the client wait for the entire process to finish.\n\nHere are the complete details for the **Search Results Polling** API as described in the documentation.\n\n### Search Results Polling\n\n*   **API Purpose**: To retrieve hotel search results progressively using a polling mechanism. This is used when an initial search is initiated and the results are still being compiled from various suppliers.\n\n*   **HTTP Method**: `GET`\n\n*   **Endpoint URL**:\n    `https://nexus.prod.zentrumhub.com/api/hotel/availability/async/{token}/results?nextResultsKey={nextResultsKey}`\n\n### Parameters\n\n*   **Path Parameters**:\n    *   `token` (string, required): The search token received from the initial search call.\n\n*   **Query Parameters**:\n    *   `nextResultsKey` (string, optional): The key provided in the previous response when the status is `InProgress`. This key is used to fetch the next batch of results.\n\n### Required Headers\n\n*   `Content-Type`: `application/json; charset=utf-8`\n*   `Accept-Encoding`: `gzip, deflate`\n*   `accountId`: Your ZentrumHub account identifier.\n*   `customer-ip`: The end-user's IP address.\n*   `correlationId`: The same correlation ID used in the search initiation call.\n*   `apiKey`: Your API authentication key.\n\n### Polling Mechanism and Workflow\n\nThe search process is asynchronous and relies on polling. After initiating a search, you must poll this endpoint to retrieve results.\n\n1.  Make an initial call to the Search Results endpoint using the `token`.\n2.  Check the `status` field in the response.\n    *   **If `status` is `InProgress`**: The search is not yet complete. The response will contain a `nextResultsKey`. You should wait 500ms and make another `GET` request to this endpoint, including the `nextResultsKey` as a query parameter.\n    *   **If `status` is `Completed`**: The search is finished, and all available hotel results have been retrieved. You should stop polling.\n3.  Continue this polling process until the status is `Completed` or a maximum duration of 10 seconds has passed.\n4.  Once polling is complete, you can proceed to the **RoomsAndRates API** call with a selected hotel.\n\n> **Implementation Guidelines:**\n> • Always implement a polling interval of **500ms** between requests to avoid rate limiting.\n> • Implement a maximum polling duration of **10 seconds** to prevent infinite loops.\n> • Process the incremental hotel results as they arrive to provide a better user experience.\n\n### Response Details\n\nThe response body contains the status of the search and any hotel results found so far.\n\n| Field                 | Data Type | Description                                                                       | Example                                  |\n| --------------------- | --------- | --------------------------------------------------------------------------------- | ---------------------------------------- |\n| **token**             | string    | The search token from the initial call.                                           | `693ccb58-cf75-445f-9186-482bb0938424`   |\n| **status**            | string    | The completion status of the search. Can be `InProgress` or `Completed`.        | `Completed`                              |\n| **expectedHotelCount**  | string    | The total number of hotels expected in the final results.                         | `6655`                                   |\n| **completedHotelCount** | string    | The number of hotels that have been processed so far.                             | `743`                                    |\n| **currency**          | string    | The currency code for all rates in the response.                                  | `SAR`                                    |\n| **hotels**            | array     | An array of hotel objects containing rates and details.                           | `[...]`                                  |\n| **nextResultsKey**    | string    | A key for the next polling request. This is **only** present when `status` is `InProgress`. | `MF81NTM=`                               |\n\n### Example Request\n\nHere is a cURL example for a polling request.\n\n```bash\ncurl --location --request GET 'https://nexus.prod.zentrumhub.com/api/hotel/availability/async/9bdd5776-cc46-4046-ac30-b3a428376bea/results?nextResultsKey=MF81NTM=' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: d2ca03b0-f5a4-ce7b-0642-3d7c961573e7' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc'\n```",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "f6edb31cfe0016fad8ea21ebfddf2856": {
+    "timestamp": 1768648847.5108736,
+    "question": "what is discounts?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, there is no specific field named `discounts`. However, the concept of a discount or savings is derived by comparing the **publishedRate** with the **totalRate**.\n\nThe documentation explains that you can calculate and display savings to a customer by showing the difference between the supplier's original rate and the final rate you offer.\n\n### Calculating Discounts and Savings\n\nThe primary field used to determine potential savings is **publishedRate**.\n\n*   **Definition**: The **publishedRate** is the original rate published by the hotel or supplier before any markups, discounts, or special negotiations are applied.\n*   **How to Use**: By comparing the **publishedRate** to the final **totalRate**, you can highlight the savings for the customer. The documentation explicitly notes to \"Compare **publishedRate** with **totalRate** to show savings to customers\" and \"Use for displaying 'You Save X%' messaging\".\n\n### Relevant API Fields\n\nHere are the detailed definitions of the fields used to understand and calculate discounts:\n\n#### **publishedRate**\n*   **Field Name**: `publishedRate`\n*   **Data Type**: `number`\n*   **Description**: This is the original rate published by the hotel or supplier before any markups, discounts, or negotiations. It can be considered the \"rack rate\" or standard public rate.\n*   **Usage**:\n    *   It appears in search results and rate responses to show the supplier's original published rate.\n    *   It is used as a reference rate for comparison against negotiated or discounted rates.\n    *   When **publishedRate** is `0`, it typically indicates a specially negotiated rate where a public rate is not available.\n*   **Example Scenarios**:\n    *   **Standard rate**: A value like `307.971` indicates the supplier's original published rate.\n    *   **Discounted rate**: A value like `184.6` means the supplier's published rate is $184.60, but the customer may be receiving a lower `totalRate`.\n*   **Related Fields**: `baseRate`, `totalRate`, `type` (Rate type), `distributionType`\n\n#### **totalRate**\n*   **Field Name**: `totalRate`\n*   **Data Type**: `number`\n*   **Description**: This is the final, complete rate that the customer will pay. It includes the **baseRate** plus all applicable taxes, fees, and other charges that are not already included in the base rate.\n*   **Usage**: This is the final price to display to the user for the booking.\n*   **Related Fields**: `baseRate`, `publishedRate`, `taxes`, `fees`, `commission`\n\n### Practical Example\n\nThe documentation provides a real-world example of how these fields work together to show savings.\n\n*   **Scenario**: Price validation for a Deluxe Room booking.\n*   **Example Pricing Data**:\n    ```json\n    {\n      \"updated_pricing\": {\n        \"base_rate\": 20.729,\n        \"taxes\": 2.26,\n        \"commission\": 0.17,\n        \"markup\": 1.869,\n        \"total_rate\": 22.989,\n        \"published_rate\": 37.05,\n        \"savings\": \"43%\"\n      }\n    }\n    ```\n*   **Explanation**:\n    *   The hotel's original published rate (**published_rate**) was **$37.05**.\n    *   The final price for the customer (**total_rate**) is **$22.989**.\n    *   By comparing these two, you can calculate and display a message like \"You save 43%!\".",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "b82df9ea17e0a107a5e2b8431102eb23": {
+    "timestamp": 1768649156.6727283,
+    "question": "what is discounts",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, the **discounts** field represents promotional offers, special deals, or price reductions applied to a hotel rate.\n\n### Field Definition: discounts\n\nThe **discounts** field is an array of objects that provides details about any applied discounts. It appears in search results and rate responses to show promotional offers.\n\n*   **Field Name**: `discounts`\n*   **Data Type**: `array`\n*   **Description**: Applied discounts with inclusion status. This represents promotional offers, special deals, or price reductions applied to the rate.\n*   **Usage**: This field is used to show discount information and promotional offers to the end user.\n\n### Structure of the `discounts` object\n\nEach object within the **discounts** array has the following structure:\n\n*   **amount**\n    *   **Data Type**: `number`\n    *   **Description**: The amount of the discount. A negative value typically indicates a price reduction.\n    *   **Example**: `-92`\n*   **description**\n    *   **Data Type**: `string`\n    *   **Description**: A description of the discount or promotional offer.\n    *   **Example**: `\"Early Bird Discount\"`\n*   **isIncludedInBaseRate**\n    *   **Data Type**: `boolean`\n    *   **Description**: This crucial field indicates whether the discount has already been applied to the **baseRate**.\n    *   **Valid Values**:\n        *   `true`: The discount is already reflected in the **baseRate**.\n        *   `false`: The discount is separate and should be applied to calculate the final price.\n\n### Examples and Scenarios\n\nThe documentation provides the following examples:\n\n*   **Scenario**: Promotional discount\n    *   **Value**:\n        ```json\n        [\n          {\n            \"amount\": -92,\n            \"description\": \"Early Bird Special\",\n            \"isIncludedInBaseRate\": false\n          }\n        ]\n        ```\n    *   **Meaning**: The customer receives a $92 discount, which has **not** yet been applied to the **baseRate**.\n\n*   **Scenario**: No discounts available\n    *   **Value**: `0`\n    *   **Meaning**: There are no promotional discounts available for this specific rate.\n\n### Common Use Cases\n\nThe **discounts** field is commonly used for:\n*   Early booking discounts\n*   Last-minute deals\n*   Loyalty program discounts\n*   Seasonal promotional offers\n*   Package deal reductions\n\n### Implementation Notes\n\n> **Important**: Always check the **isIncludedInBaseRate** field to understand if a discount has already been applied to the base price or if it needs to be calculated separately.\n\n*   Use this field to display promotional messaging to customers (e.g., \"You're getting an Early Bird Special!\").\n*   This field is important for showing total savings and the value of a deal.\n*   Negative amounts for `amount` typically indicate a price reduction.\n\n### Related Fields\n\nThe **discounts** field should be considered in conjunction with other pricing fields to ensure accurate calculations:\n\n*   **baseRate**: The base room rate, potentially before discounts are applied.\n*   **totalRate**: The complete rate after all discounts, taxes, and fees have been applied.\n*   **publishedRate**: The original rate from the supplier, which can be used for comparison to show the value of a discount.\n*   **fees**: Additional fees that may or may not be part of a discount.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "6d50fc8e8483c6c872930c7d125f2fbd": {
+    "timestamp": 1768649658.803794,
+    "question": "what is hotelconnect?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **Zentrum Connect** is a suite of APIs that covers the hotel booking workflow. It includes APIs for retrieving hotel content, searching for rates, and managing bookings.\n\nThe documentation outlines the following APIs as part of the **Zentrum Connect** suite:\n\n*   **Content API**\n    *   Get mapped hotel Ids\n    *   Download Content\n\n*   **Hotel Rate APIs**\n    *   Search Hotels\n    *   Get Rooms and Rates\n    *   Direct Rooms and Rates\n    *   Price Rooms and Rates\n\n*   **Booking API**\n    *   Book\n    *   Get Booking Details\n    *   Cancel\n\nFurther details about the purpose or overall architecture of **Zentrum Connect** are not available in the provided documents.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "2621fcde547de1ac3399435c49d9e91d": {
+    "timestamp": 1768649725.5153475,
+    "question": "what is inincludedinbaserate?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the documentation provided, here is a detailed explanation of the **isIncludedInBaseRate** field.\n\nThe **isIncludedInBaseRate** is a boolean field that indicates whether a particular fee, tax, charge, or discount is already included in the **baseRate** price displayed to the user.\n\nIts primary purpose is to help you understand the pricing structure and accurately calculate the total cost of a booking, ensuring price transparency for the end-user.\n\n### Detailed Explanation\n\nThe **isIncludedInBaseRate** field is critical for correct price calculation. Its value determines how you should handle associated costs like taxes, fees, and commissions.\n\n*   **`true`**: The fee, tax, or charge is already factored into the **baseRate**. You should **not** add this amount again when calculating the total price.\n*   **`false`**: The fee, tax, or charge is **not** included in the **baseRate**. You **must** add this amount to the **baseRate** to calculate the final, total price.\n\n### Common Locations and Examples\n\nThis field appears in multiple places within the API responses to clarify the price breakdown.\n\n*   **In the `taxes` array:**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 2.26,\n          \"description\": \"tax_and_service_fee\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** This tax of $2.26 is **not** included in the **baseRate** and must be added to calculate the total cost.\n\n*   **In the `commission` object:**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 0.17,\n          \"description\": \"Agency Commission\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** The agency commission of $0.17 is **not** included in the **baseRate**.\n\n*   **In the `otherRateComponents` array (e.g., for markups):**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 1.869,\n          \"description\": \"Agency Markup\",\n          \"type\": \"Markup\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** This agency markup of $1.869 is **not** included in the **baseRate**.\n\n*   **In the `discounts` array:**\n    *   **Example:**\n        ```json\n        [\n          {\n            \"amount\": -92,\n            \"description\": \"Early Bird Special\",\n            \"isIncludedInBaseRate\": false\n          }\n        ]\n        ```\n    *   **Meaning:** A discount of $92 is available but has **not** yet been applied to the **baseRate**.\n\n### Implementation Notes\n\n> **Important:** Always check the **isIncludedInBaseRate** field when calculating the total booking cost to avoid incorrect pricing and prevent surprising users with unexpected additional costs.\n\n*   Use this field to determine whether to add fees, taxes, and other charges to the displayed price.\n*   It is essential for accurate price comparisons between different rates.\n*   **Calculation Example:** As seen in the documentation, if you have a `baseRate` of 20.729 and a tax of 2.26 where `isIncludedInBaseRate` is `false`, the total rate would be calculated as:\n    *   `baseRate (20.729) + taxes (2.26) = totalRate (22.989)` (Note: The example in the documentation also includes a markup).\n\n### Common Use Cases\n\nThe **isIncludedInBaseRate** field is used to clarify the pricing for various components, including:\n*   City taxes that may or may not be included in the room rate.\n*   Resort fees.\n*   Service charges that vary by supplier.\n*   VAT/GST taxes.\n*   Agency commissions and markups.\n*   Property fees and other additional charges.\n*   Promotional discounts.\n\n### Related Fields\n\n*   **`baseRate`**: The fundamental room rate before taxes and fees are added.\n*   **`totalRate`**: The complete rate including all fees, taxes, and other components.\n*   **`taxes`**: An array of tax amounts and details.\n*   **`fees`**: An array of additional fee amounts and details.\n*   **`commission`**: An object containing agency commission details.\n*   **`otherRateComponents`**: An array for additional markups and fees.\n*   **`discounts`**: An array of applied discounts.\n\n### Applicable API Endpoints\n\nYou will find the **isIncludedInBaseRate** field in the responses of the following API endpoints:\n\n*   **Search Results API**\n    *   **Endpoint**: `/api/hotel/search`\n*   **Rooms and Rates API**\n    *   **Endpoint**: `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API**\n    *   **Endpoint**: `/api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "5b2777c0bff1422a291d0c4043045941": {
+    "timestamp": 1768649988.179111,
+    "question": "providerCancellationNumber cancel booking",
+    "input_type": "question",
+    "data": {
+      "answer": "Of course. As a ZentrumHub Hotel API expert, I can provide you with detailed information about the `providerCancellationNumber` and how it relates to the process of canceling a booking.\n\nThe `providerCancellationNumber` is the supplier's unique reference number for a cancellation. You receive this number in the response after successfully canceling a reservation using the **Cancel Booking API**. It serves as proof of cancellation from the supplier's end.\n\nYou will find the `providerCancellationNumber` in the response of the **Cancel Booking API**.\n\n### Cancel Booking API\n\nThis API is used to cancel a confirmed hotel reservation. A successful cancellation request will return supplier and hotel cancellation reference numbers.\n\n*   **Purpose**: To cancel confirmed hotel reservations and receive cancellation confirmation.\n*   **HTTP Method**: `DELETE`\n*   **Endpoint**: `https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}`\n\n#### Required Parameters\n\n*   **`booking_id`** (string, required): The booking identifier you received from the Book API response. This is provided in the URL path.\n    *   *Example*: `tlp91`\n\n> **Important Note on Cancellation Token**\n> The documentation indicates that the `cancellation_token` is also a mandatory requirement for cancellation. You can retrieve this token from the **Retrieve Booking API** response.\n\n#### Required Headers\n\n*   `accept`: `application/json`\n*   `api-key`: Your API authentication key.\n*   `user-ip`: The customer's IP address (can be `0` for system calls).\n*   `customer-id`: Your unique account identifier.\n*   `affiliate-id`: Your affiliate identifier.\n*   `correlation-id`: A unique ID for tracking the request.\n\n#### Request Example\n\n```shell\ncurl --request DELETE \\\n--url https://hotel-connect.prod.zentrumhub.com/api/v1/book/{{booking_id}} \\\n--header 'accept: application/json' \\\n--header 'api-key: {{your_api_key}}' \\\n--header 'user-ip: 0' \\\n--header 'customer-id: {{account_id}}' \\\n--header 'affiliate-id: {{affiliate_id}}' \\\n--header 'correlation-id: 5d42d7fd-2d3c-0e5f-9819-8b574b19ad34'\n```\n\n#### Response Details\n\nThe API response confirms the cancellation and provides the `providerCancellationNumber`. It appears at the top level for the overall booking and also within the `roomCancellation` array for each specific room.\n\n#### Response Structure\n\n```json\n{\n  \"cancellationStatus\": \"Cancelled\",\n  \"bookingId\": \"tlp91\",\n  \"providerCancellationNumber\": \"7037179363950\",\n  \"hotelCancellationNumber\": \"6037179363950\",\n  \"roomCancellation\": [\n    {\n      \"providerConfirmationNumber\": \"9037179363951\",\n      \"hotelConfirmationNumber\": \"9037179363951\",\n      \"providerCancellationNumber\": \"7037179363950\",\n      \"hotelCancellationNumber\": \"6037179363950\",\n      \"cancellationStatus\": \"Cancelled\"\n    }\n  ]\n}\n```\n\n#### Field-Level Details for `providerCancellationNumber`\n\n*   **Field Name**: `providerCancellationNumber`\n*   **Data Type**: `string`\n*   **Description**: The unique cancellation reference number provided by the supplier/provider.\n*   **Example**: `\"7037179363950\"`\n\n### Best Practices\n\nAccording to the documentation, it is a best practice to always store all cancellation reference numbers, including the **`providerCancellationNumber`**, for your records and for handling any potential disputes or inquiries.\n\n### Retrieving Cancellation Details Later\n\nIf you need to retrieve the cancellation details after the fact, you can use the **ZentrumHub Connect Retrieve Booking API**. If a booking has been cancelled, its response will also contain the `providerCancellationNumber`.\n\n*   **API Name**: ZentrumHub Connect Retrieve Booking API\n*   **HTTP Method**: `GET`\n*   **Endpoint**: `https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}`\n\nThe response for a cancelled booking will include the `providerCancellationNumber` within the main body of the response, as seen in the example from the documentation:\n\n```json\n{\n  \"bookingId\": \"tlp91\",\n  \"bookingStatus\": \"Cancelled\", // Status would reflect cancellation\n  \"providerConfirmationNumber\": \"9037179363951\",\n  \"hotelConfirmationNumber\": \"9037179363951\",\n  \"hotelCancellationNumber\": \"6037179363950\",\n  \"providerCancellationNumber\": \"7037179363950\",\n  // ... other booking details\n}\n```",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel Booking API",
+          "key": "cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Cancel Booking API",
+          "key": "zentrum_connect_cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "203f76ced0c35580944248f4cff267a1": {
+    "timestamp": 1768650278.1148467,
+    "question": "what is providerCancellationNumber?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, the **providerCancellationNumber** is the supplier's cancellation reference number for a booking. It is returned when a booking is successfully cancelled.\n\nThis field appears in the responses of two different APIs: the **Cancel Booking API** and the **Retrieve Booking API**.\n\n### 1. In the Cancel Booking API\n\nThe **providerCancellationNumber** is a key piece of information returned after you successfully cancel a reservation. It serves as the official cancellation reference from the supplier (the provider of the hotel inventory).\n\n#### **API Details: Cancel Booking API**\n\n*   **API Name and Purpose**: **Cancel Booking API**. Its purpose is to cancel confirmed hotel reservations made via the ZentrumHub Booking API and receive a cancellation confirmation.\n*   **HTTP Method**: `DELETE`\n*   **Endpoint URL**: `https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}`\n*   **Required Parameters**:\n    *   `booking_id` (string, required): The booking identifier received from the Book API response. It is passed in the URL path.\n*   **Response Details**: The API returns a JSON object confirming the cancellation. The **providerCancellationNumber** is present at the top level for the overall booking and also for each individual room within the `roomCancellation` array.\n\n    *   **providerCancellationNumber**\n        *   **Field Name**: `providerCancellationNumber`\n        *   **Data Type**: `string`\n        *   **Description**: \"Supplier cancellation reference number\" or \"Cancellation reference from supplier\".\n        *   **Example**: `\"7037179363950\"`\n\n*   **Example Response**:\n\n    ```json\n    {\n      \"cancellationStatus\": \"Cancelled\",\n      \"bookingId\": \"tlp91\",\n      \"providerCancellationNumber\": \"7037179363950\",\n      \"hotelCancellationNumber\": \"6037179363950\",\n      \"roomCancellation\": [\n        {\n          \"providerConfirmationNumber\": \"9037179363951\",\n          \"hotelConfirmationNumber\": \"9037179363951\",\n          \"providerCancellationNumber\": \"7037179363950\",\n          \"hotelCancellationNumber\": \"6037179363950\",\n          \"cancellationStatus\": \"Cancelled\"\n        }\n      ]\n    }\n    ```\n\n> **Best Practice**: The documentation recommends that you \"Store all cancellation reference numbers\" and \"Always save cancellation reference numbers for records.\" This is crucial for tracking and customer service inquiries.\n\n---\n\n### 2. In the Retrieve Booking API\n\nThe **providerCancellationNumber** also appears in the response of the Retrieve Booking API if the booking has already been cancelled. This allows you to check the cancellation details of a past booking.\n\n#### **API Details: ZentrumHub Connect Retrieve Booking API**\n\n*   **API Name and Purpose**: **ZentrumHub Connect Retrieve Booking API - Get Booking by ID**. Its purpose is to retrieve comprehensive booking details, including hotel content and the latest confirmation or cancellation information.\n*   **HTTP Method**: `GET`\n*   **Endpoint URL**: `https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}`\n*   **Required Parameters**:\n    *   `booking_id` (string, required): The booking identifier from the Book API response. It is passed in the URL path.\n*   **Response Details**: The API returns a comprehensive JSON object with all booking details. The **providerCancellationNumber** is located within the main object.\n\n    *   **providerCancellationNumber**\n        *   **Field Name**: `providerCancellationNumber`\n        *   **Data Type**: `string` (inferred from example)\n        *   **Description**: \"Provider cancellation number (if applicable)\".\n        *   **Example**: `\"7037179363950\"`\n\n*   **Example Response Snippet**:\n\n    ```json\n    {\n      \"bookingId\": \"tlp91\",\n      \"bookingStatus\": \"Confirmed\",\n      \"providerConfirmationNumber\": \"9037179363951\",\n      \"hotelConfirmationNumber\": \"9037179363951\",\n      \"hotelCancellationNumber\": \"6037179363950\",\n      \"providerCancellationNumber\": \"7037179363950\",\n      \"creationDate\": \"2024-06-28T06:58:56.5208254+00:00\",\n      \"cancellationDate\": \"2024-07-03T06:58:56.5208009+00:00\",\n      \"...\": \"...\"\n    }\n    ```",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel Booking API",
+          "key": "cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Cancel Booking API",
+          "key": "zentrum_connect_cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "ad8fcc8730e5647779e72892726211af": {
+    "timestamp": 1768650390.7994676,
+    "question": "what is discounts??",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **discounts** represents promotional offers, special deals, or price reductions applied to a hotel rate. It is typically returned as an array of objects within a rate response.\n\nEach object in the **discounts** array provides details about a specific discount, including its amount, a description, and a critical field, **isIncludedInBaseRate**, which tells you whether the discount has already been applied to the **baseRate**.\n\n### Field Definition: `discounts`\n\nHere is a detailed breakdown of the **discounts** field as specified in the API documentation.\n\n*   **Field Name**: **discounts**\n*   **Data Type**: `array`\n*   **Description**: An array of objects detailing applied discounts. This field shows promotional offers and price reductions applied to the rate.\n*   **Structure**: Each object in the array contains the following fields:\n    *   **amount**:\n        *   **Data Type**: `number`\n        *   **Description**: The value of the discount. A negative number typically indicates a price reduction.\n        *   **Example**: `-92`\n    *   **description**:\n        *   **Data Type**: `string`\n        *   **Description**: A description of the discount or promotional offer.\n        *   **Example**: `\"Children Discount\"`, `\"Early Bird Special\"`\n    *   **isIncludedInBaseRate**:\n        *   **Data Type**: `boolean`\n        *   **Description**: This critical field indicates whether the discount amount is already factored into the **baseRate**.\n        *   **Values**:\n            *   `true`: The discount has already been applied to the **baseRate**.\n            *   `false`: The discount is separate and must be applied to the **baseRate** to calculate the final price.\n\n### Common Scenarios and Implementation\n\nAccording to the documentation, you should always check the **isIncludedInBaseRate** field to understand if a discount is already applied. This is important for accurately calculating the final price and displaying savings to the customer.\n\n*   **Common Use Cases**:\n    *   Early booking discounts\n    *   Last-minute deals\n    *   Loyalty program discounts\n    *   Seasonal promotional offers\n    *   Package deal reductions\n*   **Related Fields**:\n    *   **baseRate**: The base room rate before discounts might be applied.\n    *   **totalRate**: The complete rate after all discounts, taxes, and fees are calculated.\n    *   **publishedRate**: The original supplier rate, which can be compared with the discounted rate to show savings.\n\n### Examples in API Responses\n\nThe **discounts** field appears in the responses of several APIs.\n\n#### 1. Search Results API\n\nThe `rate` object within the **Search Results API** response includes a **discounts** field.\n\n*   **API Name**: Search Results API\n*   **Purpose**: To fetch hotel search results, including the cheapest rate with a full price breakdown.\n*   **Endpoint**: `GET https://nexus.prod.zentrumhub.com/api/hotel/availability/async/{token}/results`\n*   **Response Detail**: The `rate` object for each hotel contains the **discounts** field.\n    ```json\n    \"rate\": {\n      \"totalRate\": 307.971,\n      \"publishedRate\": 307.971,\n      \"baseRate\": 264.641,\n      \"taxes\": 43.33,\n      \"fees\": 0,\n      \"discounts\": 0, // In this case, no discount is applied.\n      \"providerId\": \"ean-v3-test\"\n    }\n    ```\n\n#### 2. Zentrum Connect Room Rates API\n\nThe response for this API provides a detailed breakdown of rates, including any applicable discounts.\n\n*   **API Name**: Zentrum Connect Room Rates - Direct Room Access\n*   **Purpose**: To get detailed room and rate information for a specific hotel.\n*   **Endpoint**: `GET https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/directrooms`\n*   **Response Example**: The `rates` array in the response shows a detailed **discounts** object.\n\n    ```json\n    {\n      \"rates\": [\n        {\n          \"id\": \"d44214c6-5804-485b-b71e-149beca0fc83\",\n          \"baseRate\": 6000,\n          \"totalRate\": 6500,\n          \"discounts\": [\n            {\n              \"amount\": 92,\n              \"description\": \"Children Discount\",\n              \"isIncludedInBaseRate\": true\n            }\n          ],\n          \"commission\": {\n            \"amount\": 106.7,\n            \"description\": \"Agency Commission\",\n            \"isIncludedInBaseRate\": true\n          }\n        }\n      ]\n    }\n    ```\n    > In this example, a discount of 92 for \"Children Discount\" is available, and `isIncludedInBaseRate` is `true`, meaning it is already factored into the base rate.\n\n#### 3. Zentrum Connect Price API\n\nWhen rechecking a price, the response structure is similar to the Room Rates API and will include any updated discount information.\n\n*   **API Name**: Zentrum Connect Price - Recheck Rates Price\n*   **Purpose**: To recheck and validate the price of selected rates before booking.\n*   **Endpoint**: `GET https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/price`\n*   **Response Example**:\n\n    ```json\n    {\n      \"rates\": [\n        {\n          \"id\": \"d44214c6-5804-485b-b71e-149beca0fc83\",\n          \"baseRate\": 6000,\n          \"totalRate\": 6500,\n          \"discounts\": [\n            {\n              \"amount\": 92,\n              \"description\": \"Children Discount\",\n              \"isIncludedInBaseRate\": true\n            }\n          ]\n        }\n      ]\n    }\n    ```",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 6,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "1415e25e7242dfae90a9cd3b41d0032a": {
+    "timestamp": 1768650447.227759,
+    "question": "what is baserate??",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, the **baseRate** is the fundamental or base room rate before any additional charges like taxes, fees, markups, or commissions are applied. It serves as the starting point for calculating the final **totalRate**.\n\nTo calculate the final price, you must check the **isIncludedInBaseRate** field for other cost components like **taxes**, **fees**, and **otherRateComponents**. If **isIncludedInBaseRate** is `false`, that component's amount must be added to the **baseRate** to determine the **totalRate**.\n\n### Detailed Explanation\n\nThe **baseRate** field is a crucial component of the pricing structure across various ZentrumHub Hotel APIs. It represents the core price of the room itself, separate from other mandatory or optional charges.\n\n#### Pricing Calculation Examples\n\nThe documentation provides several examples of how **baseRate** is used to calculate the **totalRate**:\n\n*   **Example from RoomsAndRates API:**\n    > **baseRate** (20.729) + **taxes** (2.26) + **markup** (1.869) = **totalRate** (22.989)\n    In this scenario, the tax and markup amounts were not included in the base rate and had to be added.\n\n*   **Example from Search Results API:**\n    > **baseRate** (264.641) + **taxes** (43.33) + **markup** (23.941) = **totalRate** (307.971)\n\n### Field Definition\n\nHere is the detailed definition of the **baseRate** field as found in the documentation.\n\n*   **Field Name**: `baseRate`\n*   **Data Type**: `number`\n*   **Description**: The fundamental room rate before taxes and fees are added.\n*   **Related Fields**:\n    *   `totalRate`: The complete rate including all applicable taxes and fees.\n    *   `publishedRate`: The original rate published by the supplier, used for comparison.\n    *   `taxes`, `fees`, `commission`, `otherRateComponents`: Additional cost components that may or may not be included in the **baseRate**.\n    *   `isIncludedInBaseRate`: A critical boolean field within other cost components that indicates if the charge is already accounted for in the **baseRate**.\n\n### API Context\n\nThe **baseRate** field appears in the responses of several key APIs in the booking workflow.\n\n#### 1. Search Results API\n*   **Purpose**: Retrieves hotel search results with the cheapest rates from multiple suppliers.\n*   **Method**: `GET`\n*   **Endpoint**: `https://nexus.prod.zentrumhub.com/api/hotel/availability/async/{token}/results`\n*   **Response Details**: The response includes a `hotels` array, where each hotel object contains a `rate` object. The **baseRate** is a field within this `rate` object.\n    ```json\n    {\n      \"rate\": {\n        \"totalRate\": 307.971,\n        \"publishedRate\": 307.971,\n        \"baseRate\": 264.641,\n        \"commission\": 1.29,\n        \"taxes\": 43.33,\n        \"fees\": 0\n      }\n    }\n    ```\n\n#### 2. Blocking Search API\n*   **Purpose**: Returns a token and the complete set of search results in a single response, without the need for polling.\n*   **Method**: `POST`\n*   **Endpoint**: `https://nexus.prod.zentrumhub.com/api/hotel/availability`\n*   **Response Details**: Similar to the Search Results API, the response contains a `hotels` array where each hotel's `rate` object includes the **baseRate**.\n\n#### 3. RoomsAndRates API\n*   **Purpose**: Retrieves detailed room and rate specifications for a selected hotel.\n*   **Method**: `POST`\n*   **Endpoint**: `https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Response Details**: The response contains a `rates` array. Each rate object within this array includes a **baseRate** field, along with a detailed breakdown of other charges.\n    ```json\n    \"rates\": [\n        {\n          \"id\": \"577d2972-2f36-4d1c-a7a2-598c95ad5e5c\",\n          \"baseRate\": 20.729,\n          \"totalRate\": 22.989,\n          \"taxes\": [\n            {\n              \"amount\": 2.26,\n              \"description\": \"tax_and_service_fee\",\n              \"isIncludedInBaseRate\": false\n            }\n          ]\n        }\n    ]\n    ```\n\n#### 4. Zentrum Connect APIs (Hotel Search, Room Rates, Price)\n*   **Purpose**: These APIs provide direct access to hotel availability, room details, and price validation.\n*   **Method**: `GET`\n*   **Endpoints**:\n    *   `https://hotel-connect.prod.zentrumhub.com/api/v1/hotels`\n    *   `https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/directrooms`\n    *   `https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/price`\n*   **Response Details**: All these API responses include a `rates` array where each rate object contains the **baseRate** and a breakdown of all other cost components.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "RoomsAndRates API",
+          "key": "roomsandrates_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+          "key": "zentrum_connect_hotel_search"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 10,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "3fee43b8154f06168c26ab6afab3e5ad": {
+    "timestamp": 1768651589.546314,
+    "question": "what is publishedrate?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the official documentation, the **publishedRate** is the original rate published by the hotel or supplier before any markups, discounts, or negotiations are applied. It serves as a reference point to show the supplier's original price.\n\n### Detailed Field Definition: publishedRate\n\nHere is the complete definition for the **publishedRate** field as specified in the API documentation.\n\n*   **Field Name:** `publishedRate`\n*   **Data Type:** `number`\n*   **Description:** The original rate published by the hotel or supplier. This value represents the price before any agency markups, discounts, or special negotiations are factored in.\n*   **Usage:** This field appears in search results and various rate responses to show the supplier's original published rate, which can be compared against the **totalRate** to calculate and display savings to the customer.\n\n### Examples and Scenarios\n\nThe documentation provides several examples of how **publishedRate** is used in different contexts:\n\n*   **Standard Published Rate:**\n    *   **Value:** `307.971`\n    *   **Meaning:** The supplier's original published rate is $307.971. This is seen in the Search Results API response.\n\n*   **Negotiated Rate (No Published Rate):**\n    *   **Value:** `0`\n    *   **Meaning:** A value of `0` typically indicates that the rate is a negotiated or special rate for which no public published rate is available. This is a key feature of negotiated rates.\n\n*   **Discounted Rate:**\n    *   **Value:** `184.6`\n    *   **Meaning:** The supplier's published rate is $184.60, but the customer may be receiving a discounted rate, which would be reflected in the **totalRate**.\n\n### Implementation Notes\n\nWhen working with the **publishedRate** field, it's important to follow these guidelines from the documentation:\n\n*   When **publishedRate** is `0`, it is a strong indicator of a negotiated or special rate.\n*   You can compare **publishedRate** with **totalRate** to show potential savings to customers (e.g., by displaying a \"You Save X%\" message).\n*   The **publishedRate** may be higher than or equal to the **totalRate**, depending on the rate type and any applied discounts or markups.\n\n### Related Fields\n\nThe **publishedRate** should be understood in the context of other pricing fields:\n\n*   **`baseRate`**: The fundamental room rate before any taxes, fees, or other charges are added.\n*   **`totalRate`**: The final, complete rate that the customer will pay, including all applicable taxes, fees, markups, and discounts.\n*   **`type`**: The rate type, such as `Published` or `Negotiated`.\n*   **`distributionType`**: Indicates how the rate is distributed (e.g., `Public`, `Private`, `Optimized`).\n\n### Where to Find `publishedRate`\n\nThe **publishedRate** field is present in the responses of several ZentrumHub Hotel APIs, including:\n\n*   **Search Results Polling API** (`[Document 1]`)\n*   **Search Results API** (`[Document 2]`)\n*   **Blocking Search API** (`[Document 4]`)\n*   **Zentrum Connect Room Rates - Direct Room Access API** (`[Document 5]`)\n*   **Price API** (as seen in the `Rate Fields Reference` - `[Document 3]`)\n\n### Example from a Search Results Response\n\nHere is an example from the **Search Results API** documentation showing how **publishedRate** appears alongside other rate components.\n\n```json\n{\n  \"hotel_id\": \"39691980\",\n  \"total_rate\": 180.091,\n  \"published_rate\": 184.6,\n  \"base_rate\": 154.751,\n  \"taxes\": 25.35,\n  \"markup\": {\n    \"amount\": 13.951,\n    \"description\": \"Agency Markup - CountrycodeMarkup\",\n    \"isIncludedInBaseRate\": false\n  },\n  \"offer\": {\n    \"title\": \"Promotion\",\n    \"description\": \"Save 10%\"\n  },\n  \"pay_at_hotel\": false\n}\n```\n\nIn this example, the supplier's **published_rate** is `184.6`, but the final **total_rate** for the customer is `180.091`, indicating a promotional saving.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 6,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "fdbdd193a4818a7cb554d55dbec27a6d": {
+    "timestamp": 1768651631.9425495,
+    "question": "what is facility?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, a **facility** refers to a hotel or room amenity. The documentation describes it as a \"comprehensive list of hotel amenities and facilities.\"\n\nExamples of facilities include:\n*   WiFi\n*   Pool\n*   Gym\n*   Restaurant\n*   Spa\n*   Business Center\n*   Parking\n\nIn API responses, a facility is typically represented as an object containing a unique **id**, a **name**, and a **description**.\n\n### How to Retrieve Facility Information\n\nYou can retrieve detailed facility information using the Static Content APIs. Facility details are also included in the responses of transactional APIs like room searches and booking retrievals.\n\n---\n\n### 1. Using the Static Content API\n\nThe primary method to get a comprehensive list of hotel facilities is through the static content download process.\n\n#### **API: Download Hotel Content**\n\n*   **Purpose**: To download comprehensive hotel static content, including facilities, for specific hotel IDs.\n*   **HTTP Method**: `GET`\n*   **Endpoint**: `https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent`\n*   **Required Parameters**:\n    *   `hotelIds`: (array) An array of hotel IDs to download content for, with a maximum of 200 per request.\n*   **Optional Parameters**:\n    *   `contentFields`: (string) A comma-separated list of content fields to retrieve. To get facilities, you would include `Facilities` in this list. If omitted, the default is `All`.\n        *   **Valid Options**: `Basic`, `All`, `Facilities`, `Images`, `Descriptions`, `Policies`, `Reviews`\n\n*   **Example Request**:\n    To get basic hotel information along with all facilities for specific hotels, you would set the `contentFields` parameter accordingly.\n    ```\n    GET https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent?hotelIds=12345,67890&contentFields=Basic,Facilities\n    ```\n\n*   **Response Details**:\n    The response will contain a `hotels` array. Each hotel object will have a **facilities** field if requested, which is a comprehensive list of the hotel's amenities.\n\n    The documentation also mentions two specific content fields related to facilities in the **Static Content API** (`getHotelContent`):\n    *   **Facilities**: Returns hotel facilities and amenities.\n    *   **MasterFacilities**: Returns standardized facility categories.\n\n---\n\n### 2. Facilities in Transactional API Responses\n\nFacility information for specific rooms is also included in the responses of several other APIs in the booking workflow.\n\n*   **APIs**:\n    *   Zentrum Connect Hotel Search - Check Hotel Availability\n    *   Zentrum Connect Room Rates - Direct Room Access\n    *   Zentrum Connect Price - Recheck Rates Price\n    *   ZentrumHub Connect Retrieve Booking API\n\n*   **Response Structure**:\n    In the responses from these APIs, facility information is typically found within a `rooms` object or a main `hotel` object. The structure is an array of facility objects.\n\n*   **Example from a Room Rates Response**:\n    This example shows the `facilities` array for a specific room.\n    ```json\n    {\n      \"rooms\": [\n        {\n          \"id\": \"8b06acc8-ebf1-4b86-95ea-f3c54f637983\",\n          \"name\": \"DOUBLE DELUXE\",\n          \"facilities\": [\n            {\n              \"name\": \"Spa Service\",\n              \"description\": \"Spa facility\",\n              \"id\": \"72be82e3-14b4-47b0-ba0d-5b5eec7d3036\"\n            }\n          ],\n          \"...\": \"other room details\"\n        }\n      ]\n    }\n    ```\n    Each facility object in this context includes:\n    *   **name**: (string) The name of the facility (e.g., \"Spa Service\").\n    *   **description**: (string) A brief description of the facility (e.g., \"Spa facility\").\n    *   **id**: (string) A unique identifier for the facility.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Download Hotel Content - Step 2 of Content Download",
+          "key": "download_hotel_content_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+          "key": "zentrum_connect_hotel_search"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        }
+      ],
+      "relevant_docs": 7,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "2aa63624f0de91687412cf9b15656b01": {
+    "timestamp": 1768652363.483249,
+    "question": "what is markup?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, a **markup** is an additional charge applied to a hotel rate, typically described as an \"Agency Markup.\" It is a component that is added to the **`baseRate`** along with taxes and other fees to calculate the final **`totalRate`**.\n\nMarkup information is consistently found within the **`otherRateComponents`** array in the responses of several ZentrumHub APIs.\n\n### Markup in API Responses\n\nYou will find markup details within the **`otherRateComponents`** array, which is a part of the rate object returned by the following APIs:\n\n*   **Search Results API**\n*   **RoomsAndRates API**\n*   **PriceByRecommendation API**\n\n#### `otherRateComponents` Field Details\n\nThe **`otherRateComponents`** field is an array of objects, where each object represents an additional charge like a markup or a fee.\n\n*   **Field Name:** `otherRateComponents`\n*   **Data Type:** `array`\n*   **Description:** Contains additional rate components, such as markups and fees, that contribute to the total price.\n\nEach object within the **`otherRateComponents`** array has the following structure:\n\n*   **`amount`**:\n    *   **Data Type:** `number`\n    *   **Description:** The value of the markup or fee.\n    *   **Example:** `23.941`\n*   **`description`**:\n    *   **Data Type:** `string`\n    *   **Description:** A description of the charge.\n    *   **Example:** `\"Agency Markup - CountrycodeMarkup\"`\n*   **`type`**:\n    *   **Data Type:** `string`\n    *   **Description:** The type of charge.\n    *   **Example:** `\"Markup\"`\n*   **`isIncludedInBaseRate`**:\n    *   **Data Type:** `boolean`\n    *   **Description:** A critical field indicating if the markup amount is already included in the **`baseRate`**.\n    *   **`false`**: The charge must be added to the **`baseRate`** to calculate the total cost.\n    *   **`true`**: The charge is already accounted for in the **`baseRate`**.\n\n> **Important Note:** The documentation repeatedly emphasizes the importance of the **`isIncludedInBaseRate`** field. You must always check this field to perform accurate pricing calculations and avoid surprising users with unexpected costs.\n\n### Practical Examples of Markup Calculation\n\nThe documentation provides clear examples of how markups are used to calculate the final price.\n\n**Example 1: From Search Results API (Document 1)**\n\nThis example shows a hotel with a markup and a pay-at-hotel option.\n\n*   **Hotel ID:** `15350438`\n*   **`baseRate`**: `264.641`\n*   **`taxes`**: `43.33`\n*   **`markup` (from `otherRateComponents`)**: `23.941`\n*   **Calculation:**\n    `baseRate (264.641) + taxes (43.33) + markup (23.941) = totalRate (307.971)`\n\n**Example 2: From RoomsAndRates API (Document 2)**\n\nThis example shows the pricing breakdown for a specific room rate.\n\n*   **`baseRate`**: `20.729`\n*   **`taxes`**: `2.26`\n*   **`markup` (from `otherRateComponents`)**: `1.869`\n*   **Calculation:**\n    `baseRate (20.729) + taxes (2.26) + markup (1.869) = totalRate (22.989)`\n\nIn both cases, the **`isIncludedInBaseRate`** field for the markup component was `false`, indicating it needed to be added to the base rate.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "RoomsAndRates API",
+          "key": "roomsandrates_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 5,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "95c97bd594776c279e479f07cf949599": {
+    "timestamp": 1768652626.7511396,
+    "question": "what is additional charges?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **additional charges** refer to extra costs that may not be included in the base or total rate and are often payable at the property. This information is available in the API response only if the suppliers provide this data.\n\nThe structure for `additionalCharges` is detailed in the response example for the **Blocking Search API**.\n\n### API Reference: Blocking Search API\n\nThe **Blocking Search API** is used to get hotel search results, including rate details, in a single synchronous call. The response from this API can contain the `additionalCharges` field.\n\n*   **API Purpose:** To receive both a search token and the complete set of hotel results in a single response, eliminating the need for polling.\n*   **HTTP Method:** `POST`\n*   **Endpoint:** `{baseEndpoint}/api/hotel/availability` (The documentation uses `https://nexus.prod.zentrumhub.com` as the base endpoint).\n    *   Full Endpoint: `https://nexus.prod.zentrumhub.com/api/hotel/availability`\n\n#### Request Body\nThe request body for the **Blocking Search API** is the same as the Asynchronous Search Init call.\n\n```json\n{\n  \"channelId\": \"demo-channel\",\n  \"segmentId\": null,\n  \"currency\": \"USD\",\n  \"culture\": \"en-us\",\n  \"checkIn\": \"2024-08-14T00:00:00\",\n  \"checkOut\": \"2024-08-15T00:00:00\",\n  \"occupancies\": [\n    {\n      \"numOfAdults\": 1,\n      \"childAges\": []\n    }\n  ],\n  \"circularRegion\": {\n    \"centerLat\": 25.27063,\n    \"centerLong\": 55.30037,\n    \"radiusInKm\": 30\n  },\n  \"rectangularRegion\": null,\n  \"polygonalRegion\": null,\n  \"multiPolygonalRegion\": null,\n  \"hotelIds\": null,\n  \"nationality\": \"US\",\n  \"countryOfResidence\": \"US\",\n  \"destinationCountryCode\": null,\n  \"filterBy\": null\n}\n```\n\n#### Response Details and `additionalCharges` Field\n\nThe `additionalCharges` field appears within the `rate` object for a hotel in the response.\n\n*   **`additionalCharges`**\n    *   **Data Type:** `array`\n    *   **Description:** An array of objects detailing additional charges, such as mandatory taxes or fees, that may be payable at the property.\n\nEach object within the `additionalCharges` array contains a `charge` object with the following structure:\n\n*   **`charge`**\n    *   **Data Type:** `object`\n    *   **Description:** Contains the specific details of an additional charge.\n    *   **Fields:**\n        *   **`type`**:\n            *   Data Type: `string`\n            *   Description: The type of charge.\n            *   Example: `\"Fee\"`\n        *   **`description`**:\n            *   Data Type: `string`\n            *   Description: A description of the charge.\n            *   Example: `\"mandatory_tax\"`\n        *   **`frequency`**:\n            *   Data Type: `string`\n            *   Description: How often the charge is applied.\n            *   Example: `\"PerNight\"`\n        *   **`unit`**:\n            *   Data Type: `string`\n            *   Description: The unit the charge is based on.\n            *   Example: `\"PerPerson\"`\n        *   **`amount`**:\n            *   Data Type: `number`\n            *   Description: The monetary value of the charge.\n            *   Example: `454.69`\n        *   **`currency`**:\n            *   Data Type: `string`\n            *   Description: The currency of the charge amount.\n            *   Example: `\"INR\"`\n\n#### Example Response Snippet\n\nHere is an example from the documentation showing the `additionalCharges` field in the response of the **Blocking Search API**:\n\n```json\n{\n    \"token\": \"8db5cb29-2412-467f-ab3f-66190efe27f6\",\n    \"currency\": \"USD\",\n    \"hotels\": [\n        {\n            \"id\": \"39707447\",\n            \"rate\": {\n                \"totalRate\": 205.62,\n                \"baseRate\": 167.85,\n                \"taxes\": 37.76,\n                \"additionalCharges\": [\n                    {\n                        \"charge\": {\n                            \"type\": \"Fee\",\n                            \"description\": \"mandatory_tax\",\n                            \"frequency\": \"PerNight\",\n                            \"unit\": \"PerPerson\",\n                            \"amount\": 454.69,\n                            \"currency\": \"INR\"\n                        }\n                    }\n                ],\n                \"cancellationPolicy\": \"...\"\n            },\n            \"options\": {\n                \"payAtHotel\": true\n            }\n        }\n    ]\n}\n```\n\n### Important Notes\n\n> The documentation for the **Get Rooms and Rates API** and **RoomRates API** specifies that information about charges to be paid at the property is only available if the suppliers provide this data. This likely applies to the `additionalCharges` field as well.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Get Rooms And Rates",
+          "key": "get_rooms_and_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Roomrates Api",
+          "key": "roomrates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Get Rooms and Rates API",
+          "key": "rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 6,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "5843a0c8d2be227198c4db1e51ff5fb9": {
+    "timestamp": 1768653606.3053246,
+    "question": "How do I use the Blocking Search API Workflow",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the official documentation, here is a detailed guide on how to use the ZentrumHub Blocking Search API workflow.\n\nThe Blocking Search API provides a synchronous search method that returns the complete set of hotel results and a search token in a single response. This is ideal for backend integrations or B2B applications where user wait time is less critical and receiving a full result set upfront is necessary. It simplifies the integration by eliminating the need for polling.\n\n### Blocking Search Workflow Steps\n\nThe workflow is straightforward and consists of four main steps:\n\n1.  **Search Request**: Make a single `POST` request to the Blocking Search API endpoint with all the required search parameters, such as dates, occupancy, and location criteria.\n2.  **Wait for Response**: The API connection remains open while ZentrumHub waits for all configured suppliers to respond or until a timeout is reached.\n3.  **Receive Complete Results**: You receive a single JSON response that contains both the `token` for the subsequent booking steps and the complete `hotels` result set.\n4.  **Display Results**: Since you have the full list of available hotels and their rates, you can display them to the user immediately.\n\nAfter receiving the results, you can proceed to the [RoomsAndRates API](https://nexus.prod.zentrumhub.com/api/hotel/%7BhotelId%7D/roomsandrates/%7Btoken%7D) using the `hotelId` and the `token` from the response to get more detailed room and rate options for a selected hotel.\n\n***\n\n### API Details: Blocking Search API\n\n*   **API Name and Purpose**: **Blocking Search API**. Used to perform a synchronous hotel search that returns a complete set of results in one response.\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `https://nexus.prod.zentrumhub.com/api/hotel/availability`\n\n#### Mandatory Headers\n\n| Header | Description |\n| :--- | :--- |\n| `accountId` | Your ZentrumHub account identifier. |\n| `apiKey` | Your API authentication key. |\n| `correlationId` | A unique ID (UUID) for the entire transaction, which must remain the same from search to booking for proper tracking. |\n| `Content-Type` | `application/json; charset=utf-8` |\n| `Accept-Encoding` | `gzip, deflate` |\n| `customer-ip` | The end-user's IP address. |\n\n#### Request Body Fields\n\nThe request body for the Blocking Search is the same as for the Search Init API. You must provide one of the geographical search types (`circularRegion`, `polygonalRegion`, etc.) or a list of `hotelIds`.\n\n| Field | Type | Required | Description | Example |\n| :--- | :--- | :--- | :--- | :--- |\n| **`channelId`** | string | Yes | Your channel identifier for this search. | `\"demo-channel\"` |\n| **`currency`** | string | Yes | Three-letter currency code (ISO 4217). | `\"USD\"` |\n| **`checkIn`** | string | Yes | Check-in date and time in ISO 8601 format. | `\"2024-08-14T00:00:00\"` |\n| **`checkOut`** | string | Yes | Check-out date and time in ISO 8601 format. | `\"2024-08-15T00:00:00\"` |\n| **`occupancies`** | array | Yes | An array of objects, one for each room. | `[{\"numOfAdults\": 1, \"childAges\": []}]` |\n| `occupancies.numOfAdults` | integer | Yes | Number of adults in the room. | `1` |\n| `occupancies.childAges` | array | Yes | An array of integers for each child's age. | `[4, 10]` |\n| **`circularRegion`** | object | No | Search within a circular area. | `{\"centerLat\": 25.27, \"centerLong\": 55.30, \"radiusInKm\": 30}` |\n| **`polygonalRegion`** | object | No | Search within a defined polygon. | `{\"coordinates\": [{\"lat\": 18.3, \"long\": 73.4}]}` |\n| **`hotelIds`** | array | No | An array of specific hotel IDs to search. | `[\"39707447\", \"15350438\"]` |\n| **`nationality`** | string | No | Guest's nationality (two-letter country code). | `\"US\"` |\n| **`countryOfResidence`** | string | No | Guest's country of residence (two-letter code). | `\"US\"` |\n| **`culture`** | string | No | Culture code for localization. | `\"en-us\"` |\n\n#### Example Request\n\n```json\nPOST https://nexus.prod.zentrumhub.com/api/hotel/availability\nHeaders:\n{\n  \"Content-Type\": \"application/json; charset=utf-8\",\n  \"Accept-Encoding\": \"gzip, deflate\",\n  \"accountId\": \"zentrum-demo-account\",\n  \"customer-ip\": \"49.43.4.237\",\n  \"correlationId\": \"d2ca03b0-f5a4-ce7b-0642-3d7c961573e7\",\n  \"apiKey\": \"09182999-580e-4124-bcd6-fc19597532f6\"\n}\nBody:\n{\n  \"channelId\": \"demo-channel\",\n  \"currency\": \"USD\",\n  \"culture\": \"en-us\",\n  \"checkIn\": \"2024-08-14T00:00:00\",\n  \"checkOut\": \"2024-08-15T00:00:00\",\n  \"occupancies\": [\n    {\n      \"numOfAdults\": 1,\n      \"childAges\": []\n    }\n  ],\n  \"circularRegion\": {\n    \"centerLat\": 25.27063,\n    \"centerLong\": 55.30037,\n    \"radiusInKm\": 30\n  },\n  \"nationality\": \"US\",\n  \"countryOfResidence\": \"US\"\n}\n```\n\n#### Response Details\n\nThe response contains the search token and the full list of hotels.\n\n| Field | Type | Description |\n| :--- | :--- | :--- |\n| **`token`** | string | The unique search token to be used in all subsequent API calls for this transaction (e.g., RoomsAndRates, Price, Book). |\n| **`currency`** | string | The currency code for all rates in the response. |\n| **`hotels`** | array | The complete array of hotel results. |\n\nA **`hotel`** object within the array includes:\n\n| Field | Type | Description |\n| :--- | :--- | :--- |\n| **`id`** | string | The unique ZentrumHub hotel identifier. |\n| **`relevanceScore`** | string | A score for sorting results (0 is most relevant). |\n| **`rate`** | object | Contains detailed pricing information. |\n| `rate.totalRate` | number | The final rate for the customer, including all taxes and fees. |\n| `rate.baseRate` | number | The base room rate before taxes and additional charges. |\n| `rate.cancellationPolicy` | object | Detailed cancellation rules and penalties. |\n| `rate.payAtHotel` | boolean | If `true`, payment is made at the hotel; otherwise, it is prepaid. |\n| **`options`** | object | An object containing boolean flags for amenities and rate features. |\n| `options.freeBreakfast` | boolean | Indicates if free breakfast is included. |\n| `options.freeCancellation` | boolean | Indicates if free cancellation is available. |\n| `options.refundable` | boolean | Indicates if the rate is refundable. |\n\n#### Example Response\n\n```json\n{\n    \"token\": \"8db5cb29-2412-467f-ab3f-66190efe27f6\",\n    \"currency\": \"USD\",\n    \"hotels\": [\n        {\n            \"id\": \"39707447\",\n            \"relevanceScore\": \"0\",\n            \"rate\": {\n                \"totalRate\": 205.62,\n                \"publishedRate\": 0,\n                \"baseRate\": 167.85,\n                \"commission\": 23.95,\n                \"taxes\": 37.76,\n                \"fees\": 0,\n                \"discounts\": 0,\n                \"providerId\": \"ean-v3-test\",\n                \"providerName\": \"EAN\",\n                \"distributionType\": \"Unknown\",\n                \"type\": \"Published\",\n                \"payAtHotel\": true,\n                \"cancellationPolicy\": {\n                    //... cancellation rules\n                }\n            },\n            \"isRecommended\": false,\n            \"options\": {\n                \"freeBreakfast\": false,\n                \"freeCancellation\": false,\n                \"refundable\": true,\n                \"payAtHotel\": true,\n                \"roomOnly\": true,\n                \"halfBoard\": false,\n                \"fullBoard\": false,\n                \"allInclusive\": false\n            }\n        }\n        // ... more hotel objects\n    ]\n}\n```",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Get Rooms And Rates",
+          "key": "get_rooms_and_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Roomrates Api",
+          "key": "roomrates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Get Rooms and Rates API",
+          "key": "rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Direct Rooms and Rates API",
+          "key": "direct_rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Init - Initiating the Search Sequence in the Hotel API",
+          "key": "search_init_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "RoomsAndRates API",
+          "key": "roomsandrates_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Book API - Final Reservation Step",
+          "key": "book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel Booking API",
+          "key": "cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Rate Combinability",
+          "key": "rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Download Content - Get Hotel IDs",
+          "key": "zentrum_connect_download_content"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Download Hotel Content - Step 2 of Content Download",
+          "key": "download_hotel_content_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+          "key": "zentrum_connect_hotel_search"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Cancel Booking API",
+          "key": "zentrum_connect_cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Rate Combinability API",
+          "key": "zentrum_connect_rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Book API - Book Priced Rates",
+          "key": "zentrum_connect_book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "ZentrumHub Platform Introduction",
+          "key": "platform_introduction"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Price API",
+          "key": "price_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "RoomsRates API (Get Rooms and Rates)",
+          "key": "rooms_rates_api"
+        }
+      ],
+      "relevant_docs": 61,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "3c88bff6af60be5faebc92924b14ded3": {
+    "timestamp": 1768653645.8705792,
+    "question": "How do I use the Blocking Search API Workflow?",
+    "input_type": "question",
+    "data": {
+      "answer": "Of course. Here is a detailed guide on how to use the ZentrumHub Blocking Search API workflow, based on the provided documentation.\n\nThe Blocking Search API provides a synchronous search workflow that returns the complete set of hotel results in a single response. This is ideal for integrations where user wait time is not a primary concern, such as B2B applications or backend processes, as it eliminates the need for polling.\n\n### Blocking Search Workflow Steps\n\nThe typical workflow for a blocking search is as follows:\n\n1.  **Make a Search Request**: You make a single API call to the Blocking Search endpoint with all the necessary search parameters (e.g., dates, occupancy, location).\n2.  **Wait for the Response**: The API waits for all configured suppliers to respond or for the connection to time out.\n3.  **Receive Complete Results**: You receive a single response containing both a **`token`** for subsequent steps and the full list of available hotels and their rates.\n4.  **Display Results**: You can then immediately display all the hotel results to the user.\n5.  **Proceed to Next Step**: After a hotel is selected, use the `hotelId` and the `token` from the response to call the **RoomsAndRates API** to get more detailed room and rate options for that specific hotel.\n\n### API Details: Blocking Search\n\n*   **Purpose**: To perform a synchronous hotel search that returns a complete result set in a single API response.\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `https://nexus.prod.zentrumhub.com/api/hotel/availability`\n\n#### Mandatory Headers\n\nThe following headers are required for the request:\n\n| Header | Description |\n| :--- | :--- |\n| `accountId` | Your ZentrumHub account identifier. |\n| `apiKey` | Your API authentication key. |\n| `correlationId` | A unique identifier (UUID) for the entire search-to-book flow. This ID must remain the same for all subsequent calls. |\n| `Content-Type` | `application/json; charset=utf-8` |\n| `Accept-Encoding` | `gzip, deflate` |\n| `customer-ip` | The end-user's IP address. |\n\n#### Request Body Fields\n\nThe request body is identical to the Search Init API. You must provide one of the geographical search types (`circularRegion`, `polygonalRegion`, etc.) or a list of `hotelIds`.\n\n```json\n{\n  \"channelId\": \"demo-channel\",\n  \"segmentId\": null,\n  \"currency\": \"USD\",\n  \"culture\": \"en-us\",\n  \"checkIn\": \"2024-08-14T00:00:00\",\n  \"checkOut\": \"2024-08-15T00:00:00\",\n  \"occupancies\": [\n    {\n      \"numOfAdults\": 1,\n      \"childAges\": []\n    }\n  ],\n  \"circularRegion\": {\n    \"centerLat\": 25.27063,\n    \"centerLong\": 55.30037,\n    \"radiusInKm\": 30\n  },\n  \"rectangularRegion\": null,\n  \"polygonalRegion\": null,\n  \"multiPolygonalRegion\": null,\n  \"hotelIds\": null,\n  \"nationality\": \"US\",\n  \"countryOfResidence\": \"US\",\n  \"destinationCountryCode\": null,\n  \"filterBy\": null\n}\n```\n\n**Field-level Details:**\n\n*   **`channelId`** (string, required): Your channel identifier for this search.\n*   **`currency`** (string, required): The three-letter currency code (e.g., `USD`, `EUR`).\n*   **`checkIn`** (string, required): The check-in date and time in ISO 8601 format (e.g., `2024-12-04T00:00:00`).\n*   **`checkOut`** (string, required): The check-out date and time in ISO 8601 format (e.g., `2024-12-05T00:00:00`).\n*   **`occupancies`** (array, required): An array of objects, where each object represents a room.\n    *   **`numOfAdults`** (integer): Number of adults in the room.\n    *   **`childAges`** (array): An array of integers representing the ages of children in the room.\n*   **`circularRegion`** (object, optional): Search within a circular area.\n    *   **`centerLat`** (number): Center latitude.\n    *   **`centerLong`** (number): Center longitude.\n    *   **`radiusInKm`** (number): Radius in kilometers.\n*   **`polygonalRegion`** (object, optional): Search within a polygon defined by coordinates.\n*   **`hotelIds`** (array, optional): An array of specific hotel IDs to search for.\n*   **`nationality`** (string, optional): The two-letter country code for the guest's nationality.\n*   **`countryOfResidence`** (string, optional): The two-letter country code for the guest's country of residence.\n*   **`culture`** (string, optional): The culture code for localization (e.g., `en-us`).\n*   **`segmentId`** (string, optional): An optional segment identifier for rate filtering.\n*   **`userInfo`** (object, optional): User information for the search.\n    *   **`email`** (string): User's email address.\n    *   **`role`** (string): User's role (e.g., `admin`).\n\n> **Important Note:** You should only specify one type of geographical search per request (e.g., either **`circularRegion`** OR **`polygonalRegion`** OR **`hotelIds`**).\n\n#### Response Details\n\nThe API returns a single JSON object containing the token and the complete list of hotels.\n\n```json\n{\n    \"token\": \"8db5cb29-2412-467f-ab3f-66190efe27f6\",\n    \"currency\": \"USD\",\n    \"hotels\": [\n        {\n            \"id\": \"39707447\",\n            \"relevanceScore\": \"0\",\n            \"rate\": {\n                \"totalRate\": 205.62,\n                \"publishedRate\": 0,\n                \"baseRate\": 167.85,\n                \"commission\": 23.95,\n                \"taxes\": 37.76,\n                \"fees\": 0,\n                \"discounts\": 0,\n                \"providerId\": \"ean-v3-test\",\n                \"providerName\": \"EAN\",\n                \"distributionType\": \"Unknown\",\n                \"payAtHotel\": true,\n                \"cancellationPolicy\": \"...\"\n            },\n            \"options\": {\n                \"freeBreakfast\": false,\n                \"freeCancellation\": false,\n                \"refundable\": true,\n                \"payAtHotel\": true,\n                \"roomOnly\": true\n            }\n        }\n    ]\n}\n```\n\n**Response Field Details:**\n\n*   **`token`** (string): The unique search token to be used in all subsequent API calls for this search session (e.g., RoomsAndRates, Price, Book).\n*   **`currency`** (string): The currency code used for all rates in the response.\n*   **`hotels`** (array): A list of hotel objects that match the search criteria.\n    *   **`id`** (string): The unique ZentrumHub hotel identifier.\n    *   **`relevanceScore`** (string): A score for sorting results, where `0` is the highest relevance.\n    *   **`rate`** (object): Contains detailed pricing information for the cheapest available rate.\n        *   **`totalRate`** (number): The final rate payable, including all taxes and fees.\n        *   **`baseRate`** (number): The base room rate before taxes and other charges.\n        *   **`taxes`** (number): The total amount of taxes.\n        *   **`commission`** (number): The commission amount, if applicable.\n        *   **`providerId`** (string): The identifier of the supplier providing the rate.\n        *   **`payAtHotel`** (boolean): Indicates if the payment is to be made at the hotel (`true`) or prepaid (`false`).\n        *   **`cancellationPolicy`** (object): Contains the detailed cancellation rules.\n    *   **`options`** (object): Contains boolean flags for key amenities and rate features.\n        *   **`freeBreakfast`** (boolean): Indicates if free breakfast is included.\n        *   **`freeCancellation`** (boolean): Indicates if free cancellation is available.\n        *   **`refundable`** (boolean): Indicates if the rate is refundable.\n\n### Use Cases for Blocking Search\n\nAccording to the documentation, the Blocking Search API is best suited for:\n\n*   **B2B applications** where travel agents can wait for complete results.\n*   **Backend integrations** and batch processing jobs.\n*   Scenarios where a **complete result set is required upfront** before displaying anything to the user.\n\n### Comparison with Asynchronous Search\n\n| Feature | Blocking Search | Asynchronous Search |\n| :--- | :--- | :--- |\n| **API Calls** | One single call | Multiple calls (Init + Polling) |\n| **Response Time** | Slower (waits for all suppliers) | Faster initial response |\n| **User Experience**| Can involve a longer initial wait | Better, with progressive loading of results |\n| **Implementation**| Simpler | More complex (requires polling logic) |",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Get Rooms And Rates",
+          "key": "get_rooms_and_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Roomrates Api",
+          "key": "roomrates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Get Rooms and Rates API",
+          "key": "rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Direct Rooms and Rates API",
+          "key": "direct_rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Init - Initiating the Search Sequence in the Hotel API",
+          "key": "search_init_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "RoomsAndRates API",
+          "key": "roomsandrates_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Book API - Final Reservation Step",
+          "key": "book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel Booking API",
+          "key": "cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Rate Combinability",
+          "key": "rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Download Content - Get Hotel IDs",
+          "key": "zentrum_connect_download_content"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Download Hotel Content - Step 2 of Content Download",
+          "key": "download_hotel_content_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+          "key": "zentrum_connect_hotel_search"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Cancel Booking API",
+          "key": "zentrum_connect_cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Rate Combinability API",
+          "key": "zentrum_connect_rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Book API - Book Priced Rates",
+          "key": "zentrum_connect_book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "ZentrumHub Platform Introduction",
+          "key": "platform_introduction"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Price API",
+          "key": "price_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "RoomsRates API (Get Rooms and Rates)",
+          "key": "rooms_rates_api"
+        }
+      ],
+      "relevant_docs": 61,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "fab68d4235739e4a972a0da93700edf6": {
+    "timestamp": 1768653770.543668,
+    "question": "In case of multiroom how can i handle cancellation policies in price response?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the documentation, here is how you should handle cancellation policies from the Price API response in a multi-room scenario.\n\n### Direct Answer\n\nIn a multi-room booking scenario, you first get a **recommendationId** from the **RoomsAndRates API**. This ID represents a valid, pre-grouped combination of rates for all the rooms, sourced from a single supplier.\n\nWhen you call the **Price API** with this **recommendationId**, the response will contain a `rates` array. This array will include a separate rate object for each room in your multi-room booking. **Each of these rate objects has its own `cancellationPolicies` field.**\n\nTherefore, to handle cancellation policies for a multi-room booking, you must:\n1.  Iterate through the `rates` array in the **Price API** response.\n2.  For each rate object, parse its specific `cancellationPolicies`.\n3.  Combine and display all the cancellation policies to the user, as the terms for each room's rate might be different.\n\n---\n\n### Detailed Workflow and API Information\n\nThe process involves using the **RoomsAndRates API** to get a recommendation, followed by the **Price API** to validate the price and get the final policies.\n\n#### 1. Get Recommendations for Multi-Room Search\n\nFirst, you call the **RoomsRates API** after a search. The response provides `recommendations` which are crucial for multi-room bookings.\n\n*   **API Name:** RoomsRates API (Get Rooms and Rates)\n*   **Purpose:** To fetch comprehensive details and all available room/rate options for a selected hotel, including pre-grouped `recommendations` for multi-room searches.\n*   **HTTP Method:** GET\n*   **Endpoint:** `{baseEndpoint}/api/v1/hotels/{hotel_id}/rooms?searchResponseToken={search_response_token}`\n\n> **Important:** According to the documentation, you should use the **recommendationId** from this response when calling the Price API for multi-room searches. Each recommendation contains rate IDs from a single supplier, as the platform does not support multi-supplier pricing for a single booking.\n\n#### 2. Get Final Price and Cancellation Policies\n\nNext, you use the **recommendationId** to call the Price API.\n\n*   **API Name:** PriceByRecommendation API\n*   **Purpose:** To validate and get the most current pricing, rate details, and final cancellation policies from the supplier before proceeding to booking. This step is mandatory.\n*   **HTTP Method:** GET\n*   **Endpoint:** `https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/{token}/price/recommendation/{recommendationId}`\n*   **Required Parameters:**\n    *   `hotelId` (string): The hotel identifier from the search results.\n    *   `token` (string): The search token obtained from the initial search call.\n    *   `recommendationId` (string): The ID of the selected recommendation from the **RoomsAndRates API** response.\n\n#### Price API Response Details\n\nThe JSON response from the Price API will contain a `hotel` object, which in turn contains a `rates` array. For a multi-room booking, this array will have multiple rate objects.\n\n**Response Structure (Relevant Part):**\n\n```json\n{\n  \"token\": \"9bdd5776-cc46-4046-ac30-b3a428376bea\",\n  \"currency\": \"USD\",\n  \"hotel\": {\n    \"id\": \"70448191\",\n    \"rooms\": [...],\n    \"rates\": [\n      {\n        \"id\": \"rate-id-for-room-1\",\n        \"totalRate\": 150.00,\n        \"cancellationPolicies\": \"...\",\n        // ...other rate details for room 1\n      },\n      {\n        \"id\": \"rate-id-for-room-2\",\n        \"totalRate\": 180.00,\n        \"cancellationPolicies\": \"...\",\n        // ...other rate details for room 2\n      }\n    ]\n  }\n}\n```\n\n**Cancellation Policy Structure**\n\nThe `cancellationPolicies` field within each rate object contains detailed rules. Based on the documentation, the structure is an array of rules with time-based penalties.\n\n**Example of a `cancellationPolicy` object from the documentation:**\n\n```json\n\"cancellationPolicy\": {\n  \"rules\": [\n    {\n      \"value\": 0.0,\n      \"valueType\": \"Amount\",\n      \"estimatedValue\": 0.0,\n      \"start\": \"2024-07-02T07:01:36.6924033+00:00\",\n      \"end\": \"2024-08-12T12:59:59+00:00\",\n      \"meaning\": \"Free cancellation until August 12, 2024\"\n    },\n    {\n      \"value\": 159.55,\n      \"valueType\": \"Amount\",\n      \"estimatedValue\": 159.55,\n      \"start\": \"2024-08-12T13:00:00+00:00\",\n      \"end\": \"2024-08-13T22:59:59+00:00\",\n      \"meaning\": \"Full rate penalty from August 12-13, 2024\"\n    }\n  ]\n}\n```\n\n### Actionable Steps\n\n1.  **Call the Price API** using the `recommendationId` for the selected multi-room option.\n2.  **Loop through the `rates` array** in the response. There will be one object per room.\n3.  **Extract and parse** the `cancellationPolicies` from *each* rate object.\n4.  **Display all policies** to the end-user. Be aware that the policies might differ. For example, one room could be non-refundable while the other is fully refundable. Your user interface should clearly present the terms for the entire booking, potentially highlighting the most restrictive policy.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Get Rooms And Rates",
+          "key": "get_rooms_and_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Roomrates Api",
+          "key": "roomrates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Get Rooms and Rates API",
+          "key": "rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Direct Rooms and Rates API",
+          "key": "direct_rooms_and_rates_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-rooms-rates.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Platform",
+          "key": "platform_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Authentication & Credentials",
+          "key": "authentication"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Complete Integration Workflow",
+          "key": "integration_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "ZentrumHub Autosuggest API",
+          "key": "autosuggest_overview"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Suggestions API",
+          "key": "get_suggestions_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Get Location Details API",
+          "key": "get_location_details_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base.json",
+          "title": "Typical Integration Workflow",
+          "key": "workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Static Content API",
+          "key": "static_content_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Hotel Search API",
+          "key": "search_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Asynchronous Search API Workflow",
+          "key": "async_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API Workflow",
+          "key": "blocking_search_workflow"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Booking API",
+          "key": "booking_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel API",
+          "key": "cancel_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Init - Initiating the Search Sequence in the Hotel API",
+          "key": "search_init_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results Polling",
+          "key": "search_results_polling_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Search Results API",
+          "key": "search_results_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "RoomsAndRates API",
+          "key": "roomsandrates_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+          "key": "pricebyrecommendation_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Book API - Final Reservation Step",
+          "key": "book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Cancel Booking API",
+          "key": "cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Rate Combinability",
+          "key": "rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Blocking Search API",
+          "key": "blocking_search_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Download Content - Get Hotel IDs",
+          "key": "zentrum_connect_download_content"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Download Hotel Content - Step 2 of Content Download",
+          "key": "download_hotel_content_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+          "key": "zentrum_connect_hotel_search"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Room Rates - Direct Room Access",
+          "key": "zentrum_connect_room_rates"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Price - Recheck Rates Price",
+          "key": "zentrum_connect_price"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Cancel Booking API",
+          "key": "zentrum_connect_cancel_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Zentrum Connect Rate Combinability API",
+          "key": "zentrum_connect_rate_combinability_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Book API - Book Priced Rates",
+          "key": "zentrum_connect_book_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+          "key": "zentrum_connect_retrieve_booking_recipe"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "troubleshooting",
+          "key": "troubleshooting"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Combinability Types",
+          "key": "rate_combinability_types"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "ZentrumHub Platform Introduction",
+          "key": "platform_introduction"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Price API",
+          "key": "price_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "Book API",
+          "key": "book_api"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/complete-documentation.json",
+          "title": "RoomsRates API (Get Rooms and Rates)",
+          "key": "rooms_rates_api"
+        }
+      ],
+      "relevant_docs": 62,
+      "source_type": "local_knowledge_base"
+    }
   }
 }

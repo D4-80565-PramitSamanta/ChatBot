@@ -3705,6 +3705,71 @@
       "bookingId": "Unique identifier for the booking - used for modifications and cancellations",
       "confirmationNumber": "Hotel confirmation number provided by the supplier",
       "status": "Current booking status (Confirmed, Pending, Cancelled, etc.)"
+    },
+    "pricing_fields": {
+      "discounts": {
+        "field_name": "discounts",
+        "type": "array",
+        "description": "Applied discounts with inclusion status - represents promotional offers, special deals, or price reductions applied to the rate",
+        "usage": "This field appears in search results and rate responses to show discount information and promotional offers",
+        "structure": {
+          "amount": {
+            "type": "number",
+            "description": "Discount amount (can be negative to indicate reduction)",
+            "example": -92
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the discount or promotional offer",
+            "example": "Early Bird Discount"
+          },
+          "isIncludedInBaseRate": {
+            "type": "boolean",
+            "description": "Indicates whether the discount is already applied to the base rate",
+            "values": {
+              "true": "Discount is already applied to the base rate",
+              "false": "Discount is separate and should be applied to calculate final price"
+            }
+          }
+        },
+        "examples": [
+          {
+            "scenario": "Promotional discount",
+            "value": [
+              {
+                "amount": -92,
+                "description": "Early Bird Special",
+                "isIncludedInBaseRate": false
+              }
+            ],
+            "meaning": "Customer gets $92 discount, not yet applied to base rate"
+          },
+          {
+            "scenario": "No discounts available",
+            "value": 0,
+            "meaning": "No promotional discounts available for this rate"
+          }
+        ],
+        "common_scenarios": [
+          "Early booking discounts",
+          "Last-minute deals",
+          "Loyalty program discounts",
+          "Seasonal promotional offers",
+          "Package deal reductions"
+        ],
+        "implementation_notes": [
+          "Always check isIncludedInBaseRate to understand if discount is already applied",
+          "Negative amounts typically indicate price reductions",
+          "Use for displaying promotional messaging to customers",
+          "Important for showing total savings and deal value"
+        ],
+        "related_fields": [
+          "baseRate - The base room rate before discounts",
+          "totalRate - The complete rate after all discounts applied",
+          "publishedRate - Original rate for comparison with discounted rate",
+          "fees - Additional fees that may also have discounts"
+        ]
+      }
     }
   },
   "zentrum_connect_cancel_booking_recipe": {
