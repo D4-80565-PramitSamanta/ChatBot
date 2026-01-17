@@ -59,23 +59,25 @@ Move your documentation files to `data/` directory:
 
 ### Start the Server
 
+Using the startup script:
+
 ```bash
-start.bat
+bash start.sh
 ```
 
 Or manually:
 
 ```bash
-python -m uvicorn app.main:app --reload --port 8000
+python -m uvicorn app.main:app --reload --port 8080
 ```
 
 ### Access Swagger Documentation
 
 Once running, access the interactive API documentation:
 
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-- **API Root**: http://localhost:8000
+- **Swagger UI**: http://localhost:8080/docs
+- **ReDoc**: http://localhost:8080/redoc
+- **API Root**: http://localhost:8080
 
 ## API Endpoints
 
@@ -135,8 +137,8 @@ logs/                           # Application logs
 
 ## Testing with Swagger
 
-1. Start the server: `start.bat`
-2. Open browser: http://localhost:8000/docs
+1. Start the server: `bash start.sh`
+2. Open browser: http://localhost:8080/docs
 3. Click on `POST /api/chat`
 4. Click "Try it out"
 5. Enter your question in the request body

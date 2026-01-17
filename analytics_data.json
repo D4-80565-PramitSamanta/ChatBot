@@ -19,7 +19,8 @@
     "hotel booking engine": 1,
     "what is hotelapi": 1,
     "how should i integrate this hotel api in my system": 1,
-    "What does error 429 mean?": 1
+    "What does error 429 mean?": 1,
+    "How do I search for hotels?": 1
   },
   "client_query_counter": {
     "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
@@ -77,6 +78,9 @@
     },
     "63aeb788-8600-4bcb-b313-dd6cb113959e": {
       "What does error 429 mean?": 1
+    },
+    "conv-123": {
+      "How do I search for hotels?": 1
     }
   },
   "unanswered_counter": {
@@ -154,5 +158,5 @@
       "timestamp": "2026-01-16T19:46:04.009Z"
     }
   ],
-  "last_updated": "2026-01-16T19:48:13.442954"
+  "last_updated": "2026-01-17T06:49:53.008073"
 }
