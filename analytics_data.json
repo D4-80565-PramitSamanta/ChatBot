@@ -20,7 +20,10 @@
     "what is hotelapi": 1,
     "how should i integrate this hotel api in my system": 1,
     "What does error 429 mean?": 1,
-    "How do I search for hotels?": 1
+    "How do I search for hotels?": 1,
+    "How do I cancel booking?": 5,
+    "what is totalrate?": 1,
+    "how to cancel a booking?": 1
   },
   "client_query_counter": {
     "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
@@ -80,7 +83,13 @@
       "What does error 429 mean?": 1
     },
     "conv-123": {
-      "How do I search for hotels?": 1
+      "How do I search for hotels?": 1,
+      "How do I cancel booking?": 4,
+      "what is totalrate?": 1,
+      "how to cancel a booking?": 1
+    },
+    "test-123": {
+      "How do I cancel booking?": 1
     }
   },
   "unanswered_counter": {
@@ -118,6 +127,11 @@
       "count": 1,
       "first_seen": "2026-01-16T19:42:15.862741",
       "last_seen": "2026-01-16T19:42:15.862741"
+    },
+    "How do I cancel booking?": {
+      "count": 5,
+      "first_seen": "2026-01-17T09:03:27.837230",
+      "last_seen": "2026-01-17T09:08:33.843262"
     }
   },
   "feedback_data": [
@@ -158,5 +172,5 @@
       "timestamp": "2026-01-16T19:46:04.009Z"
     }
   ],
-  "last_updated": "2026-01-17T06:49:53.008073"
+  "last_updated": "2026-01-17T09:09:56.948069"
 }

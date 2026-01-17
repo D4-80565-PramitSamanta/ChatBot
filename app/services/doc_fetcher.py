@@ -19,7 +19,11 @@ class DocumentationFetcher:
             "cancellation": "cancel-api",
             "cancelled": "cancel-api",
             "cancelling": "cancel-api",
+            "cancel-booking": "cancel-api",
+            "cancel-reservation": "cancel-api",
             "refund": "cancel-api",
+            "void": "cancel-api",
+            "terminate": "cancel-api",
             
             # Rooms and Rates API
             "room": "roomrates-api",
@@ -92,58 +96,76 @@ class DocumentationFetcher:
             "searchinit": "search-init",
             "initialize": "search-init",
             "start-search": "search-init",
+            "init": "search-init",
             
             "search-results": "search-results",
             "searchresults": "search-results",
             "results": "search-results",
             
             "search-polling": "search-results-polling",
+            "search-results-polling": "search-results-polling",
             "polling": "search-results-polling",
             "poll": "search-results-polling",
             "async-search": "search-results-polling",
+            "asynchronous": "search-results-polling",
             
             "blocking-search": "blocking-search",
             "blockingsearch": "blocking-search",
             "synchronous": "blocking-search",
             "sync-search": "blocking-search",
+            "blocking": "blocking-search",
             
             # Rooms and rates workflows
             "roomsandrates": "roomsandrates",
             "rooms-rates-workflow": "roomsandrates",
             "get-rates": "roomsandrates",
+            "room-rates": "roomsandrates",
+            "rates": "roomsandrates",
             
             # Pricing workflows
             "pricerecommendation": "pricebyrecommendation",
+            "pricebyrecommendation": "pricebyrecommendation",
             "price-recommendation": "pricebyrecommendation",
+            "price-by-recommendation": "pricebyrecommendation",
             "recommendation-price": "pricebyrecommendation",
             "quote": "pricebyrecommendation",
             
             # Booking workflows
             "book-workflow": "book",
+            "book": "book",
             "booking-flow": "book",
             "make-booking": "book",
             "create-reservation": "book",
+            "reservation": "book",
             
             # Cancellation workflows
             "cancel-booking": "cancel-booking",
             "cancelbooking": "cancel-booking",
             "cancel-workflow": "cancel-booking",
             "cancellation-flow": "cancel-booking",
+            "cancel": "cancel-booking",
+            "cancellation": "cancel-booking",
             
-            # Zentrum Connect specific
+            # Zentrum Connect specific workflows
             "zentrum-connect": "zentrum-connect-hotel-search",
             "zentrumconnect": "zentrum-connect-hotel-search",
             
+            "zentrum-connect-download-content": "zentrum-connect-download-content",
             "download-content": "zentrum-connect-download-content",
             "static-content": "zentrum-connect-download-content",
             "content-download": "zentrum-connect-download-content",
             
+            "zentrum-connect-hotel-search": "zentrum-connect-hotel-search",
             "connect-search": "zentrum-connect-hotel-search",
             "connect-hotel": "zentrum-connect-hotel-search",
+            "connect-hotel-search": "zentrum-connect-hotel-search",
             
+            "zentrum-connect-room-rates": "zentrum-connect-room-rates",
             "connect-rooms": "zentrum-connect-room-rates",
             "connect-rates": "zentrum-connect-room-rates",
+            "connect-room-rates": "zentrum-connect-room-rates",
             
+            "zentrum-connect-price": "zentrum-connect-price",
             "connect-price": "zentrum-connect-price",
             "smoking": "zentrum-connect-price",
             "issmoking": "zentrum-connect-price",
@@ -153,18 +175,24 @@ class DocumentationFetcher:
             "parameter": "zentrum-connect-price",
             "parameters": "zentrum-connect-price",
             
+            "zentrum-connect-book": "zentrum-connect-book",
             "connect-book": "zentrum-connect-book",
             "connect-booking": "zentrum-connect-book",
             
+            "zentrum-connect-retreive-booking": "zentrum-connect-retreive-booking",
+            "zentrum-connect-retrieve-booking": "zentrum-connect-retreive-booking",
             "retrieve-booking": "zentrum-connect-retreive-booking",
             "retreive-booking": "zentrum-connect-retreive-booking",
             "get-booking": "zentrum-connect-retreive-booking",
             "fetch-booking": "zentrum-connect-retreive-booking",
+            "connect-retrieve": "zentrum-connect-retreive-booking",
             
+            "zentrum-connect-rate-combinability": "zentrum-connect-rate-combinability",
             "rate-combinability": "zentrum-connect-rate-combinability",
             "combinability": "zentrum-connect-rate-combinability",
             "combine-rates": "zentrum-connect-rate-combinability",
-            "ratecombinability": "zentrum-connect-rate-combinability"
+            "ratecombinability": "zentrum-connect-rate-combinability",
+            "connect-combinability": "zentrum-connect-rate-combinability"
         }
         
         # Reference API mapping for detailed field specifications
@@ -308,11 +336,19 @@ class DocumentationFetcher:
             score = 0
             if keyword in query_lower:
                 score += 20
+                # Boost score for exact phrase matches
+                if keyword == "cancel-booking" and "cancel" in query_lower and "booking" in query_lower:
+                    score += 50  # High boost for cancel booking queries
             for word in query_words:
                 if keyword in word or word in keyword:
                     score += 10
             if any(keyword in word for word in query_words):
                 score += 5
+            
+            # Special boost for cancel-related queries
+            if page == "cancel-api" and any(term in query_lower for term in ['cancel', 'cancellation', 'refund']):
+                score += 30
+                
             if score > 0:
                 doc_scores[page] = doc_scores.get(page, 0) + score
         
@@ -321,11 +357,19 @@ class DocumentationFetcher:
             score = 0
             if keyword in query_lower:
                 score += 20
+                # Boost score for exact phrase matches
+                if keyword == "cancel-booking" and "cancel" in query_lower and "booking" in query_lower:
+                    score += 50  # High boost for cancel booking queries
             for word in query_words:
                 if keyword in word or word in keyword:
                     score += 10
             if any(keyword in word for word in query_words):
                 score += 5
+                
+            # Special boost for cancel-related queries in recipes
+            if page == "cancel-booking" and any(term in query_lower for term in ['cancel', 'cancellation', 'refund']):
+                score += 30
+                
             if score > 0:
                 recipe_scores[page] = recipe_scores.get(page, 0) + score
         

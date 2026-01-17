@@ -66,9 +66,101 @@ class RAGService:
         except Exception as e:
             print(f"✗ Error loading documents: {e}")
     
-    def retrieve_context(self, question: str) -> List[Dict[str, Any]]:
-        """Retrieve relevant documents for the question"""
-        return self.vector_store.search(question, config.TOP_K_DOCUMENTS)
+    def _search_local_knowledge_base(self, question: str) -> List[Dict[str, Any]]:
+        """
+        Search local knowledge base files with improved scoring
+        
+        NEW SCORING SYSTEM:
+        - 2 points per word match (was 1)
+        - 20 points for exact phrase match (was 10)  
+        - 15 points if document KEY matches query (e.g., "cancel_api")
+        - 10 points if document TITLE matches query
+        """
+        question_lower = question.lower()
+        question_words = question_lower.split()
+        
+        results = []
+        
+        # Knowledge base files to search
+        kb_files = [
+            'knowledge-base.json',
+            'knowledge-base-extended.json', 
+            'data/knowledge-base.json',
+            'data/knowledge-base-extended.json',
+            'data/complete-documentation.json'
+        ]
+        
+        for kb_file in kb_files:
+            try:
+                with open(kb_file, 'r', encoding='utf-8') as f:
+                    kb_data = json.load(f)
+                    
+                    # Handle different file structures
+                    if kb_file == 'data/complete-documentation.json':
+                        # Complete documentation has nested structure
+                        if 'documentation' in kb_data:
+                            kb_data = kb_data['documentation']
+                    
+                    for key, value in kb_data.items():
+                        if not isinstance(value, dict):
+                            continue
+                            
+                        title = value.get('title', key)
+                        description = value.get('description', '')
+                        content = json.dumps(value, indent=2)
+                        
+                        # Calculate score with NEW SCORING SYSTEM
+                        score = 0
+                        
+                        # 15 points if document KEY matches query (e.g., "cancel_api")
+                        key_normalized = key.lower().replace('_', ' ').replace('-', ' ')
+                        if any(word in key_normalized for word in question_words):
+                            score += 15
+                            
+                        # 10 points if document TITLE matches query
+                        title_normalized = title.lower()
+                        if any(word in title_normalized for word in question_words):
+                            score += 10
+                            
+                        # 2 points per word match (was 1)
+                        for word in question_words:
+                            if word in key_normalized:
+                                score += 2
+                            if word in title_normalized:
+                                score += 2
+                            if word in description.lower():
+                                score += 2
+                                
+                        # 20 points for exact phrase match (was 10)
+                        search_text = f"{key_normalized} {title_normalized} {description.lower()}"
+                        if question_lower in search_text:
+                            score += 20
+                            
+                        # Special boost for cancel-related queries
+                        if 'cancel' in question_lower and 'cancel' in key_normalized:
+                            score += 25
+                            
+                        if score > 0:
+                            results.append({
+                                'key': key,
+                                'title': title,
+                                'content': content,
+                                'score': score,
+                                'file': kb_file
+                            })
+                            
+            except (FileNotFoundError, json.JSONDecodeError) as e:
+                continue
+        
+        # Sort by score (highest first)
+        results.sort(key=lambda x: x['score'], reverse=True)
+        
+        if results:
+            print(f"📚 Local KB search results:")
+            for i, result in enumerate(results[:3]):  # Show top 3
+                print(f"  {i+1}. {result['key']} (score: {result['score']}) from {result['file']}")
+        
+        return results
     
     def build_prompt(self, question: str, context_docs: List[Dict[str, Any]]) -> str:
         """Build enhanced prompt for LLM with retrieved context"""
@@ -234,50 +326,74 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         
         Flow:
         1. Check response cache first
-        2. If cache miss, fetch from live documentation (with doc caching)
-        3. Generate answer and cache it
-        4. Return cached or fresh response
+        2. Check local knowledge base files with improved scoring
+        3. If no good match, fetch from live documentation (with doc caching)
+        4. Generate answer and cache it
+        5. Return cached or fresh response
         """
         # Check response cache first
         cached_response = self.cache_service.get_response(question, "question")
         if cached_response:
             return cached_response
         
-        # Cache miss - fetch documentation (with doc caching)
-        print(f"🔍 Fetching documentation for: {question}")
+        print(f"🔍 Searching for: {question}")
         
-        # Check documentation cache
-        cached_doc = self.cache_service.get_documentation(question)
-        if cached_doc:
-            live_doc = cached_doc
+        # First, search local knowledge base files with improved scoring
+        local_docs = self._search_local_knowledge_base(question)
+        
+        if local_docs and local_docs[0]['score'] >= 15:  # Good match threshold
+            print(f"✓ Found in local knowledge base: {local_docs[0]['title']} (score: {local_docs[0]['score']})")
+            
+            # Use local knowledge base
+            context_docs = [{
+                "text": f"{local_docs[0]['title']}\n{local_docs[0]['content']}",
+                "metadata": {
+                    "source": "local_knowledge_base",
+                    "file": local_docs[0]['file'],
+                    "title": local_docs[0]['title'],
+                    "key": local_docs[0]['key']
+                }
+            }]
+            
+            source_type = "local_knowledge_base"
         else:
-            # Fetch from live documentation
-            live_doc = await self.doc_fetcher.fetch_documentation(question)
-            if live_doc:
-                # Cache the documentation
-                self.cache_service.set_documentation(question, live_doc)
-        
-        if not live_doc:
-            response = {
-                "answer": "I couldn't fetch the latest documentation. Please ensure the question is about ZentrumHub Hotel API or visit https://docs-hotel.prod.zentrumhub.com/docs directly.",
-                "confidence": "low",
-                "sources": [],
-                "relevant_docs": 0,
-                "source_type": "none"
-            }
-            return response
-        
-        print(f"✓ Using documentation: {live_doc['title']} from {live_doc['url']}")
-        
-        # Use documentation as context
-        context_docs = [{
-            "text": f"{live_doc['title']}\n{live_doc['content']}",
-            "metadata": {
-                "source": "live_docs",
-                "url": live_doc['url'],
-                "title": live_doc['title']
-            }
-        }]
+            # Fallback to live documentation
+            print(f"📚 No good local match, fetching live documentation")
+            
+            # Check documentation cache
+            cached_doc = self.cache_service.get_documentation(question)
+            if cached_doc:
+                live_doc = cached_doc
+            else:
+                # Fetch from live documentation
+                live_doc = await self.doc_fetcher.fetch_documentation(question)
+                if live_doc:
+                    # Cache the documentation
+                    self.cache_service.set_documentation(question, live_doc)
+            
+            if not live_doc:
+                response = {
+                    "answer": "I couldn't find relevant documentation. Please ensure the question is about ZentrumHub Hotel API or visit https://docs-hotel.prod.zentrumhub.com/docs directly.",
+                    "confidence": "low",
+                    "sources": [],
+                    "relevant_docs": 0,
+                    "source_type": "none"
+                }
+                return response
+            
+            print(f"✓ Using live documentation: {live_doc['title']} from {live_doc['url']}")
+            
+            # Use documentation as context
+            context_docs = [{
+                "text": f"{live_doc['title']}\n{live_doc['content']}",
+                "metadata": {
+                    "source": "live_docs",
+                    "url": live_doc['url'],
+                    "title": live_doc['title']
+                }
+            }]
+            
+            source_type = "live_documentation"
         
         # Build prompt with context
         prompt = self.build_prompt(question, context_docs)
@@ -291,7 +407,7 @@ PROVIDE YOUR ERROR EXPLANATION:"""
             "confidence": "high",
             "sources": [doc.get("metadata", {}) for doc in context_docs],
             "relevant_docs": len(context_docs),
-            "source_type": "hybrid_cached" if cached_doc else "live_documentation"
+            "source_type": source_type
         }
         
         # Cache the response

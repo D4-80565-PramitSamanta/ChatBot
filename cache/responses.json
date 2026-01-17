@@ -16,5 +16,41 @@
       "relevant_docs": 1,
       "source_type": "live_documentation"
     }
+  },
+  "cd06c266d26bb065deeb0dcdf6a21a86": {
+    "timestamp": 1768640948.4085312,
+    "question": "what is totalrate?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, the **total rate** is a detail included within the **Rates** object of the **RoomRates API** response. It represents one of the pricing components for a room offered by the hotel.\n\nThe documentation does not provide a specific definition or a breakdown of what is included in the **total rate**. It is listed alongside other rate details such as base rate, taxes, and fees.\n\n### RoomRates API\n\nThe **RoomRates API** is used to fetch comprehensive details for the various room and rate options available at a specific hotel, going beyond the minimum rate information returned by the Search API.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/hotel/{hotelId}/roomsandrates/{token}`\n\n#### Response Details\n\nThe API response contains several key objects:\n\n*   **Rooms**: An array of objects containing details about each room, such as its name, description, facilities, bed information, and area. This is used when the room mapping service is not enabled.\n*   **Rates**: An array of objects containing detailed pricing information for the rooms. The documentation states this object includes:\n    *   **total rate**\n    *   base rate\n    *   taxes\n    *   fee\n    *   refundability info\n    *   cancellation policies info\n*   **Recommendations**: An array of recommended room/rate combinations. Each recommendation groups different rates (e.g., refundable and non-refundable) for the same room type.\n    *   The `recommendationId` from this object is used in the subsequent **Price API** call.\n    *   Each recommendation contains an array of `rateId`s that map to specific objects in the main **Rates** array.\n*   **Standardized Rooms**: An array of objects containing unified and normalized room data from multiple suppliers. This is only included in the response if you have subscribed to the room mapping service with ZentrumHub.\n\n#### Use Case: Displaying Rooms and Rates\n\nTo display room and rate information to a user, you must map the different parts of the response together.\n\n1.  **Start with a `recommendation`**: Each object in the **recommendations** array represents a purchasable option.\n2.  **Map to a `rate`**: Use the `rateId` from within a `recommendation` object to find the corresponding rate object in the top-level **rates** array. This object will contain the pricing details, including the **total rate**.\n3.  **Map to a `room`**: From the rate object, use the `stdRoomId` (if using room mapping) or `roomId` (if not) found in the `occupancies` array to find the corresponding room object in the **standardizedRooms** or **rooms** array, respectively. This provides the descriptive details of the room associated with that rate.\n\n> **Important Note**: The token received in the Search API response, which is used in the endpoint for this API call, is valid for 60 minutes.\n\n#### Error Codes\n\n*   **`4001`**: Invalid data in request - Please refer to the fields[] for more details.\n*   **`4004`**: The hotel you selected is soldout\n*   **`5000`**: Your request failed due to an unknown system error. Please contact support team with the correlationId.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "live_docs",
+          "url": "https://docs-hotel.prod.zentrumhub.com/docs/roomrates-api",
+          "title": "Roomrates Api"
+        }
+      ],
+      "relevant_docs": 1,
+      "source_type": "live_documentation"
+    }
+  },
+  "18a3fd3658050cb005b86d76b2d719ea": {
+    "timestamp": 1768640996.9447947,
+    "question": "how to cancel a booking?",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, you can cancel a booking using the **Cancel Booking** API endpoint.\n\nHere are the details for the relevant API endpoint:\n\n### **Cancel Booking**\n\nThis API is used to cancel a booking using its unique booking ID.\n\n*   **API Purpose:** To cancel a hotel booking.\n*   **HTTP Method:** `POST`\n*   **Endpoint URL:** `/api/hotel/booking/{bookingId}/cancel`\n\n#### **Path Parameters**\n\n*   **`bookingId`**\n    *   **Description:** The unique identifier for the booking you wish to cancel.\n    *   **Data Type:** string\n    *   **Required:** Yes\n\n> **Note:** The provided documentation also lists a `POST /api/hotel/bookingcancellationFee` endpoint, which could be used to check for cancellation fees before initiating the cancellation. However, no further details about this endpoint are available in the documentation.\n\n#### **Request Body**\n\nThis information is not available in the current documentation.\n\n#### **Response Details**\n\nThis information is not available in the current documentation.\n\n#### **Error Codes**\n\nThis information is not available in the current documentation.",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "live_docs",
+          "url": "https://docs-hotel.prod.zentrumhub.com/reference/post_api-hotel-hotelid-roomsandrates-token",
+          "title": "Post Api Hotel Hotelid Roomsandrates Token"
+        }
+      ],
+      "relevant_docs": 1,
+      "source_type": "live_documentation"
+    }
   }
 }
