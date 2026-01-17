@@ -95,48 +95,134 @@ CRITICAL INSTRUCTIONS:
      * API Name and Purpose
      * HTTP Method (GET, POST, etc.)
      * Full Endpoint URL with placeholders
-     * Required Parameters
-     * Optional Parameters (if any)
-     * Response Details
+     * Required Parameters (with data types and descriptions)
+     * Optional Parameters (with data types and descriptions)
+     * Request Body Fields (if applicable, with complete field details)
+     * Response Details (structure and fields)
      * Error Codes (if applicable)
    - Include practical examples or use cases when available
 
-3. FORMATTING REQUIREMENTS:
+3. FIELD-LEVEL DETAILS (CRITICAL):
+   - When the documentation includes API reference specifications, provide COMPLETE field details:
+     * Field name
+     * Data type (string, integer, boolean, array, object)
+     * Required or optional
+     * Description and purpose
+     * Valid values or constraints
+     * Example values
+   - For request bodies, show the complete JSON structure with all fields
+   - Explain nested objects and arrays clearly
+
+4. FORMATTING REQUIREMENTS:
    - Use **bold** for API names, important terms, and field names
    - Use `code blocks` for:
-     * Endpoints: `GET /api/v1/hotels/{{hotel_id}}/rooms`
+     * Endpoints: `POST /api/v1/hotels/{{hotel_id}}/rooms`
      * Parameters: `searchResponseToken`, `hotel_id`
      * Field names: `rateCombinabilityType`, `allGuestInfoRequired`
+     * JSON structures and examples
    - Use bullet points (•) for lists
    - Use numbered lists for sequential steps
    - Use > blockquotes for important notes or warnings
 
-4. SPECIFIC GUIDELINES:
+5. REQUEST/RESPONSE EXAMPLES:
+   - When available, include complete request body examples
+   - Show response structure with field descriptions
+   - Explain what each field means and when to use it
+   - Include data type information for all fields
+
+6. SPECIFIC GUIDELINES:
    - For "rooms and rates" queries: Focus on Get Rooms and Rates API or Direct Rooms and Rates API
-   - For "booking" queries: Focus on Book API details
+   - For "booking" queries: Focus on Book API details with complete request body
    - For "cancel" queries: Focus on Cancel API details
    - For "search" queries: Focus on Search API details
    - For "hotel content" or "static content" queries: Focus on Static Content API
+   - For "field" or "parameter" queries: Provide detailed field specifications from reference docs
    - Always include error codes when discussing APIs
 
-5. EXAMPLES & USE CASES:
+7. EXAMPLES & USE CASES:
    - When available, include practical examples from the documentation
    - Explain when to use one API vs another (e.g., Direct Rooms vs Get Rooms)
    - Mention related APIs that might be useful
+   - Show complete request/response cycles
 
-6. TONE & STYLE:
+8. TONE & STYLE:
    - Be professional but conversational
    - Use clear, simple language
    - Avoid jargon unless it's from the API documentation
    - Be helpful and anticipate follow-up questions
 
-7. QUALITY CHECKS:
+9. QUALITY CHECKS:
    - Ensure all endpoints are complete and accurate
    - Verify HTTP methods are correct
    - Double-check parameter names match the documentation
    - Confirm error codes are accurate
+   - Validate field names and data types
 
 ANSWER (provide your response below):"""
+        
+        return prompt
+    
+    def build_explain_prompt(self, error_content: str, context_docs: List[Dict[str, Any]]) -> str:
+        """Build specialized prompt for error code explanations"""
+        context = "\n\n---\n\n".join([
+            f"[Document {i + 1}]\n{doc['text']}"
+            for i, doc in enumerate(context_docs)
+        ])
+        
+        prompt = f"""You are a ZentrumHub Hotel API error diagnostic expert. Your role is to explain error codes and provide actionable solutions.
+
+CONTEXT - RELEVANT DOCUMENTATION:
+{context}
+
+ERROR TO EXPLAIN: {error_content}
+
+CRITICAL INSTRUCTIONS FOR ERROR EXPLANATION:
+
+1. IDENTIFY THE ERROR CODE:
+   - Extract the error code number (e.g., 4001, 4004, 5000)
+   - Look for the error code in the "Error Codes" section of the documentation
+   - Match the exact error code and message
+
+2. PROVIDE STRUCTURED EXPLANATION:
+   
+   **Summary** (1-2 sentences):
+   - What does this error mean?
+   - When does it occur?
+   
+   **Details** (3-5 bullet points):
+   - Root cause of the error
+   - Common scenarios that trigger this error
+   - What went wrong in the API request/response
+   - Impact on the booking flow
+   - Related error codes if any
+   
+   **Recommended Actions** (3-5 specific steps):
+   - Immediate actions to resolve the error
+   - How to prevent this error in future
+   - What to check in the request
+   - When to contact support
+   - Include correlationId usage if mentioned
+
+3. ERROR CODE SPECIFIC GUIDANCE:
+   - **4001**: Focus on request validation, check fields[] array
+   - **4004**: Explain sold out scenario, suggest alternative dates/hotels
+   - **4005**: Price changed, explain re-search requirement
+   - **4006**: Rate expired, explain token expiration
+   - **4007**: Duplicate booking, explain idempotency
+   - **5000-5004**: System/supplier errors, emphasize support contact with correlationId
+
+4. FORMATTING:
+   - Use **bold** for error codes and important terms
+   - Use `code` for field names and parameters
+   - Use bullet points for lists
+   - Be concise but comprehensive
+
+5. ALWAYS INCLUDE:
+   - The exact error code and message from documentation
+   - Whether this is a client error (4xxx) or server error (5xxx)
+   - If correlationId should be provided to support
+
+PROVIDE YOUR ERROR EXPLANATION:"""
         
         return prompt
     
@@ -181,6 +267,56 @@ ANSWER (provide your response below):"""
         answer = await self.llm_client.generate(prompt)
         
         # Return response with live documentation source
+        return {
+            "answer": answer,
+            "confidence": "high",
+            "sources": [doc.get("metadata", {}) for doc in context_docs],
+            "relevant_docs": len(context_docs),
+            "source_type": "live_documentation"
+        }
+    
+    async def explain_error(self, error_content: str) -> Dict[str, Any]:
+        """
+        Explain error codes using live documentation
+        
+        Args:
+            error_content: Error message or code to explain
+            
+        Returns:
+            Dictionary with explanation and metadata
+        """
+        # Fetch documentation about errors
+        print(f"🔍 Fetching error documentation for: {error_content}")
+        live_doc = await self.doc_fetcher.fetch_documentation(f"error {error_content}")
+        
+        if not live_doc:
+            return {
+                "answer": "Error code not found in documentation. Please check the error code or visit https://docs-hotel.prod.zentrumhub.com/docs",
+                "confidence": "low",
+                "sources": [],
+                "relevant_docs": 0,
+                "source_type": "none"
+            }
+        
+        print(f"✓ Fetched error documentation from {live_doc['url']}")
+        
+        # Use live documentation as context
+        context_docs = [{
+            "text": f"{live_doc['title']}\n{live_doc['content']}",
+            "metadata": {
+                "source": "live_docs",
+                "url": live_doc['url'],
+                "title": live_doc['title']
+            }
+        }]
+        
+        # Build specialized error explanation prompt
+        prompt = self.build_explain_prompt(error_content, context_docs)
+        
+        # Generate explanation using Gemini 2.5 Pro
+        answer = await self.llm_client.generate(prompt)
+        
+        # Return response
         return {
             "answer": answer,
             "confidence": "high",

@@ -1,0 +1,158 @@
+{
+  "query_counter": {
+    "kjb": 1,
+    "what is cancellation policies": 1,
+    "how to cancel a booking": 2,
+    "what is multroom booking": 1,
+    "give me curl request for multiroom booking": 1,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 3,
+    "[EXPLAIN] 500 error": 2,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": 2,
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 2,
+    "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 2,
+    "what is revenue management": 1,
+    "hotelapi recommendation": 1,
+    "what is totalrate and base rate": 2,
+    "what is totalrate": 1,
+    "tell me about base rate and total rate": 1,
+    "what is hotel engine": 1,
+    "hotel booking engine": 1,
+    "what is hotelapi": 1,
+    "how should i integrate this hotel api in my system": 1,
+    "What does error 429 mean?": 1
+  },
+  "client_query_counter": {
+    "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
+      "kjb": 1,
+      "what is cancellation policies": 1,
+      "how to cancel a booking": 2,
+      "what is multroom booking": 1,
+      "give me curl request for multiroom booking": 1
+    },
+    "167497b0-5cc0-4525-b45f-1a69641d07e1": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 1
+    },
+    "e4159a50-9ca1-42e8-a219-deb2376d6520": {
+      "[EXPLAIN] 500 error": 1
+    },
+    "d1de2947-de45-4fa5-9486-d8f29726a789": {
+      "[EXPLAIN] 500 error": 1
+    },
+    "59a838b6-1b8b-4aac-9e6c-6ff089cbd590": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 1
+    },
+    "95d74cd7-79ad-4aae-8b22-82d9c4e60086": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": 1
+    },
+    "83516dbc-665b-49a4-b8e8-b2ca38563e32": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 1
+    },
+    "30674174-c27c-4114-8c7a-a113ab30292c": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": 1
+    },
+    "87133105-6927-4969-b0f8-5829e526c1a3": {
+      "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 1
+    },
+    "555d4cbe-e490-4b26-a446-1bd42f6f4754": {
+      "[EXPLAIN] Invalid data in request - Please refer to the fields[] for more details.": 1
+    },
+    "07ea9810-3b29-4b54-890c-d0acef50f8f7": {
+      "what is revenue management": 1,
+      "hotelapi recommendation": 1,
+      "what is totalrate and base rate": 2,
+      "what is totalrate": 1,
+      "tell me about base rate and total rate": 1
+    },
+    "1aa46010-59bf-4651-a4c6-cd51390b196e": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": 1
+    },
+    "b550c9d9-ffc6-4dc0-84d8-f239b75a6418": {
+      "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": 1
+    },
+    "eba207ca-346d-48f4-bca6-c1e4e469e7a4": {
+      "what is hotel engine": 1,
+      "hotel booking engine": 1,
+      "what is hotelapi": 1,
+      "how should i integrate this hotel api in my system": 1
+    },
+    "63aeb788-8600-4bcb-b313-dd6cb113959e": {
+      "What does error 429 mean?": 1
+    }
+  },
+  "unanswered_counter": {
+    "kjb": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:33:26.378565",
+      "last_seen": "2026-01-16T17:33:26.378565"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 404\n}": {
+      "count": 2,
+      "first_seen": "2026-01-16T17:54:58.398412",
+      "last_seen": "2026-01-16T17:58:56.306821"
+    },
+    "[EXPLAIN] 500 error": {
+      "count": 2,
+      "first_seen": "2026-01-16T17:55:17.475156",
+      "last_seen": "2026-01-16T17:58:15.001240"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:59:34.973757",
+      "last_seen": "2026-01-16T17:59:34.973757"
+    },
+    "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"code\": 4001\n}": {
+      "count": 1,
+      "first_seen": "2026-01-16T17:59:50.724074",
+      "last_seen": "2026-01-16T17:59:50.724074"
+    },
+    "what is hotel engine": {
+      "count": 1,
+      "first_seen": "2026-01-16T19:42:01.736075",
+      "last_seen": "2026-01-16T19:42:01.736075"
+    },
+    "hotel booking engine": {
+      "count": 1,
+      "first_seen": "2026-01-16T19:42:15.862741",
+      "last_seen": "2026-01-16T19:42:15.862741"
+    }
+  },
+  "feedback_data": [
+    {
+      "message_id": "12903ff1-ad48-4a19-8996-e71af7940b1d",
+      "conversation_id": "b550c9d9-ffc6-4dc0-84d8-f239b75a6418",
+      "question": "[EXPLAIN] {\n  \"error\": \"not_found\",\n  \"message\": \"The requested resource '/api/users/12345' was not found\",\n  \"status_code\": 4001\n}",
+      "answer": "Based on the provided documentation, the error code `4001` indicates that there is invalid data in the request sent to the API.\n\nThe error message associated with this code is: **Invalid data in request - Please refer to the fields[] for more details.** This suggests that the API response should contain a `fields` array specifying which parts of the request are incorrect.\n\nThis is a generic error code used across multiple ZentrumHub APIs. To resolve this issue, you need to identify which API you are calling and then carefully review your request payload or parameters against the API's requirements to find the invalid data.\n\n### APIs Using Error Code 4001\n\nHere are the APIs from the documentation that utilize the `4001` error code:\n\n#### 1. RoomRates API\nThe **RoomRates API** is used to fetch comprehensive details for all available room options and their corresponding rates for a specific hotel.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Error Code Details**:\n    *   **Error Code**: `4001`\n    *   **Error Message**: `Invalid data in request - Please refer to the fields[] for more details.`\n\n#### 2. Book API\nThe **Book API** is the final step in the booking flow and is used to create a reservation for the selected hotel room and rate.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/hotel/{hotelId}/{token}/book`\n*   **Error Code Details**:\n    *   **Error Code**: `4001`\n    *   **Error Message**: `Invalid data in request - Please refer to the fields[] for more details.`\n\n#### 3. Cancel API\nThe **Cancel API** is used to cancel a hotel reservation that was previously made through the Book API.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/hotel/booking/{bookingId}/cancel`\n*   **Error Code Details**:\n    *   **Error Code**: `4001`\n    *   **Error Message**: `Invalid data in request - Please refer to the fields[] for more details.`\n\n#### 4. Static Content API\nThe **Static Content API** delivers comprehensive static details about hotel properties, such as names, facilities, images, and addresses.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/content/hotelcontent/getHotelContent`\n*   **Error Code Details**:\n    *   **Error Code**: `4001`\n    *   **Error Message**: `Invalid data in request - Please refer to the fields[] for more details.`",
+      "feedback": "positive",
+      "confidence": "high",
+      "timestamp": "2026-01-16T19:31:06.246Z"
+    },
+    {
+      "message_id": "2e27d8e7-b9da-474c-808a-d5d0d7ec6a7c",
+      "conversation_id": "eba207ca-346d-48f4-bca6-c1e4e469e7a4",
+      "question": "what is hotelapi",
+      "answer": "Based on the provided documentation, the ZentrumHub Hotel API suite includes several components for hotel booking workflows. The specific API detailed in the documentation is the **Static Content API**.\n\nThe **Static Content API** is a resource that delivers comprehensive static details about hotel properties. It allows applications to access essential information such as hotel names, facilities, images, ratings, addresses, and contact information.\n\n### Static Content API\n\n**API Purpose**\n\nThe **Static Content API** provides detailed, non-volatile information about hotel properties. It is used to retrieve static content for one or more hotels to display to the end-user. The API supports advanced geographical searches (polygon, circular, multi-polygon) and can also fetch content for specific hotel IDs.\n\n**HTTP Method**\n`POST`\n\n**Endpoint**\n`{baseEndpoint}/api/content/hotelcontent/getHotelContent`\n\n### Request Body Fields\n\nThe documentation mentions the following fields that can be included in the request body:\n\n*   **`contentFields`** (string): Specifies which content blocks to return in the response.\n    *   **Supported Values**:\n        *   `Basic`: Returns a fundamental set of hotel details.\n        *   `All`: Returns all available content for a hotel, which is equivalent to requesting all other values combined.\n        *   `Facilities`\n        *   `MasterFacilities`\n        *   `NearByAttractions`\n        *   `Policies`\n        *   `Images`\n        *   `CheckInCheckout`\n        *   `Descriptions`\n        *   `Neighbourhoods`\n        *   `Fees`\n        *   `Reviews`\n        *   `Rooms`\n    > You can combine multiple values to get specific content. For example, requesting `Basic`, `Facilities`, and `Images` will return the basic fields plus the hotel's facilities and images.\n\n*   **`providerPrefs`** (array): An optional field to provide supplier preferences. If the same hotel is available from multiple suppliers, the API will return static content from a single supplier based on pre-configured preferencing or the preferences provided in this field.\n\n### Response Details\n\nThe content returned in the response depends on the values specified in the **`contentFields`** parameter.\n\n*   **Content included in `Basic`**:\n    *   `Category`\n    *   `ChainCode`\n    *   `ChainName`\n    *   `Contact`\n    *   `Distance`\n    *   `GeoCode` (includes latitude/longitude)\n    *   `HeroImage`\n    *   `Id`\n    *   `Language`\n    *   `Name`\n    *   `ProviderHotelId`\n    *   `ProviderId`\n    *   `ProviderName`\n    *   `RelevanceScore`\n    *   `Website`\n    *   `Type`\n    *   `StarRating`\n    *   `ImageCount`\n    *   `RatePlanTypes`\n    *   `Attributes`\n\n*   **`RelevanceScore`**: The API returns a **`relevance score`** for each hotel based on pre-configured biasing rules. The results can be sorted by this score to display preferred hotels at the top of a list.\n\n### Use Cases\n\n*   **Fetching Basic Hotel Information**: To retrieve essential information needed for a local cache (e.g., hotel ID, name, address, star rating, latitude/longitude, phone number), you would use the `getHotelContent` API. The documentation confirms that there is no separate API for downloading bulk static content.\n*   **Displaying a Hotel Details Page**: Before a user books, you can call this API with `contentFields=All` or a combination of values like `Basic`, `Images`, `Facilities`, and `Policies` to build a comprehensive hotel details page.\n\n### Error Codes\n\n| Error Code | Error Message                                                              |\n| :--------- | :------------------------------------------------------------------------- |\n| **4001**   | Invalid data in request - Please refer to the fields[] for more details.   |\n| **5000**   | Your request failed due to an unknown system error. Please contact support team with the correlationId. |\n\n---\n\nWhile the documentation lists other APIs like **Search API**, **RoomRates API**, and **Book API**, it does not provide any specific details about their endpoints, parameters, or functionality. The information provided is exclusively for the **Static Content API**.",
+      "feedback": "positive",
+      "confidence": "high",
+      "timestamp": "2026-01-16T19:43:25.945Z"
+    },
+    {
+      "message_id": "2e27d8e7-b9da-474c-808a-d5d0d7ec6a7c",
+      "conversation_id": "eba207ca-346d-48f4-bca6-c1e4e469e7a4",
+      "question": "what is hotelapi",
+      "answer": "Based on the provided documentation, the ZentrumHub Hotel API suite includes several components for hotel booking workflows. The specific API detailed in the documentation is the **Static Content API**.\n\nThe **Static Content API** is a resource that delivers comprehensive static details about hotel properties. It allows applications to access essential information such as hotel names, facilities, images, ratings, addresses, and contact information.\n\n### Static Content API\n\n**API Purpose**\n\nThe **Static Content API** provides detailed, non-volatile information about hotel properties. It is used to retrieve static content for one or more hotels to display to the end-user. The API supports advanced geographical searches (polygon, circular, multi-polygon) and can also fetch content for specific hotel IDs.\n\n**HTTP Method**\n`POST`\n\n**Endpoint**\n`{baseEndpoint}/api/content/hotelcontent/getHotelContent`\n\n### Request Body Fields\n\nThe documentation mentions the following fields that can be included in the request body:\n\n*   **`contentFields`** (string): Specifies which content blocks to return in the response.\n    *   **Supported Values**:\n        *   `Basic`: Returns a fundamental set of hotel details.\n        *   `All`: Returns all available content for a hotel, which is equivalent to requesting all other values combined.\n        *   `Facilities`\n        *   `MasterFacilities`\n        *   `NearByAttractions`\n        *   `Policies`\n        *   `Images`\n        *   `CheckInCheckout`\n        *   `Descriptions`\n        *   `Neighbourhoods`\n        *   `Fees`\n        *   `Reviews`\n        *   `Rooms`\n    > You can combine multiple values to get specific content. For example, requesting `Basic`, `Facilities`, and `Images` will return the basic fields plus the hotel's facilities and images.\n\n*   **`providerPrefs`** (array): An optional field to provide supplier preferences. If the same hotel is available from multiple suppliers, the API will return static content from a single supplier based on pre-configured preferencing or the preferences provided in this field.\n\n### Response Details\n\nThe content returned in the response depends on the values specified in the **`contentFields`** parameter.\n\n*   **Content included in `Basic`**:\n    *   `Category`\n    *   `ChainCode`\n    *   `ChainName`\n    *   `Contact`\n    *   `Distance`\n    *   `GeoCode` (includes latitude/longitude)\n    *   `HeroImage`\n    *   `Id`\n    *   `Language`\n    *   `Name`\n    *   `ProviderHotelId`\n    *   `ProviderId`\n    *   `ProviderName`\n    *   `RelevanceScore`\n    *   `Website`\n    *   `Type`\n    *   `StarRating`\n    *   `ImageCount`\n    *   `RatePlanTypes`\n    *   `Attributes`\n\n*   **`RelevanceScore`**: The API returns a **`relevance score`** for each hotel based on pre-configured biasing rules. The results can be sorted by this score to display preferred hotels at the top of a list.\n\n### Use Cases\n\n*   **Fetching Basic Hotel Information**: To retrieve essential information needed for a local cache (e.g., hotel ID, name, address, star rating, latitude/longitude, phone number), you would use the `getHotelContent` API. The documentation confirms that there is no separate API for downloading bulk static content.\n*   **Displaying a Hotel Details Page**: Before a user books, you can call this API with `contentFields=All` or a combination of values like `Basic`, `Images`, `Facilities`, and `Policies` to build a comprehensive hotel details page.\n\n### Error Codes\n\n| Error Code | Error Message                                                              |\n| :--------- | :------------------------------------------------------------------------- |\n| **4001**   | Invalid data in request - Please refer to the fields[] for more details.   |\n| **5000**   | Your request failed due to an unknown system error. Please contact support team with the correlationId. |\n\n---\n\nWhile the documentation lists other APIs like **Search API**, **RoomRates API**, and **Book API**, it does not provide any specific details about their endpoints, parameters, or functionality. The information provided is exclusively for the **Static Content API**.",
+      "feedback": "negative",
+      "confidence": "high",
+      "timestamp": "2026-01-16T19:44:18.861Z"
+    },
+    {
+      "message_id": "dd53b2ee-b4c7-479d-a76d-449956907110",
+      "conversation_id": "eba207ca-346d-48f4-bca6-c1e4e469e7a4",
+      "question": "how should i integrate this hotel api in my system",
+      "answer": "Based on the provided documentation, here is a detailed guide on how to integrate the ZentrumHub **Static Content API** into your system.\n\nIntegrating the ZentrumHub Hotel API into your system involves using specific API endpoints to perform different actions. The provided documentation focuses exclusively on the **Static Content API**, which is used to retrieve detailed information about hotel properties.\n\n### Static Content API\n\nThe **Static Content API** allows you to fetch comprehensive details about hotel properties, such as names, facilities, images, ratings, and location data. This is a foundational step before you can display hotel information to your users.\n\n#### API Details\n\n*   **API Name:** **Static Content API**\n*   **Purpose:** To deliver comprehensive static content details about hotel properties, including names, facilities, images, star ratings, addresses, and contact information. It also supports advanced geographical searches.\n*   **HTTP Method:** `POST`\n*   **Endpoint:** `{baseEndpoint}/api/content/hotelcontent/getHotelContent`\n\n#### How to Use the API\n\nTo integrate this API, you will need to send `POST` requests to the endpoint with a request body that specifies which hotels and what content fields you want to retrieve.\n\n**1. Specify the Content You Need**\n\nUse the `contentFields` parameter in your request to define the level of detail you require. This helps in optimizing the response size and speed.\n\n*   **Supported Values for `contentFields`:**\n    *   `Basic`: Returns a fundamental set of hotel details.\n    *   `All`: Returns all available content for a hotel. This is equivalent to requesting all other `contentFields` values combined.\n    *   `Facilities`\n    *   `MasterFacilities`\n    *   `NearByAttractions`\n    *   `Policies`\n    *   `Images`\n    *   `CheckInCheckout`\n    *   `Descriptions`\n    *   `Neighbourhoods`\n    *   `Fees`\n    *   `Reviews`\n    *   `Rooms`\n\n*   **Combining Values:** You can request multiple content types in a single call. For example, to get basic details plus images and facilities, you would include `Basic`, `Images`, and `Facilities` in your `contentFields` array.\n\n**2. Understand the `Basic` Content**\n\nRequesting `contentFields=Basic` is a good starting point and returns the following fields:\n*   `Category`\n*   `ChainCode`\n*   `ChainName`\n*   `Contact`\n*   `Distance`\n*   `GeoCode` (includes latitude/longitude)\n*   `HeroImage`\n*   `Id` (the hotel ID)\n*   `Language`\n*   `Name` (the hotel name)\n*   `ProviderHotelId`\n*   `ProviderId`\n*   `ProviderName`\n*   `RelevanceScore`\n*   `Website`\n*   `Type`\n*   `StarRating`\n*   `ImageCount`\n*   `RatePlanTypes`\n*   `Attributes`\n\n**3. Implement Search and Filtering**\n\nThe API supports several ways to query for hotels:\n*   **By Hotel IDs:** You can search for specific properties using their hotel IDs.\n*   **Geographical Search:** The API supports precise location-based queries, including polygon, circular region, and multi-polygon searches.\n\n> **Note:** The provided documentation does not include the specific request body structure or field names required to perform these searches (e.g., how to pass hotel IDs or polygon coordinates).\n\n**4. Handle Supplier Preferences**\n\nIf the same hotel is available from multiple suppliers, the API will return static content from a single, pre-configured preferred supplier.\n*   You can override this by providing your own supplier preferences in the request using the `providerPrefs` field.\n\n**5. Utilize Search Biasing**\n\nThe API response includes a `RelevanceScore` for each hotel, which is calculated based on pre-configured biasing rules.\n*   You can sort the results based on this `RelevanceScore` to display the most relevant hotels at the top of your list.\n\n#### Local Content Storage\n\nAccording to the documentation, there is no API available for bulk-downloading static content on a regular basis.\n*   If your application architecture requires some hotel data to be stored locally (e.g., hotel name, address, star rating, geo-coordinates), you must use the `getHotelContent` API to fetch these details as needed. You can then cache this information in your own system.\n\n#### Error Codes\n\nYou should implement logic to handle potential errors returned by the API.\n\n| Error Code | Error Message                                                              |\n| :--------- | :------------------------------------------------------------------------- |\n| `4001`     | Invalid data in request - Please refer to the fields[] for more details.   |\n| `5000`     | Your request failed due to an unknown system error. Please contact support team with the correlationId. |\n\n#### Information Not Available in the Documentation\n\n*   The complete JSON request body structure for the `getHotelContent` API is not provided.\n*   Specific field names and structures for performing searches by hotel ID, polygon, or circular region are not detailed.\n*   Details for other APIs mentioned in the documentation (e.g., **Search API**, **RoomRates API**, **Book API**) are not available in the provided context. To integrate the full booking flow, you would need documentation for those specific APIs.",
+      "feedback": "negative",
+      "confidence": "high",
+      "timestamp": "2026-01-16T19:46:04.009Z"
+    }
+  ],
+  "last_updated": "2026-01-16T19:48:13.442954"
+}
