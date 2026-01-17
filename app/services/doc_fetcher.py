@@ -97,10 +97,22 @@ class DocumentationFetcher:
             "initialize": "search-init",
             "start-search": "search-init",
             "init": "search-init",
+            "initiate": "search-init",
+            "initiating": "search-init",
+            "search-sequence": "search-init",
+            "availability-init": "search-init",
+            "token": "search-init",
+            "search-token": "search-init",
             
             "search-results": "search-results",
             "searchresults": "search-results",
             "results": "search-results",
+            "isincludedinbaserate": "search-results",
+            "isIncludedInBaseRate": "search-results",
+            "includedInBaseRate": "search-results",
+            "baseRate": "search-results",
+            "baserate": "search-results",
+            "included": "search-results",
             
             "search-polling": "search-results-polling",
             "search-results-polling": "search-results-polling",
@@ -360,6 +372,9 @@ class DocumentationFetcher:
                 # Boost score for exact phrase matches
                 if keyword == "cancel-booking" and "cancel" in query_lower and "booking" in query_lower:
                     score += 50  # High boost for cancel booking queries
+                # Boost score for field-specific queries
+                if "isincludedinbaserate" in keyword.lower() and "isincludedinbaserate" in query_lower.replace(" ", ""):
+                    score += 60  # Very high boost for specific field queries
             for word in query_words:
                 if keyword in word or word in keyword:
                     score += 10
@@ -369,6 +384,11 @@ class DocumentationFetcher:
             # Special boost for cancel-related queries in recipes
             if page == "cancel-booking" and any(term in query_lower for term in ['cancel', 'cancellation', 'refund']):
                 score += 30
+                
+            # Special boost for field-related queries - prioritize recipes over docs
+            if any(field_term in query_lower for field_term in ['isincludedinbaserate', 'field', 'what is', 'define']):
+                if page == "search-results":
+                    score += 40  # High boost for field queries in search-results
                 
             if score > 0:
                 recipe_scores[page] = recipe_scores.get(page, 0) + score

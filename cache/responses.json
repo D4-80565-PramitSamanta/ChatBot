@@ -1,56 +1,190 @@
 {
-  "a34c61887faedca792b7d3e5fde29ee8": {
-    "timestamp": 1768632593.006579,
-    "question": "How do I search for hotels?",
+  "91b0717fdd46a4c1f9b03a9443012b58": {
+    "timestamp": 1768641897.8680768,
+    "question": "what is taxes?",
     "input_type": "question",
     "data": {
-      "answer": "Based on the provided documentation, you can search for hotel static content using the **Static Content API**. This API allows you to retrieve comprehensive details about hotel properties using various search methods, including geographical searches (polygon, circular, multi-polygon) and searches by specific hotel IDs.\n\nHere are the detailed specifications for the **Static Content API**:\n\n### **Static Content API**\n\nThe **Static Content API** delivers comprehensive static content details about hotel properties, such as names, facilities, images, star ratings, addresses, and contact information.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/content/hotelcontent/getHotelContent`\n\n#### **Request Parameters**\n\nThe documentation highlights the following parameters and fields that can be used in the request.\n\n> Note: The provided documentation does not detail the full request body structure for specifying geographical search criteria or a list of hotel IDs. It focuses on the `contentFields` and `providerPrefs` parameters.\n\n*   **contentFields** (string): Specifies which content blocks to return in the response.\n    *   **Supported Values**:\n        *   `Basic`: Returns a fundamental set of hotel details.\n        *   `All`: Returns all available content for a hotel. This is equivalent to requesting all other content fields combined.\n        *   `Facilities`\n        *   `MasterFacilities`\n        *   `NearByAttractions`\n        *   `Policies`\n        *   `Images`\n        *   `CheckInCheckout`\n        *   `Descriptions`\n        *   `Neighbourhoods`\n        *   `Fees`\n        *   `Reviews`\n        *   `Rooms`\n    *   You can combine values to get specific information. For example, requesting `Basic`, `Facilities`, and `Images` will return the basic hotel details plus the facilities and images in a single response.\n\n*   **providerPrefs** (array): Used to specify supplier preferences when the same hotel is available from multiple suppliers. The API returns static content from a single supplier, which is determined either by pre-configured preferencing or by the preferences provided in this field.\n\n#### **Response Details**\n\nThe response contains the hotel content details based on the requested `contentFields`.\n\n*   **Fields returned with `contentFields=Basic`**:\n    *   `Category`\n    *   `ChainCode`\n    *   `ChainName`\n    *   `Contact`\n    *   `Distance`\n    *   `GeoCode` (includes latitude/longitude)\n    *   `HeroImage`\n    *   `Id` (ZentrumHub's hotel ID)\n    *   `Language`\n    *   `Name`\n    *   `ProviderHotelId`\n    *   `ProviderId`\n    *   `ProviderName`\n    *   `RelevanceScore`\n    *   `Website`\n    *   `Type`\n    *   `StarRating`\n    *   `ImageCount`\n    *   `RatePlanTypes`\n    *   `Attributes`\n\n*   **Relevance Score**: The API returns a `relevanceScore` for each hotel, which is based on pre-configured biasing rules. You can sort the search results based on this score to display hotels with a higher relevance at the top of the list.\n\n#### **Use Cases from the Documentation**\n\n*   **Downloading Basic Content**: To get basic content for your local system (e.g., hotel ID, name, address, star rating, latitude/longitude, phone number), you must use the `getHotelContent` API. The documentation states there is no separate API for bulk-downloading static content. The `Basic` value for `contentFields` will provide most of these details.\n*   **Handling Multiple Suppliers**: If a hotel is available from multiple suppliers, the API returns static content from a single, preferred supplier. You can influence this selection by passing your supplier preferences in the `providerPrefs` field in the request.\n\n#### **Error Codes**\n\n*   **`4001`**: Invalid data in request - Please refer to the fields[] for more details.\n*   **`5000`**: Your request failed due to an unknown system error. Please contact support team with the correlationId.",
+      "answer": "Based on the provided documentation, **taxes** are defined as \"Tax amounts and details\".\n\nThe concept of **taxes** is a crucial part of the pricing structure and is closely related to the **baseRate**, **totalRate**, and the **isIncludedInBaseRate** fields to ensure accurate cost calculation.\n\n### Pricing and Tax Fields\n\nThe documentation outlines several key fields for understanding how taxes are handled:\n\n*   **baseRate**: The fundamental room rate *before* taxes and fees are added.\n*   **totalRate**: The complete rate *including* all applicable taxes and fees.\n*   **taxes**: An object containing the specific tax amounts and details.\n*   **fees**: An object containing additional fee amounts and details.\n\nA critical field for correctly calculating the final price is **isIncludedInBaseRate**.\n\n### Field Detail: isIncludedInBaseRate\n\nThis boolean field is essential for determining if a tax is already factored into the **baseRate** or if it needs to be added separately.\n\n*   **Field Name**: `isIncludedInBaseRate`\n*   **Data Type**: boolean\n*   **Description**: Indicates whether a particular fee, tax, or charge is already included in the base rate price displayed to the user.\n*   **Values**:\n    *   `true`: The tax is already included in the displayed **baseRate**. You do not need to add it again.\n    *   `false`: The tax is NOT included in the **baseRate**. You must add this amount to the **baseRate** to calculate the final price.\n\n> **Important Note:** You must always check the **isIncludedInBaseRate** field when calculating the total booking cost. This practice helps avoid surprising users with unexpected additional costs and ensures accurate price comparisons between different rates.\n\n### Common Use Cases for Taxes\n\nThe documentation highlights several common scenarios where the handling of taxes is important:\n\n*   City taxes that may or may not be included in the room rate.\n*   VAT/GST taxes that may be included or excluded depending on the supplier or region.\n\n### Applicable API Endpoints\n\nThe logic for handling **taxes** and the `isIncludedInBaseRate` field applies to the following API endpoints where pricing is returned:\n\n*   **Search Results API**: ` /api/hotel/search`\n*   **Rooms and Rates API**: `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API**: `/api/hotel/{hotelId}/price/{recommendationId}`\n\nWhile the documentation defines **taxes** as \"Tax amounts and details,\" the specific structure and sub-fields of the **taxes** object (e.g., `taxType`, `amount`, `currency`) are not detailed in the provided context.",
       "confidence": "high",
       "sources": [
         {
-          "source": "live_docs",
-          "url": "https://docs-hotel.prod.zentrumhub.com/docs/static-content-api",
-          "title": "Static Content Api"
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
         }
       ],
       "relevant_docs": 1,
-      "source_type": "live_documentation"
+      "source_type": "local_knowledge_base"
     }
   },
-  "cd06c266d26bb065deeb0dcdf6a21a86": {
-    "timestamp": 1768640948.4085312,
-    "question": "what is totalrate?",
+  "b029c995303722cb5a3f8af000e08f2a": {
+    "timestamp": 1768641967.6921191,
+    "question": "define isIncludedInBaseRate field",
     "input_type": "question",
     "data": {
-      "answer": "Based on the provided documentation, the **total rate** is a detail included within the **Rates** object of the **RoomRates API** response. It represents one of the pricing components for a room offered by the hotel.\n\nThe documentation does not provide a specific definition or a breakdown of what is included in the **total rate**. It is listed alongside other rate details such as base rate, taxes, and fees.\n\n### RoomRates API\n\nThe **RoomRates API** is used to fetch comprehensive details for the various room and rate options available at a specific hotel, going beyond the minimum rate information returned by the Search API.\n\n*   **HTTP Method**: `POST`\n*   **Endpoint**: `{baseEndpoint}/api/hotel/{hotelId}/roomsandrates/{token}`\n\n#### Response Details\n\nThe API response contains several key objects:\n\n*   **Rooms**: An array of objects containing details about each room, such as its name, description, facilities, bed information, and area. This is used when the room mapping service is not enabled.\n*   **Rates**: An array of objects containing detailed pricing information for the rooms. The documentation states this object includes:\n    *   **total rate**\n    *   base rate\n    *   taxes\n    *   fee\n    *   refundability info\n    *   cancellation policies info\n*   **Recommendations**: An array of recommended room/rate combinations. Each recommendation groups different rates (e.g., refundable and non-refundable) for the same room type.\n    *   The `recommendationId` from this object is used in the subsequent **Price API** call.\n    *   Each recommendation contains an array of `rateId`s that map to specific objects in the main **Rates** array.\n*   **Standardized Rooms**: An array of objects containing unified and normalized room data from multiple suppliers. This is only included in the response if you have subscribed to the room mapping service with ZentrumHub.\n\n#### Use Case: Displaying Rooms and Rates\n\nTo display room and rate information to a user, you must map the different parts of the response together.\n\n1.  **Start with a `recommendation`**: Each object in the **recommendations** array represents a purchasable option.\n2.  **Map to a `rate`**: Use the `rateId` from within a `recommendation` object to find the corresponding rate object in the top-level **rates** array. This object will contain the pricing details, including the **total rate**.\n3.  **Map to a `room`**: From the rate object, use the `stdRoomId` (if using room mapping) or `roomId` (if not) found in the `occupancies` array to find the corresponding room object in the **standardizedRooms** or **rooms** array, respectively. This provides the descriptive details of the room associated with that rate.\n\n> **Important Note**: The token received in the Search API response, which is used in the endpoint for this API call, is valid for 60 minutes.\n\n#### Error Codes\n\n*   **`4001`**: Invalid data in request - Please refer to the fields[] for more details.\n*   **`4004`**: The hotel you selected is soldout\n*   **`5000`**: Your request failed due to an unknown system error. Please contact support team with the correlationId.",
+      "answer": "Based on the provided documentation, here is the definition and detailed information for the **isIncludedInBaseRate** field.\n\nThe **isIncludedInBaseRate** field is a boolean indicator that specifies whether a particular fee, tax, or charge is already factored into the base rate price. Its primary purpose is to help you accurately calculate the total booking cost and avoid surprising users with unexpected additional charges.\n\n### Field Definition: isIncludedInBaseRate\n\n*   **Field Name:** `isIncludedInBaseRate`\n*   **Data Type:** boolean\n*   **Description:** Indicates whether a particular fee, tax, or charge is already included in the base rate price displayed to the user.\n*   **Usage:** This field appears in search results and rate responses to help you understand the pricing structure and display accurate total costs to users.\n\n#### Valid Values\n\n*   **`true`**: The fee, tax, or charge is already included in the displayed base rate. No additional cost needs to be added for this item.\n*   **`false`**: The fee, tax, or charge is NOT included in the base rate. It must be added to the base rate to calculate the total price.\n\n#### Common Use Cases\n\nThe documentation highlights several common scenarios where this field is important:\n*   City taxes that may or may not be included in the room rate.\n*   Resort fees that are sometimes pre-included.\n*   Service charges that vary by supplier.\n*   VAT/GST taxes that may be included or excluded.\n\n> **Implementation Notes**\n> The documentation provides the following critical implementation guidance:\n> *   Always check this field when calculating the total booking cost.\n> *   Use this to determine whether to add specific fees to the displayed price.\n> *   It is important for accurate price comparison between different rates.\n> *   It helps avoid surprising users with unexpected additional costs.\n\n#### Related Fields\n\n*   `baseRate`: The base room rate amount.\n*   `totalRate`: The complete rate including all fees.\n*   `taxes`: An object containing tax amounts and details.\n*   `fees`: An object containing additional fee amounts and details.\n\n#### API Endpoints\n\nThis field is found in the responses of the following API endpoints:\n\n*   **Search Results API:** `/api/hotel/search`\n*   **Rooms and Rates API:** `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API:** `/api/hotel/{hotelId}/price/{recommendationId}`",
       "confidence": "high",
       "sources": [
         {
-          "source": "live_docs",
-          "url": "https://docs-hotel.prod.zentrumhub.com/docs/roomrates-api",
-          "title": "Roomrates Api"
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
         }
       ],
       "relevant_docs": 1,
-      "source_type": "live_documentation"
+      "source_type": "local_knowledge_base"
     }
   },
-  "18a3fd3658050cb005b86d76b2d719ea": {
-    "timestamp": 1768640996.9447947,
-    "question": "how to cancel a booking?",
+  "9f5fe161194674fa2fd0b689b45b90eb": {
+    "timestamp": 1768642211.4098454,
+    "question": "what is isIncludedInBaseRate field?",
     "input_type": "question",
     "data": {
-      "answer": "Based on the provided documentation, you can cancel a booking using the **Cancel Booking** API endpoint.\n\nHere are the details for the relevant API endpoint:\n\n### **Cancel Booking**\n\nThis API is used to cancel a booking using its unique booking ID.\n\n*   **API Purpose:** To cancel a hotel booking.\n*   **HTTP Method:** `POST`\n*   **Endpoint URL:** `/api/hotel/booking/{bookingId}/cancel`\n\n#### **Path Parameters**\n\n*   **`bookingId`**\n    *   **Description:** The unique identifier for the booking you wish to cancel.\n    *   **Data Type:** string\n    *   **Required:** Yes\n\n> **Note:** The provided documentation also lists a `POST /api/hotel/bookingcancellationFee` endpoint, which could be used to check for cancellation fees before initiating the cancellation. However, no further details about this endpoint are available in the documentation.\n\n#### **Request Body**\n\nThis information is not available in the current documentation.\n\n#### **Response Details**\n\nThis information is not available in the current documentation.\n\n#### **Error Codes**\n\nThis information is not available in the current documentation.",
+      "answer": "Based on the official documentation, the **isIncludedInBaseRate** field is a boolean indicator used to clarify whether a specific fee, tax, or charge is already factored into the base room price.\n\nThis field is crucial for accurately calculating the total cost of a booking and ensuring price transparency for the end-user.\n\n### Field Details: isIncludedInBaseRate\n\n*   **Field Name:** `isIncludedInBaseRate`\n*   **Data Type:** `boolean`\n*   **Description:** Indicates whether a particular fee, tax, or charge is already included in the base rate price displayed to the user.\n*   **Usage:** This field appears in search results and rate responses to help you understand the pricing structure and display accurate total costs to users.\n\n#### Valid Values\n\n*   `true`: The fee, tax, or charge is already included in the displayed **baseRate**. You should not add this amount again.\n*   `false`: The fee, tax, or charge is **NOT** included in the **baseRate**. You must add this amount to the **baseRate** to calculate the final, total price.\n\n### Common Use Cases\n\nThe **isIncludedInBaseRate** field is used to clarify the pricing for various components, including:\n*   City taxes that may or may not be included in the room rate\n*   Resort fees that are sometimes pre-included\n*   Service charges that vary by supplier\n*   VAT/GST taxes that may be included or excluded\n*   Agency commissions and markups\n*   Property fees and additional charges\n\n### Real-World Examples\n\nYou will find the **isIncludedInBaseRate** field in various parts of the API response, such as the Rooms and Rates API. Here are examples from the documentation:\n\n*   **In the `taxes` array:**\n    ```json\n    {\n      \"amount\": 2.26,\n      \"description\": \"tax_and_service_fee\",\n      \"isIncludedInBaseRate\": false\n    }\n    ```\n    *   **Meaning:** This tax of $2.26 is **NOT** included in the **baseRate** and must be added to the total cost.\n\n*   **In the `commission` object:**\n    ```json\n    {\n      \"amount\": 0.17,\n      \"description\": \"Agency Commission\",\n      \"isIncludedInBaseRate\": false\n    }\n    ```\n    *   **Meaning:** This commission of $0.17 is **NOT** included in the **baseRate**.\n\n*   **In the `otherRateComponents` array:**\n    ```json\n    {\n      \"amount\": 1.869,\n      \"description\": \"Agency Markup\",\n      \"type\": \"Markup\",\n      \"isIncludedInBaseRate\": false\n    }\n    ```\n    *   **Meaning:** This markup of $1.869 is **NOT** included in the **baseRate**.\n\n### Implementation Notes\n\n> **Important:** Always check the `isIncludedInBaseRate` field when calculating the total booking cost to avoid surprising users with unexpected additional charges.\n>\n*   Use this field to determine whether to add fees to the displayed price.\n*   This is critical for providing accurate price comparisons between different rates.\n*   As an example of a calculation: `baseRate: 20.729` + `taxes (2.26)` = `totalRate: 22.989`.\n\n### Related Fields\n\nThe **isIncludedInBaseRate** field works in conjunction with several other pricing fields:\n*   **baseRate**: The fundamental room rate before taxes and fees.\n*   **totalRate**: The complete rate including all applicable taxes and fees.\n*   **taxes**: An array containing tax amounts and details.\n*   **fees**: An array containing additional fee amounts and details.\n*   **commission**: An object containing agency commission details.\n*   **otherRateComponents**: An array for additional markups and fees.\n\n### API Endpoints\n\nYou can find the **isIncludedInBaseRate** field in the responses of the following API endpoints:\n\n*   Search Results API: `/api/hotel/search`\n*   Rooms and Rates API: `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   Price API: `/api/hotel/{hotelId}/price/{recommendationId}`",
       "confidence": "high",
       "sources": [
         {
-          "source": "live_docs",
-          "url": "https://docs-hotel.prod.zentrumhub.com/reference/post_api-hotel-hotelid-roomsandrates-token",
-          "title": "Post Api Hotel Hotelid Roomsandrates Token"
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
         }
       ],
       "relevant_docs": 1,
-      "source_type": "live_documentation"
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "bd877c952246f5d1383e05551e4c5c35": {
+    "timestamp": 1768647403.1043272,
+    "question": "what is taxes",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **taxes** are a component of the pricing structure that contains tax amounts and details for a given hotel rate. This information is typically found within a `taxes` array in API responses.\n\nThe most critical aspect of handling taxes is determining whether they are already included in the `baseRate` or if they need to be added to calculate the final price. This is done using the **isIncludedInBaseRate** field.\n\n### Field Details: `taxes` Array\n\nThe `taxes` field is an array of objects, where each object represents a specific tax.\n\nHere is an example of an object you would find inside the `taxes` array:\n\n```json\n{\n  \"amount\": 2.26,\n  \"description\": \"tax_and_service_fee\",\n  \"isIncludedInBaseRate\": false\n}\n```\n\n**Fields within a tax object:**\n\n*   **amount**\n    *   **Data Type:** number\n    *   **Description:** The value of the tax.\n    *   **Example:** `2.26`\n*   **description**\n    *   **Data Type:** string\n    *   **Description:** A description of the tax.\n    *   **Example:** `\"tax_and_service_fee\"`\n*   **isIncludedInBaseRate**\n    *   **Data Type:** boolean\n    *   **Description:** This is a crucial field that indicates if the tax amount is already factored into the **baseRate**.\n    *   **Valid Values:**\n        *   `true`: The tax is already included in the displayed **baseRate**. You should not add this amount again.\n        *   `false`: The tax is **NOT** included in the **baseRate** and must be added to it to calculate the accurate total price.\n\n### How to Calculate Total Price with Taxes\n\nTo correctly calculate the total booking cost, you must always check the **isIncludedInBaseRate** field for each item in the `taxes` array.\n\n**Example from the documentation:**\n\nIf the API response includes:\n*   `baseRate`: `20.729`\n*   `taxes` array: `[ { \"amount\": 2.26, \"description\": \"tax_and_service_fee\", \"isIncludedInBaseRate\": false } ]`\n\nThe `isIncludedInBaseRate` value is `false`, which means the tax of `2.26` must be added to the `baseRate`.\n\n**Calculation:**\n`baseRate` (20.729) + `taxes` (2.26) = `totalRate` (22.989)\n\n> **Important Note:** Always check the `isIncludedInBaseRate` field to avoid surprising users with unexpected additional costs and to ensure accurate price comparisons between different rates.\n\n### Common Types of Taxes\n\nThe documentation notes that the `taxes` field can be used for various charges, including:\n*   City taxes\n*   VAT/GST taxes\n\n### Related Fields\n\n*   **baseRate**: The fundamental room rate before taxes and fees are added.\n*   **totalRate**: The complete rate including all applicable taxes and fees.\n*   **fees**: Additional fee amounts and details.\n*   **commission**: Agency commission details.\n*   **otherRateComponents**: Additional markups and fees.\n\n### Relevant API Endpoints\n\nYou will find the **taxes** array and the **isIncludedInBaseRate** field in the responses of the following API endpoints:\n\n*   **Search Results API**: `/api/hotel/search`\n*   **Rooms and Rates API**: `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API**: `/api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 1,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "ecb48365d5f18bc86bdf67fa63815b0f": {
+    "timestamp": 1768647425.3838587,
+    "question": "what is isIncludedInBaseRate",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **`isIncludedInBaseRate`** is a boolean field that indicates whether a specific fee, tax, or charge is already factored into the base rate price.\n\nIt is a critical field for accurately calculating the total cost of a hotel stay and ensuring price transparency for the end-user.\n\n### Field Details: isIncludedInBaseRate\n\n*   **Field Name:** `isIncludedInBaseRate`\n*   **Data Type:** `boolean`\n*   **Description:** Indicates whether a particular fee, tax, or charge is already included in the base rate price displayed to the user.\n*   **Usage:** This field appears in search results and rate responses to help you understand the pricing structure and display accurate total costs to users.\n\n#### Valid Values\n\n*   `true`: The fee, tax, or charge is already included in the displayed base rate. You do not need to add this amount to the total.\n*   `false`: The fee, tax, or charge is **NOT** included in the base rate. You must add this amount to the base rate to calculate the final, total price.\n\n### Common Use Cases\n\nThe **`isIncludedInBaseRate`** field is commonly used for:\n*   City taxes that may or may not be included in the room rate\n*   Resort fees that are sometimes pre-included\n*   Service charges that vary by supplier\n*   VAT/GST taxes that may be included or excluded\n*   Agency commissions and markups\n*   Property fees and additional charges\n\n### Real-World Examples\n\nYou will find the **`isIncludedInBaseRate`** field in multiple places within the API response. Here are some examples:\n\n*   **In the `taxes` array:**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 2.26,\n          \"description\": \"tax_and_service_fee\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** This $2.26 tax is **NOT** included in the base rate and must be added to calculate the total cost.\n\n*   **In the `commission` object:**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 0.17,\n          \"description\": \"Agency Commission\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** This $0.17 commission is **NOT** included in the base rate.\n\n*   **In the `otherRateComponents` array:**\n    *   **Example:**\n        ```json\n        {\n          \"amount\": 1.869,\n          \"description\": \"Agency Markup\",\n          \"type\": \"Markup\",\n          \"isIncludedInBaseRate\": false\n        }\n        ```\n    *   **Meaning:** This $1.869 markup is **NOT** included in the base rate.\n\n### Implementation Notes\n\n> *   Always check this field when calculating the total booking cost.\n> *   Use this to determine whether to add fees to the displayed price.\n> *   This is important for accurate price comparison between different rates.\n> *   It helps avoid surprising users with unexpected additional costs at checkout.\n> *   For example, if `baseRate` is `20.729` and a tax of `2.26` has `isIncludedInBaseRate: false`, the calculation is: `20.729` (baseRate) + `2.26` (taxes) = `22.989` (totalRate).\n\n### Related Fields\n\n*   **`baseRate`**: The fundamental room rate before taxes and fees (e.g., `20.729`).\n*   **`totalRate`**: The complete rate including all fees (e.g., `22.989`).\n*   **`taxes`**: An array containing tax amounts and details.\n*   **`fees`**: An array containing additional fee amounts and details.\n*   **`commission`**: An object containing agency commission details.\n*   **`otherRateComponents`**: An array for additional markups and fees.\n\n### API Endpoints\n\nThis field is found in the responses of the following API endpoints:\n\n*   **Search Results API:** `/api/hotel/search`\n*   **Rooms and Rates API:** `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API:** `/api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        }
+      ],
+      "relevant_docs": 1,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "03d2e50594b85ecd06ed758cd7b4acf9": {
+    "timestamp": 1768647966.0743518,
+    "question": "what is commission",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **commission** refers to the amount earned by the travel agency or booking platform for facilitating a hotel reservation. It is a key component in understanding the pricing structure of a rate.\n\nHere is a detailed breakdown of the **commission** field:\n\n### Field: `commission`\n\nThe **commission** is represented as an object containing the details of the agency's earnings for a specific rate.\n\n*   **Type**: `object`\n*   **Description**: Agency commission details - the amount earned by the travel agency or booking platform for facilitating the reservation.\n*   **Usage**: This field appears in search results and rate responses to show commission information for travel agents and booking platforms.\n\n#### Structure\n\nThe **commission** object has the following nested fields:\n\n*   **`amount`**\n    *   **Type**: `number`\n    *   **Description**: The commission amount in the specified currency.\n    *   **Example**: `0.17`\n\n*   **`description`**\n    *   **Type**: `string`\n    *   **Description**: A description of the commission.\n    *   **Example**: `\"Agency Commission\"`\n\n*   **`isIncludedInBaseRate`**\n    *   **Type**: `boolean`\n    *   **Description**: Indicates whether the commission amount is already included in the **baseRate**.\n    *   **Values**:\n        *   `true`: The commission is already included in the **baseRate**.\n        *   `false`: The commission is separate from the **baseRate** and should not be added again when calculating the total price.\n\n> **Important Note:**\n> It is critical to always check the **`isIncludedInBaseRate`** field to understand the pricing structure and calculate earnings accurately.\n\n### Examples from Documentation\n\nThe documentation provides several scenarios to illustrate how the **commission** field works:\n\n*   **Standard agency commission**:\n    ```json\n    {\n      \"amount\": 0.17,\n      \"description\": \"Agency Commission\",\n      \"isIncludedInBaseRate\": false\n    }\n    ```\n    *   **Meaning**: The agency earns a $0.17 commission, and this amount is not included in the **baseRate**.\n\n*   **High commission rate**:\n    ```json\n    {\n      \"amount\": 106.7,\n      \"description\": \"Agency Commission\",\n      \"isIncludedInBaseRate\": true\n    }\n    ```\n    *   **Meaning**: The agency earns a $106.70 commission, and this amount is already factored into the **baseRate**.\n\n*   **No commission**:\n    ```json\n    0\n    ```\n    *   **Meaning**: No commission is available for this particular rate. This can occur for net rates or direct bookings.\n\n### Common Scenarios\n\nThe **commission** field is relevant in the following contexts:\n*   Travel agency bookings with a commission structure.\n*   OTA (Online Travel Agency) commission rates.\n*   Corporate booking platform commissions.\n*   Affiliate partner commission arrangements.\n\n### Implementation Notes\n\n*   Always check **`isIncludedInBaseRate`** to understand the pricing structure.\n*   The commission may be `0` for net rates or direct bookings.\n*   This field is primarily used for calculating agency earnings and profit margins.\n*   It is particularly important for B2B travel platforms and agencies.\n\n### Related Fields\n\nThe **commission** field is related to and should be considered alongside the following fields for accurate pricing:\n*   **`baseRate`**: The base room rate before taxes and fees.\n*   **`totalRate`**: The complete rate including all charges.\n*   **`taxes`**: An array of tax amounts with their inclusion status.\n*   **`otherRateComponents`**: An array of additional markups and fees.\n\n### API Endpoints\n\nYou can find the **commission** field in the responses of the following API endpoints:\n*   `Search Results API - /api/hotel/search`\n*   `Rooms and Rates API - /api/hotel/{hotelId}/roomsandrates/{token}`\n*   `Price API - /api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "4df7c44c0455ae4110b25d3280661e71": {
+    "timestamp": 1768647997.8646266,
+    "question": "what is publishedRate",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, the **publishedRate** is the original rate published by the hotel or supplier before any markups, discounts, or negotiations are applied. It is used to show the supplier's original rate for comparison purposes.\n\n### Detailed Field Definition: publishedRate\n\nHere is a complete breakdown of the **publishedRate** field as described in the documentation.\n\n*   **Field Name**: `publishedRate`\n*   **Data Type**: `number`\n*   **Description**: The **publishedRate** represents the original rate from the supplier. This is the rate that a hotel or supplier publishes publicly, often referred to as the \"rack rate,\" before any agency markups, negotiated discounts, or other adjustments.\n*   **Usage**: This field is included in API responses to provide a reference point. It allows you to compare the final price (**totalRate**) against the original published price to calculate and display savings to the end-user.\n\n### Common Scenarios and Examples\n\nThe value of **publishedRate** can vary depending on the type of rate you receive.\n\n*   **Standard Published Rate**:\n    *   **Value**: `307.971`\n    *   **Meaning**: The supplier's original published rate is $307.971.\n\n*   **Negotiated Rate (No Published Rate)**:\n    *   **Value**: `0`\n    *   **Meaning**: This is a negotiated or special rate for which no public published rate is available.\n\n*   **Discounted Rate**:\n    *   **Value**: `184.6`\n    *   **Meaning**: The supplier's published rate is $184.60, but you may be receiving a lower, discounted rate.\n\nIn another real-world example from the documentation, for a room where the final **totalRate** is `22.989`, the **publishedRate** is `37.05`, allowing you to show the customer a saving of \"43%\".\n\n### Implementation Notes\n\n> **Important**: When using this field, always consider the following implementation guidelines from the documentation:\n>\n> *   When **publishedRate** is `0`, it typically indicates a negotiated or special rate.\n> *   You should compare **publishedRate** with **totalRate** to show potential savings to customers (e.g., by displaying a \"You Save X%\" message).\n> *   Depending on the rate type (e.g., negotiated vs. standard), the **publishedRate** may be higher than or equal to the **totalRate**.\n\n### Related Fields\n\nThe **publishedRate** should be understood in the context of other pricing fields:\n\n*   **`baseRate`**: The fundamental room rate before taxes and fees are added.\n*   **`totalRate`**: The complete and final rate that includes all applicable taxes, fees, and other charges.\n*   **`type`**: The rate type (e.g., Published, Negotiated).\n*   **`distributionType`**: Describes how the rate is distributed.\n\n### API Endpoints\n\nYou can find the **publishedRate** field in the responses of the following ZentrumHub Hotel APIs:\n\n*   **Search Results API**\n    *   **Endpoint**: `/api/hotel/search`\n*   **Rooms and Rates API**\n    *   **Endpoint**: `/api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API**\n    *   **Endpoint**: `/api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
+    }
+  },
+  "321f11d45cc01f093b27f96cc298685d": {
+    "timestamp": 1768648110.659555,
+    "question": "what is baseRate",
+    "input_type": "question",
+    "data": {
+      "answer": "Based on the provided documentation, **baseRate** is the fundamental room rate before any taxes, fees, commissions, or other charges are added. It serves as the starting point for calculating the final price (**totalRate**).\n\n### Field Details: `baseRate`\n\n*   **Field Name:** `baseRate`\n*   **Data Type:** `number`\n*   **Description:** The fundamental or updated room rate before taxes and fees.\n*   **Example Value:** `20.729`\n\n### Role in Price Calculation\n\nThe **baseRate** is the core price of the room. To calculate the final payable amount (**totalRate**), you must check other price components like **taxes**, **commission**, and **otherRateComponents** (e.g., markups) to see if they are already included in the **baseRate**.\n\nThis is determined by the **isIncludedInBaseRate** boolean field present within each of those components.\n\n*   If `isIncludedInBaseRate` is `true`, the charge is already accounted for in the **baseRate**.\n*   If `isIncludedInBaseRate` is `false`, the charge must be added to the **baseRate** to calculate the **totalRate**.\n\n> **Important Note on Calculation:**\n> The documentation provides a clear example of how the final price is calculated:\n> `baseRate (20.729) + taxes (2.26) = totalRate (22.989)`\n>\n> In another example, a markup is also added:\n> `baseRate (20.729) + taxes (2.26) + markup (1.869) = totalRate (22.989)`\n>\n> This demonstrates that you must sum the **baseRate** with all other components where `isIncludedInBaseRate` is `false`.\n\n### Related Fields\n\nThe **baseRate** is closely related to several other fields that are essential for understanding the complete pricing structure:\n\n*   **`totalRate`**: The complete rate including all applicable taxes and fees.\n*   **`publishedRate`**: The original rate published by the hotel or supplier, which can be used to show savings to a customer.\n*   **`taxes`**: An array of tax objects. Each object contains an `amount` and the critical `isIncludedInBaseRate` field.\n*   **`fees`**: An array of additional fee objects, each with an `amount` and `isIncludedInBaseRate` field.\n*   **`commission`**: An object detailing the agency commission, which also contains an `isIncludedInBaseRate` field.\n*   **`otherRateComponents`**: An array for additional charges like markups, where each component has an `amount` and an `isIncludedInBaseRate` field.\n\n### API Endpoints\n\nThe **baseRate** field appears in the responses of the following API endpoints:\n\n*   **Search Results API**: `GET /api/hotel/search`\n*   **Rooms and Rates API**: `GET /api/hotel/{hotelId}/roomsandrates/{token}`\n*   **Price API**: `GET /api/hotel/{hotelId}/price/{recommendationId}`",
+      "confidence": "high",
+      "sources": [
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "API Field Definitions",
+          "key": "api_field_definitions"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "data/knowledge-base-extended.json",
+          "title": "Rate Fields Reference",
+          "key": "rate_fields_reference"
+        },
+        {
+          "source": "local_knowledge_base",
+          "file": "knowledge-base-dynamic.json",
+          "title": "Book Api",
+          "key": "book_api"
+        }
+      ],
+      "relevant_docs": 3,
+      "source_type": "local_knowledge_base"
     }
   }
 }

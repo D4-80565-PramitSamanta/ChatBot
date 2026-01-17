@@ -1,0 +1,578 @@
+openapi: 3.0.3
+info:
+  title: ZentrumHub Documentation Assistant API
+  description: |
+    AI-powered chatbot API for ZentrumHub hotel booking platform documentation.
+    
+    This API provides intelligent assistance for developers integrating with ZentrumHub APIs,
+    offering comprehensive documentation coverage, error explanations, and analytics.
+    
+    ## Features
+    - **AI-Powered Chat**: Get instant answers about ZentrumHub APIs
+    - **Error Explanation**: Understand and resolve API errors
+    - **Analytics**: Track usage patterns and improve documentation
+    - **Feedback System**: Continuous improvement through user feedback
+    
+    ## Coverage
+    - **Zentrum Booking Engine APIs**: Search, RoomsAndRates, Booking, Cancellation
+    - **Zentrum Connect APIs**: Direct access, Rate combinability, Multi-room bookings
+    - **Static Content APIs**: Hotel information, Images, Facilities
+    - **Location APIs**: Autosuggest, Geocoding, Search regions
+  version: 1.0.0
+  contact:
+    name: ZentrumHub Support
+    url: https://zentrumhub.com/support
+    email: support@zentrumhub.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+  - url: https://api.zentrumhub-docs.com
+    description: Production server
+
+paths:
+  /:
+    get:
+      summary: API Root
+      description: Get basic API information and available endpoints
+      tags:
+        - General
+      responses:
+        '200':
+          description: API information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ZentrumHub Documentation Assistant API"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  docs:
+                    type: string
+                    example: "/docs"
+                  health:
+                    type: string
+                    example: "/api/health"
+
+  /api/health:
+    get:
+      summary: Health Check
+      description: Check server health and status
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  service:
+                    type: string
+                    example: "zentrumhub-chatbot"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  llm:
+                    type: string
+                    example: "gemini-2.5-pro"
+
+  /api/chat:
+    post:
+      summary: Chat with AI Assistant
+      description: |
+        Ask questions about ZentrumHub APIs and get intelligent responses.
+        
+        The AI assistant can help with:
+        - API integration guidance
+        - Code examples and best practices
+        - Troubleshooting common issues
+        - Understanding API responses
+        - Workflow recommendations
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - question
+              properties:
+                question:
+                  type: string
+                  description: Your question about ZentrumHub APIs
+                  example: "How do I search for hotels in a specific city?"
+                conversation_id:
+                  type: string
+                  description: Unique conversation identifier for context
+                  example: "conv-123"
+                history:
+                  type: array
+                  description: Previous conversation messages for context
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, assistant]
+                      content:
+                        type: string
+                  example:
+                    - role: "user"
+                      content: "What is ZentrumHub?"
+                    - role: "assistant"
+                      content: "ZentrumHub is a hotel booking platform..."
+      responses:
+        '200':
+          description: AI response with answer and metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: AI-generated answer to your question
+                  confidence:
+                    type: string
+                    enum: [high, medium, low]
+                    description: Confidence level of the answer
+                  sources:
+                    type: array
+                    description: Documentation sources used for the answer
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        section:
+                          type: string
+                        url:
+                          type: string
+                        snippet:
+                          type: string
+                  tokens_used:
+                    type: integer
+                    nullable: true
+                    description: Number of tokens used by the LLM
+                  latency_ms:
+                    type: integer
+                    description: Response time in milliseconds
+                  service_used:
+                    type: string
+                    description: LLM service used for the response
+                    example: "gemini_2.5_pro"
+        '400':
+          description: Bad request - missing or invalid parameters
+        '500':
+          description: Internal server error
+
+  /api/explain:
+    post:
+      summary: Explain Errors and Issues
+      description: |
+        Get detailed explanations for API errors, error codes, and integration issues.
+        
+        Supports:
+        - Error code explanations (4001, 4004, 5000, etc.)
+        - API response troubleshooting
+        - Integration problem diagnosis
+        - Best practice recommendations
+      tags:
+        - Explanation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - input_type
+                - content
+              properties:
+                input_type:
+                  type: string
+                  enum: [error_code, api_response, integration_issue]
+                  description: Type of content to explain
+                  example: "error_code"
+                content:
+                  type: string
+                  description: The error code, response, or issue description
+                  example: "Error 4004: Hotel sold out"
+                client_id:
+                  type: string
+                  description: Client identifier for analytics
+                  example: "client-123"
+      responses:
+        '200':
+          description: Detailed explanation with recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+                    description: Brief summary of the issue
+                  details:
+                    type: array
+                    items:
+                      type: string
+                    description: Detailed explanation points
+                  recommended_actions:
+                    type: array
+                    items:
+                      type: string
+                    description: Recommended actions to resolve the issue
+                  sources:
+                    type: array
+                    description: Documentation sources referenced
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        url:
+                          type: string
+                  confidence:
+                    type: string
+                    enum: [high, medium, low]
+
+  /api/suggested-questions:
+    get:
+      summary: Get Suggested Questions
+      description: Get a list of commonly asked questions to help users get started
+      tags:
+        - Chat
+      responses:
+        '200':
+          description: List of suggested questions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category:
+                          type: string
+                        question:
+                          type: string
+                        description:
+                          type: string
+
+  /api/analytics/top-queries:
+    get:
+      summary: Get Top Queries
+      description: Get the most frequently asked questions across all clients
+      tags:
+        - Analytics
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of queries to return
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Top queries with counts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_queries:
+                    type: integer
+                  top_queries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                        count:
+                          type: integer
+
+  /api/analytics/top-queries/by-client:
+    get:
+      summary: Get Top Queries by Client
+      description: Get the most frequently asked questions for a specific client
+      tags:
+        - Analytics
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          description: Client identifier
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of queries to return
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Top queries for the specified client
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  client_id:
+                    type: string
+                  total_queries:
+                    type: integer
+                  top_queries:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                        count:
+                          type: integer
+
+  /api/analytics/unanswered-questions:
+    get:
+      summary: Get Unanswered Questions
+      description: Get questions that received low confidence answers, indicating potential documentation gaps
+      tags:
+        - Analytics
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of questions to return
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Questions with low confidence answers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_unanswered:
+                    type: integer
+                  questions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                        count:
+                          type: integer
+                        first_seen:
+                          type: string
+                          format: date-time
+                        last_seen:
+                          type: string
+                          format: date-time
+
+  /api/analytics/feedback:
+    post:
+      summary: Submit Feedback
+      description: Submit user feedback for chat responses to improve the AI assistant
+      tags:
+        - Feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message_id
+                - conversation_id
+                - question
+                - answer
+                - feedback
+              properties:
+                message_id:
+                  type: string
+                  description: Unique message identifier
+                  example: "msg-123"
+                conversation_id:
+                  type: string
+                  description: Conversation identifier
+                  example: "conv-123"
+                question:
+                  type: string
+                  description: Original user question
+                  example: "How do I cancel a booking?"
+                answer:
+                  type: string
+                  description: AI assistant's answer
+                feedback:
+                  type: string
+                  enum: [positive, negative]
+                  description: User feedback on the answer quality
+                confidence:
+                  type: string
+                  enum: [high, medium, low]
+                  description: AI confidence level for the answer
+                timestamp:
+                  type: string
+                  format: date-time
+                  description: Feedback submission timestamp
+      responses:
+        '200':
+          description: Feedback recorded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "success"
+                  message:
+                    type: string
+                    example: "Feedback recorded successfully"
+                  message_id:
+                    type: string
+
+  /api/feedback:
+    post:
+      summary: Submit Feedback (Alias)
+      description: Alternative endpoint for feedback submission (same as /api/analytics/feedback)
+      tags:
+        - Feedback
+      requestBody:
+        $ref: '#/paths/~1api~1analytics~1feedback/post/requestBody'
+      responses:
+        $ref: '#/paths/~1api~1analytics~1feedback/post/responses'
+
+  /api/analytics/feedback-stats:
+    get:
+      summary: Get Feedback Statistics
+      description: Get overall feedback statistics and trends
+      tags:
+        - Analytics
+      responses:
+        '200':
+          description: Feedback statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_feedback:
+                    type: integer
+                  positive:
+                    type: integer
+                  negative:
+                    type: integer
+                  positive_rate:
+                    type: number
+                    format: float
+                  recent_feedback:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message_id:
+                          type: string
+                        feedback:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+
+  /api/analytics/negative-feedback:
+    get:
+      summary: Get Negative Feedback
+      description: Get recent negative feedback for improvement analysis
+      tags:
+        - Analytics
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of feedback entries to return
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Recent negative feedback entries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  negative_feedback:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message_id:
+                          type: string
+                        question:
+                          type: string
+                        answer:
+                          type: string
+                        timestamp:
+                          type: string
+                          format: date-time
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+        detail:
+          type: string
+          description: Detailed error information
+        code:
+          type: integer
+          description: HTTP status code
+
+tags:
+  - name: General
+    description: General API information
+  - name: Health
+    description: Health check endpoints
+  - name: Chat
+    description: AI chat and assistance endpoints
+  - name: Explanation
+    description: Error and issue explanation endpoints
+  - name: Analytics
+    description: Usage analytics and insights
+  - name: Feedback
+    description: User feedback and improvement
+
+externalDocs:
+  description: ZentrumHub API Documentation
+  url: https://docs-hotel.prod.zentrumhub.com

@@ -23,7 +23,25 @@
     "How do I search for hotels?": 1,
     "How do I cancel booking?": 5,
     "what is totalrate?": 1,
-    "how to cancel a booking?": 1
+    "how to cancel a booking?": 1,
+    "what is baserate?": 1,
+    "what is isIncludedInBaseRate?": 2,
+    "what is isIncludedInBaseRate field?": 3,
+    "what is tax": 1,
+    "what is isIncludedInBaseRate": 4,
+    "what is taxes?": 4,
+    "define isIncludedInBaseRate field": 1,
+    "what is IsPassportMandatory?": 5,
+    "How do I cancel reservation?": 1,
+    "What is publishedRate?": 2,
+    "what is taxes": 4,
+    "What is publishedRate": 1,
+    "what is commission": 3,
+    "what is publishedRate": 1,
+    "what is search polling": 1,
+    "what is baseRate": 1,
+    "what is blocking search": 1,
+    "what is allGuestsInfoRequired": 1
   },
   "client_query_counter": {
     "9f5fffa1-3cef-4a32-9d09-a65a5b86dee1": {
@@ -86,10 +104,51 @@
       "How do I search for hotels?": 1,
       "How do I cancel booking?": 4,
       "what is totalrate?": 1,
-      "how to cancel a booking?": 1
+      "how to cancel a booking?": 1,
+      "what is baserate?": 1,
+      "what is isIncludedInBaseRate?": 1,
+      "what is taxes?": 4,
+      "what is IsPassportMandatory?": 5,
+      "How do I cancel reservation?": 1,
+      "What is publishedRate?": 2
     },
     "test-123": {
       "How do I cancel booking?": 1
+    },
+    "test-456": {
+      "what is isIncludedInBaseRate?": 1
+    },
+    "test-789": {
+      "what is isIncludedInBaseRate field?": 1
+    },
+    "test-final": {
+      "what is isIncludedInBaseRate field?": 1
+    },
+    "tax-test": {
+      "what is tax": 1
+    },
+    "field-test": {
+      "what is isIncludedInBaseRate": 1
+    },
+    "final-test": {
+      "what is isIncludedInBaseRate": 1
+    },
+    "new-test": {
+      "define isIncludedInBaseRate field": 1
+    },
+    "test-updated": {
+      "what is isIncludedInBaseRate field?": 1
+    },
+    "unknown": {
+      "what is taxes": 4,
+      "what is isIncludedInBaseRate": 2,
+      "What is publishedRate": 1,
+      "what is commission": 3,
+      "what is publishedRate": 1,
+      "what is search polling": 1,
+      "what is baseRate": 1,
+      "what is blocking search": 1,
+      "what is allGuestsInfoRequired": 1
     }
   },
   "unanswered_counter": {
@@ -132,6 +191,61 @@
       "count": 5,
       "first_seen": "2026-01-17T09:03:27.837230",
       "last_seen": "2026-01-17T09:08:33.843262"
+    },
+    "what is IsPassportMandatory?": {
+      "count": 1,
+      "first_seen": "2026-01-17T09:51:59.894992",
+      "last_seen": "2026-01-17T09:51:59.894992"
+    },
+    "How do I cancel reservation?": {
+      "count": 1,
+      "first_seen": "2026-01-17T10:45:52.888257",
+      "last_seen": "2026-01-17T10:45:52.888257"
+    },
+    "what is taxes?": {
+      "count": 3,
+      "first_seen": "2026-01-17T10:46:19.397020",
+      "last_seen": "2026-01-17T10:49:59.051061"
+    },
+    "What is publishedRate?": {
+      "count": 2,
+      "first_seen": "2026-01-17T10:51:08.523600",
+      "last_seen": "2026-01-17T10:57:53.080507"
+    },
+    "what is taxes": {
+      "count": 2,
+      "first_seen": "2026-01-17T10:53:27.615421",
+      "last_seen": "2026-01-17T10:54:37.258436"
+    },
+    "what is isIncludedInBaseRate": {
+      "count": 1,
+      "first_seen": "2026-01-17T10:53:45.390918",
+      "last_seen": "2026-01-17T10:53:45.390918"
+    },
+    "What is publishedRate": {
+      "count": 1,
+      "first_seen": "2026-01-17T10:58:21.797362",
+      "last_seen": "2026-01-17T10:58:21.797362"
+    },
+    "what is commission": {
+      "count": 2,
+      "first_seen": "2026-01-17T11:02:26.664561",
+      "last_seen": "2026-01-17T11:03:25.276156"
+    },
+    "what is search polling": {
+      "count": 1,
+      "first_seen": "2026-01-17T11:07:07.777394",
+      "last_seen": "2026-01-17T11:07:07.777394"
+    },
+    "what is blocking search": {
+      "count": 1,
+      "first_seen": "2026-01-17T11:08:59.475729",
+      "last_seen": "2026-01-17T11:08:59.475729"
+    },
+    "what is allGuestsInfoRequired": {
+      "count": 1,
+      "first_seen": "2026-01-17T11:10:11.640614",
+      "last_seen": "2026-01-17T11:10:11.640614"
     }
   },
   "feedback_data": [
@@ -172,5 +286,5 @@
       "timestamp": "2026-01-16T19:46:04.009Z"
     }
   ],
-  "last_updated": "2026-01-17T09:09:56.948069"
+  "last_updated": "2026-01-17T11:10:11.640662"
 }

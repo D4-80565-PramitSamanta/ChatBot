@@ -521,6 +521,4108 @@
       ]
     }
   ],
+  "search_init_recipe": {
+    "title": "Search Init - Initiating the Search Sequence in the Hotel API",
+    "description": "This initial call initiates the search sequence in the hotel API. It returns a token that will be used throughout the entire process from search to booking.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/availability/init",
+    "method": "POST",
+    "purpose": "Initialize hotel search and obtain a token for the complete booking workflow",
+    "required_criteria": [
+      "channelId - Your channel identifier",
+      "currency - Three-letter currency code (USD, EUR, etc.)", 
+      "checkIn - Check-in date in ISO format",
+      "checkOut - Check-out date in ISO format",
+      "occupancy details - Number of adults and child ages per room"
+    ],
+    "search_types": {
+      "circular_region": "Search within a radius from a center point",
+      "polygon": "Search within a defined polygon area using coordinates", 
+      "multi_polygon": "Search within multiple polygon areas",
+      "hotel_ids": "Search specific hotels by their IDs"
+    },
+    "mandatory_headers": {
+      "description": "The following headers are mandatory for all API calls from search to booking",
+      "headers": [
+        "accountId - Your ZentrumHub account identifier",
+        "apiKey - Your API authentication key", 
+        "correlationId - Must remain the same throughout the search to booking process",
+        "Content-Type - application/json; charset=utf-8",
+        "Accept-Encoding - gzip, deflate",
+        "customer-ip - Customer's IP address"
+      ]
+    },
+    "complete_request_example": {
+      "method": "POST",
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/availability/init",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "a8e78ad3-cc6c-2fa8-02c1-545adec2e51f",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      },
+      "body": {
+        "channelId": "demo-channel",
+        "segmentId": null,
+        "currency": "USD",
+        "culture": "en-us",
+        "checkIn": "2024-12-04T00:00:00",
+        "checkOut": "2024-12-05T00:00:00",
+        "userInfo": {
+          "email": "aishworya@zentrumhub.com",
+          "role": "admin"
+        },
+        "occupancies": [
+          {
+            "numOfAdults": 2,
+            "childAges": []
+          }
+        ],
+        "circularRegion": null,
+        "rectangularRegion": null,
+        "polygonalRegion": {
+          "coordinates": [
+            {"lat": 18.3081, "long": 73.431717},
+            {"lat": 18.305981, "long": 73.43206},
+            {"lat": 18.30459, "long": 73.434357},
+            {"lat": 18.307718, "long": 73.446266},
+            {"lat": 18.30784, "long": 73.456612}
+          ],
+          "id": null
+        },
+        "multiPolygonalRegion": null,
+        "hotelIds": null,
+        "nationality": "US",
+        "countryOfResidence": "US",
+        "destinationCountryCode": null,
+        "filterBy": null
+      }
+    },
+    "request_body_fields": {
+      "channelId": {
+        "type": "string",
+        "required": true,
+        "description": "Your channel identifier for this search"
+      },
+      "segmentId": {
+        "type": "string",
+        "required": false,
+        "description": "Optional segment identifier for rate filtering"
+      },
+      "currency": {
+        "type": "string", 
+        "required": true,
+        "description": "Three-letter currency code (USD, EUR, GBP, etc.)"
+      },
+      "culture": {
+        "type": "string",
+        "required": false,
+        "description": "Culture code for localization (en-us, fr-fr, etc.)"
+      },
+      "checkIn": {
+        "type": "string",
+        "required": true,
+        "format": "ISO 8601 datetime",
+        "description": "Check-in date and time",
+        "example": "2024-12-04T00:00:00"
+      },
+      "checkOut": {
+        "type": "string",
+        "required": true,
+        "format": "ISO 8601 datetime", 
+        "description": "Check-out date and time",
+        "example": "2024-12-05T00:00:00"
+      },
+      "userInfo": {
+        "type": "object",
+        "required": false,
+        "description": "User information for the search",
+        "properties": {
+          "email": "User email address",
+          "role": "User role (admin, user, etc.)"
+        }
+      },
+      "occupancies": {
+        "type": "array",
+        "required": true,
+        "description": "Room occupancy details - one object per room",
+        "items": {
+          "numOfAdults": "Number of adults in this room",
+          "childAges": "Array of child ages in this room"
+        }
+      },
+      "circularRegion": {
+        "type": "object",
+        "required": false,
+        "description": "Search within a circular area",
+        "properties": {
+          "centerLat": "Center latitude",
+          "centerLong": "Center longitude", 
+          "radiusKm": "Radius in kilometers"
+        }
+      },
+      "rectangularRegion": {
+        "type": "object",
+        "required": false,
+        "description": "Search within a rectangular area"
+      },
+      "polygonalRegion": {
+        "type": "object",
+        "required": false,
+        "description": "Search within a polygon area defined by coordinates",
+        "properties": {
+          "coordinates": "Array of lat/long coordinate objects",
+          "id": "Optional polygon identifier"
+        }
+      },
+      "multiPolygonalRegion": {
+        "type": "object",
+        "required": false,
+        "description": "Search within multiple polygon areas"
+      },
+      "hotelIds": {
+        "type": "array",
+        "required": false,
+        "description": "Array of specific hotel IDs to search"
+      },
+      "nationality": {
+        "type": "string",
+        "required": false,
+        "description": "Guest nationality (two-letter country code)"
+      },
+      "countryOfResidence": {
+        "type": "string",
+        "required": false,
+        "description": "Guest country of residence (two-letter country code)"
+      },
+      "destinationCountryCode": {
+        "type": "string",
+        "required": false,
+        "description": "Destination country code"
+      },
+      "filterBy": {
+        "type": "object",
+        "required": false,
+        "description": "Additional search filters"
+      }
+    },
+    "response_structure": {
+      "token": {
+        "type": "string",
+        "description": "Unique search token to be used in all subsequent API calls",
+        "example": "dbd39207-3b8e-48ac-8c4a-c1bba58196ad"
+      }
+    },
+    "example_response": {
+      "token": "dbd39207-3b8e-48ac-8c4a-c1bba58196ad"
+    },
+    "curl_example": "curl --location --request POST 'https://nexus.prod.zentrumhub.com/api/hotel/availability/init' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: a8e78ad3-cc6c-2fa8-02c1-545adec2e51f' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc' \\\n--data-raw '{\"channelId\": \"demo-channel\", \"currency\": \"USD\", \"checkIn\": \"2024-12-04T00:00:00\", \"checkOut\": \"2024-12-05T00:00:00\", \"occupancies\": [{\"numOfAdults\": 2, \"childAges\": []}], \"polygonalRegion\": {\"coordinates\": [{\"lat\": 18.3081, \"long\": 73.431717}]}}'",
+    "key_points": [
+      "The token returned is used throughout the entire search to booking process",
+      "CorrelationId must remain the same from search to booking for proper tracking",
+      "You can search by different geographical methods (circular, polygon, multi-polygon) or specific hotel IDs",
+      "All required search criteria must be provided in the initial call",
+      "Only one search type should be specified per request (circularRegion OR polygonalRegion OR hotelIds, etc.)",
+      "The occupancies array supports multi-room searches with different occupancy per room"
+    ],
+    "workflow_integration": [
+      "1. Call Search Init API with search criteria to get token",
+      "2. Use token in Search Results API to get hotel availability",
+      "3. Use same token in RoomsAndRates API for detailed room information", 
+      "4. Use same token in Price API for rate validation",
+      "5. Use same token in Book API for final reservation",
+      "6. Maintain same correlationId throughout entire workflow"
+    ],
+    "important_notes": [
+      "The token has a limited lifespan - complete the booking workflow promptly",
+      "All geographical coordinates should be in decimal degrees format",
+      "For polygon searches, ensure coordinates form a closed polygon",
+      "Child ages are required for accurate pricing - empty array if no children",
+      "Currency affects both search results and final pricing"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/search-init",
+      "https://zentrumhub-hotel-api.readme.io/reference/post_api-hotel-availability-init"
+    ]
+  },
+  "search_results_polling_recipe": {
+    "title": "Search Results Polling",
+    "description": "Progressive polling mechanism to retrieve search results as they become available from multiple suppliers. Use this when search results are still being compiled.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/availability/async/{token}/results?nextResultsKey={nextResultsKey}",
+    "method": "GET",
+    "purpose": "Retrieve additional search results using polling mechanism when initial search status is 'InProgress'",
+    "polling_mechanism": {
+      "description": "After initiating the search request with the provided token, the response may include one of the following statuses",
+      "statuses": {
+        "Completed": {
+          "description": "Indicates that the full set of search results is available",
+          "action": "Stop polling - all results have been retrieved"
+        },
+        "InProgress": {
+          "description": "Indicates that the search results are still being compiled",
+          "action": "Continue polling using the nextResultsKey parameter",
+          "includes": "Response will include a nextResultsKey parameter for subsequent requests"
+        }
+      }
+    },
+    "polling_configuration": {
+      "interval": "500ms intervals between requests",
+      "max_duration": "10 seconds maximum polling duration",
+      "stop_conditions": [
+        "Response status is 'Completed'",
+        "Polling duration reaches 10 seconds"
+      ]
+    },
+    "polling_process": [
+      "1. Make initial search results call",
+      "2. Check response status",
+      "3. If status is 'InProgress', extract nextResultsKey",
+      "4. Make subsequent request with nextResultsKey parameter",
+      "5. Repeat until status is 'Completed' or 10 seconds elapsed",
+      "6. Proceed to RoomsAndRates API call"
+    ],
+    "required_headers": [
+      "Content-Type: application/json; charset=utf-8",
+      "Accept-Encoding: gzip, deflate",
+      "accountId: Your ZentrumHub account identifier",
+      "customer-ip: Customer's IP address",
+      "correlationId: Same correlation ID from search init",
+      "apiKey: Your API authentication key"
+    ],
+    "example_polling_request": {
+      "method": "GET",
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/availability/async/9bdd5776-cc46-4046-ac30-b3a428376bea/results?nextResultsKey=MF81NTM=",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      }
+    },
+    "curl_example": "curl --location --request GET 'https://nexus.prod.zentrumhub.com/api/hotel/availability/async/9bdd5776-cc46-4046-ac30-b3a428376bea/results?nextResultsKey=MF81NTM=' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: d2ca03b0-f5a4-ce7b-0642-3d7c961573e7' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc'",
+    "response_structure": {
+      "token": {
+        "type": "string",
+        "description": "The search token from init call",
+        "example": "693ccb58-cf75-445f-9186-482bb0938424"
+      },
+      "status": {
+        "type": "string",
+        "description": "Search completion status",
+        "values": ["Completed", "InProgress"],
+        "example": "Completed"
+      },
+      "expectedHotelCount": {
+        "type": "string",
+        "description": "Total number of hotels expected in results",
+        "example": "6655"
+      },
+      "completedHotelCount": {
+        "type": "string",
+        "description": "Number of hotels processed so far",
+        "example": "743"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency code for all rates",
+        "example": "SAR"
+      },
+      "hotels": {
+        "type": "array",
+        "description": "Array of hotel results with rates and details"
+      },
+      "nextResultsKey": {
+        "type": "string",
+        "description": "Key for next polling request (only present when status is InProgress)",
+        "example": "MF81NTM="
+      }
+    },
+    "real_world_polling_example": {
+      "scenario": "Saudi Arabia hotel search with negotiated rates",
+      "currency": "SAR",
+      "expected_hotels": 6655,
+      "completed_hotels": 743,
+      "status": "Completed",
+      "sample_hotels": [
+        {
+          "id": "16281678",
+          "total_rate": 159.55,
+          "rate_type": "Negotiated",
+          "provider": "dotw",
+          "free_breakfast": true,
+          "free_cancellation": true,
+          "pan_mandatory": true
+        },
+        {
+          "id": "39783835",
+          "total_rate": 243.91,
+          "rate_type": "Negotiated",
+          "provider": "dotw",
+          "meal_plans": ["room_only", "half_board", "full_board"],
+          "pan_mandatory": true
+        }
+      ]
+    },
+    "negotiated_rates_example": {
+      "description": "Example showing negotiated rates with different characteristics",
+      "features": [
+        "No published rates (publishedRate: 0)",
+        "Base rate equals total rate (no additional taxes/fees)",
+        "Negotiated rate type instead of Published",
+        "Free breakfast and cancellation included",
+        "PAN mandatory for Indian tax compliance",
+        "Multiple meal plan options available"
+      ],
+      "rate_structure": {
+        "totalRate": 159.55,
+        "publishedRate": 0,
+        "baseRate": 159.55,
+        "commission": 0,
+        "taxes": 0.00,
+        "fees": 0,
+        "type": "Negotiated"
+      }
+    },
+    "cancellation_policy_structure": {
+      "description": "Detailed cancellation rules with time-based penalties",
+      "example": {
+        "rules": [
+          {
+            "value": 0.00,
+            "valueType": "Amount",
+            "estimatedValue": 0.00,
+            "start": "2024-07-02T07:01:36.6924033+00:00",
+            "end": "2024-08-12T12:59:59+00:00",
+            "meaning": "Free cancellation until August 12, 2024"
+          },
+          {
+            "value": 159.55,
+            "valueType": "Amount", 
+            "estimatedValue": 159.55,
+            "start": "2024-08-12T13:00:00+00:00",
+            "end": "2024-08-13T22:59:59+00:00",
+            "meaning": "Full rate penalty from August 12-13, 2024"
+          }
+        ]
+      }
+    },
+    "meal_plan_options": {
+      "roomOnly": "Room accommodation only, no meals included",
+      "halfBoard": "Room with breakfast and one main meal (lunch or dinner)",
+      "fullBoard": "Room with all three meals (breakfast, lunch, dinner)",
+      "allInclusive": "Room with all meals, drinks, and activities included"
+    },
+    "compliance_fields": {
+      "isGstMandatory": {
+        "type": "boolean",
+        "description": "Whether GST information is required for booking",
+        "example": false
+      },
+      "isPANMandatory": {
+        "type": "boolean",
+        "description": "Whether PAN (Permanent Account Number) is required for booking",
+        "example": true,
+        "note": "Common requirement for Indian market bookings"
+      }
+    },
+    "implementation_guidelines": [
+      "Always check response status before proceeding",
+      "Implement proper polling intervals (500ms) to avoid rate limiting",
+      "Set maximum polling duration (10 seconds) to prevent infinite loops",
+      "Handle both InProgress and Completed statuses appropriately",
+      "Store and use nextResultsKey for subsequent polling requests",
+      "Maintain same headers across all polling requests",
+      "Process incremental results as they arrive for better UX"
+    ],
+    "workflow_integration": [
+      "1. Call Search Init API to get token",
+      "2. Call Search Results API with token",
+      "3. If status is 'InProgress', start polling with nextResultsKey",
+      "4. Continue polling until status is 'Completed' or timeout",
+      "5. Proceed to RoomsAndRates API with selected hotel",
+      "6. Continue with booking workflow"
+    ],
+    "key_differences_from_basic_search": [
+      "Uses nextResultsKey parameter for progressive loading",
+      "Requires polling mechanism implementation",
+      "Results arrive incrementally from different suppliers",
+      "Better for handling large result sets",
+      "Provides real-time progress updates",
+      "Allows early display of partial results"
+    ],
+    "next_step": "After retrieving the desired results set, the next step in the process is RoomsAndRates API call",
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/search-results-polling"
+  },
+  "search_results_recipe": {
+    "title": "Search Results API",
+    "description": "Use the token received in the Search Init call response to fetch hotel search results. The Search Results API provides the cheapest rate among all configured providers/suppliers for your channelId and accountId in the requested currency.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/availability/async/{token}/results",
+    "method": "GET",
+    "purpose": "Retrieve hotel search results with rates from multiple suppliers using the search token",
+    "key_features": [
+      "Returns cheapest rates from all configured suppliers",
+      "Provides comprehensive rate breakdown including taxes, fees, and markups",
+      "Includes cancellation policies and booking options",
+      "Shows distribution types and supplier information",
+      "Contains promotional offers and discounts when available"
+    ],
+    "required_headers": [
+      "Content-Type: application/json; charset=utf-8",
+      "Accept-Encoding: gzip, deflate",
+      "accountId: Your ZentrumHub account identifier",
+      "customer-ip: Customer's IP address",
+      "correlationId: Same correlation ID from search init",
+      "apiKey: Your API authentication key"
+    ],
+    "example_request": {
+      "method": "GET",
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/availability/async/9a45ecbf-0ab2-4bed-9626-ea94c7104174/results",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "344f2606-7f7c-8878-8b19-bb94953c3e8e",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      }
+    },
+    "curl_example": "curl --location --request GET 'https://nexus.prod.zentrumhub.com/api/hotel/availability/async/9a45ecbf-0ab2-4bed-9626-ea94c7104174/results' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: 344f2606-7f7c-8878-8b19-bb94953c3e8e' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc'",
+    "response_structure": {
+      "token": {
+        "type": "string",
+        "description": "The search token from init call",
+        "example": "9a45ecbf-0ab2-4bed-9626-ea94c7104174"
+      },
+      "status": {
+        "type": "string",
+        "description": "Search completion status",
+        "values": ["Completed", "InProgress"],
+        "example": "Completed"
+      },
+      "expectedHotelCount": {
+        "type": "string",
+        "description": "Total number of hotels expected in results",
+        "example": "494"
+      },
+      "completedHotelCount": {
+        "type": "string", 
+        "description": "Number of hotels processed so far",
+        "example": "224"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency code for all rates",
+        "example": "USD"
+      },
+      "hotels": {
+        "type": "array",
+        "description": "Array of hotel results with rates and details"
+      }
+    },
+    "hotel_object_structure": {
+      "id": {
+        "type": "string",
+        "description": "Unique hotel identifier",
+        "example": "15350438"
+      },
+      "relevanceScore": {
+        "type": "string",
+        "description": "Relevance score for sorting (0 = highest relevance)",
+        "example": "0"
+      },
+      "rate": {
+        "type": "object",
+        "description": "Detailed rate information including pricing and policies"
+      },
+      "isNewInResult": {
+        "type": "boolean",
+        "description": "Whether this hotel is new in current result set",
+        "example": true
+      },
+      "moreRatesExpected": {
+        "type": "boolean",
+        "description": "Whether more rates are expected for this hotel",
+        "example": false
+      },
+      "isRecommended": {
+        "type": "boolean",
+        "description": "Whether this hotel is recommended",
+        "example": false
+      },
+      "options": {
+        "type": "object",
+        "description": "Available booking options and amenities"
+      }
+    },
+    "rate_object_detailed": {
+      "totalRate": {
+        "type": "number",
+        "description": "Complete rate including all fees, taxes, and markups",
+        "example": 307.971
+      },
+      "publishedRate": {
+        "type": "number",
+        "description": "Published rate from supplier",
+        "example": 307.971
+      },
+      "baseRate": {
+        "type": "number",
+        "description": "Base room rate before taxes and additional charges",
+        "example": 264.641
+      },
+      "commission": {
+        "type": "number",
+        "description": "Agency commission amount",
+        "example": 1.29
+      },
+      "taxes": {
+        "type": "number",
+        "description": "Tax amount",
+        "example": 43.33
+      },
+      "fees": {
+        "type": "number",
+        "description": "Additional fees",
+        "example": 0
+      },
+      "discounts": {
+        "type": "number",
+        "description": "Discount amount applied",
+        "example": 0
+      },
+      "providerId": {
+        "type": "string",
+        "description": "Supplier identifier",
+        "example": "ean-v3-test"
+      },
+      "providerName": {
+        "type": "string",
+        "description": "Supplier name",
+        "example": "EAN"
+      },
+      "distributionType": {
+        "type": "string",
+        "description": "Type of distribution",
+        "values": ["Unknown", "Optimized", "Private", "Public", "Corporate"],
+        "example": "Unknown"
+      },
+      "distributionChannel": {
+        "type": "string",
+        "description": "Distribution channel",
+        "example": "Any"
+      },
+      "type": {
+        "type": "string",
+        "description": "Rate type",
+        "example": "Published"
+      },
+      "payAtHotel": {
+        "type": "boolean",
+        "description": "Whether payment is made at hotel or prepaid",
+        "example": true
+      },
+      "otherRateComponents": {
+        "type": "array",
+        "description": "Additional rate components like markups",
+        "items": {
+          "amount": "Markup amount",
+          "description": "Description of the charge",
+          "type": "Type of charge (Markup, Fee, etc.)",
+          "isIncludedInBaseRate": "Boolean indicating if included in base rate"
+        }
+      },
+      "cancellationPolicy": {
+        "type": "array",
+        "description": "Cancellation rules and penalties"
+      },
+      "offer": {
+        "type": "object",
+        "description": "Promotional offer details when available",
+        "properties": {
+          "title": "Offer title",
+          "description": "Offer description",
+          "discountOffer": "Discount amount",
+          "percentageDiscountOffer": "Percentage discount"
+        }
+      }
+    },
+    "options_object_detailed": {
+      "freeBreakfast": {
+        "type": "boolean",
+        "description": "Free breakfast included"
+      },
+      "freeCancellation": {
+        "type": "boolean", 
+        "description": "Free cancellation available"
+      },
+      "refundable": {
+        "type": "boolean",
+        "description": "Rate is refundable"
+      },
+      "payAtHotel": {
+        "type": "boolean",
+        "description": "Payment at hotel option"
+      },
+      "contractedRateExists": {
+        "type": "boolean",
+        "description": "Contracted rate available"
+      },
+      "roomOnly": {
+        "type": "boolean",
+        "description": "Room only rate (no meals)"
+      },
+      "halfBoard": {
+        "type": "boolean",
+        "description": "Half board meal plan"
+      },
+      "fullBoard": {
+        "type": "boolean",
+        "description": "Full board meal plan"
+      },
+      "allInclusive": {
+        "type": "boolean",
+        "description": "All inclusive package"
+      },
+      "isGstMandatory": {
+        "type": "boolean",
+        "description": "GST information required"
+      },
+      "isPANMandatory": {
+        "type": "boolean",
+        "description": "PAN information required"
+      },
+      "isOptimizedDistribution": {
+        "type": "boolean",
+        "description": "Optimized distribution rate"
+      }
+    },
+    "real_world_examples": {
+      "example_1": {
+        "description": "Hotel with markup and pay-at-hotel option",
+        "hotel_id": "15350438",
+        "total_rate": 307.971,
+        "base_rate": 264.641,
+        "taxes": 43.33,
+        "markup": {
+          "amount": 23.941,
+          "description": "Agency Markup - CountrycodeMarkup",
+          "isIncludedInBaseRate": false
+        },
+        "pay_at_hotel": true,
+        "calculation": "baseRate (264.641) + taxes (43.33) + markup (23.941) = totalRate (307.971)"
+      },
+      "example_2": {
+        "description": "Hotel with promotional offer and prepaid option",
+        "hotel_id": "39691980",
+        "total_rate": 180.091,
+        "published_rate": 184.60,
+        "base_rate": 154.751,
+        "taxes": 25.35,
+        "markup": {
+          "amount": 13.951,
+          "description": "Agency Markup - CountrycodeMarkup",
+          "isIncludedInBaseRate": false
+        },
+        "offer": {
+          "title": "Promotion",
+          "description": "Save 10%"
+        },
+        "pay_at_hotel": false,
+        "calculation": "baseRate (154.751) + taxes (25.35) + markup (13.951) = totalRate (180.091)"
+      },
+      "example_3": {
+        "description": "Optimized distribution rate",
+        "hotel_id": "39644515",
+        "total_rate": 203.166,
+        "base_rate": 174.566,
+        "taxes": 28.60,
+        "distribution_type": "Optimized",
+        "markup": {
+          "amount": 15.706,
+          "description": "Agency Markup - CountrycodeMarkup",
+          "isIncludedInBaseRate": false
+        }
+      }
+    },
+    "important_fields": {
+      "isIncludedInBaseRate": {
+        "description": "Critical field in otherRateComponents indicating whether charges are included in base rate",
+        "usage": "Always check this field when calculating total costs",
+        "values": {
+          "false": "Charge must be added to base rate",
+          "true": "Charge already included in base rate"
+        }
+      },
+      "distributionType": {
+        "description": "Indicates the type of rate distribution",
+        "types": {
+          "Unknown": "Standard distribution",
+          "Optimized": "Optimized rates with better terms",
+          "Private": "Private rates for specific channels",
+          "Public": "Publicly available rates",
+          "Corporate": "Corporate negotiated rates"
+        }
+      }
+    },
+    "workflow_integration": [
+      "1. Use token from Search Init API call",
+      "2. Call Search Results API to get hotel rates",
+      "3. Parse response to display hotels with rates",
+      "4. Use hotel ID and token for RoomsAndRates API call",
+      "5. Proceed with booking workflow using same token"
+    ],
+    "key_implementation_notes": [
+      "Always use the same correlationId from search init",
+      "Check isIncludedInBaseRate field for accurate pricing",
+      "Handle both pay-at-hotel and prepaid options",
+      "Display promotional offers when available",
+      "Consider distribution type for rate categorization",
+      "Parse cancellation policies for user display"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/search-results",
+      "https://zentrumhub-hotel-api.readme.io/reference/get_api-hotel-availability-async-token-results"
+    ]
+  },
+  "roomsandrates_recipe": {
+    "title": "RoomsAndRates API",
+    "description": "This API call retrieves detailed room and rate specifications for all available rooms in a hotel selected from the search results. Uses the selected hotelId and token obtained from the search results call.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/roomsandrates/{token}",
+    "method": "POST",
+    "purpose": "Get comprehensive information about rooms including name, facilities, bed info, size, images, meal plans, pricing and more",
+    "response_structure": {
+      "main_objects": [
+        "Rooms - Room details, facilities, descriptions",
+        "Rates - Pricing information, taxes, fees, policies", 
+        "Recommendations - Rate combinations for multi-room bookings",
+        "StandardizedRooms - Unified room information from multiple suppliers"
+      ]
+    },
+    "recommendations_explanation": {
+      "purpose": "Useful for multi-room booking scenarios. A recommendation is a combination of rates created based on common booking patterns.",
+      "why_needed": "Some suppliers return rates for individual rooms, others return rates for entire booking as single package. API abstracts this complexity by creating recommendations so all rates can be perceived as rates for the entire booking.",
+      "mapping_reference": "https://zentrumhub-hotel-api.readme.io/discuss/666abed1c268d500f6e73219"
+    },
+    "example_request": {
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/70448191/roomsandrates/9bdd5776-cc46-4046-ac30-b3a428376bea",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      },
+      "body": {
+        "searchSpecificProviders": false,
+        "providerIds": []
+      }
+    },
+    "response_example": {
+      "token": "9bdd5776-cc46-4046-ac30-b3a428376bea",
+      "currency": "USD",
+      "hotel": {
+        "id": "70448191",
+        "rooms": [
+          {
+            "id": "50598be3-08a6-4276-b55a-461c424365f8",
+            "name": "Deluxe Room",
+            "description": "Room description with amenities",
+            "beds": [{"type": "FullBed", "count": "1"}],
+            "smokingAllowed": false,
+            "facilities": ["WiFi speed - 25+ Mbps", "Free WiFi", "Air conditioning", "etc..."],
+            "views": []
+          }
+        ],
+        "rates": [
+          {
+            "id": "577d2972-2f36-4d1c-a7a2-598c95ad5e5c",
+            "availability": "36",
+            "needsPriceCheck": true,
+            "isPackageRate": false,
+            "providerId": "ean-v3-test",
+            "providerName": "EAN",
+            "type": "Published",
+            "baseRate": 20.729,
+            "totalRate": 22.989,
+            "currency": "USD",
+            "taxes": [
+              {
+                "amount": 2.26,
+                "description": "tax_and_service_fee",
+                "isIncludedInBaseRate": false
+              }
+            ],
+            "commission": {
+              "amount": 0.17,
+              "description": "Agency Commission",
+              "isIncludedInBaseRate": false
+            },
+            "otherRateComponents": [
+              {
+                "amount": 1.869,
+                "description": "Agency Markup applied on baseAmount - CountrycodeMarkup",
+                "type": "Markup",
+                "isIncludedInBaseRate": false
+              }
+            ],
+            "refundable": true,
+            "payAtHotel": true,
+            "cancellationPolicies": "... (detailed cancellation rules)",
+            "policies": "... (check-in/out, special instructions)",
+            "boardBasis": {"description": "Room Only", "type": "RoomOnly"}
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "71d1810c-dd49-49c1-a4e3-1c7a23d53970",
+            "rates": ["127844f9-5a71-4548-848a-78252cd7064f"],
+            "groupId": "1"
+          }
+        ],
+        "standardizedRooms": [
+          {
+            "id": "1",
+            "name": "Deluxe",
+            "facilities": ["WiFi speed - 25+ Mbps", "Air conditioning", "etc..."],
+            "maxGuestAllowed": "2",
+            "maxAdultAllowed": "2",
+            "maxChildrenAllowed": "1"
+          }
+        ]
+      }
+    },
+    "key_rate_fields": {
+      "baseRate": "Base room rate before taxes and fees (e.g., 20.729)",
+      "totalRate": "Complete rate including all taxes and fees (e.g., 22.989)",
+      "taxes": "Array of tax amounts with isIncludedInBaseRate field",
+      "commission": "Agency commission with isIncludedInBaseRate field",
+      "otherRateComponents": "Additional markups/fees with isIncludedInBaseRate field",
+      "refundable": "Boolean indicating if rate is refundable",
+      "payAtHotel": "Boolean indicating payment method",
+      "cancellationPolicies": "Detailed cancellation rules and penalties",
+      "boardBasis": "Meal plan information (Room Only, Half Board, etc.)"
+    },
+    "pricing_calculation_example": {
+      "baseRate": 20.729,
+      "taxes": 2.26,
+      "otherRateComponents": 1.869,
+      "totalRate": 22.989,
+      "explanation": "baseRate (20.729) + taxes (2.26) + markup (1.869) = totalRate (22.989)",
+      "note": "Always check isIncludedInBaseRate field for each component"
+    },
+    "room_information": {
+      "facilities": "Detailed list of room amenities and features",
+      "beds": "Bed type and count information",
+      "description": "HTML formatted room description",
+      "smokingAllowed": "Boolean for smoking policy",
+      "views": "Array of room views (if available)"
+    },
+    "reference_links": [
+      "https://zentrumhub-hotel-api.readme.io/reference/post_api-hotel-hotelid-roomsandrates-token",
+      "https://zentrumhub-hotel-api.readme.io/discuss/666abed1c268d500f6e73219"
+    ]
+  },
+  "pricebyrecommendation_recipe": {
+    "title": "PriceByRecommendation API - Rate Validation and Updated Pricing",
+    "description": "Once the recommendationId is received for the desired pricing, pass the hotelId, recommendationId, and token to the Price API to fetch the updated pricing/rate information provided by the supplier. This step ensures current pricing before booking.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/{token}/price/recommendation/{recommendationId}",
+    "method": "GET",
+    "purpose": "Validate and get the most current pricing/rate details from the supplier before proceeding to booking",
+    "when_to_use": [
+      "When needsPriceCheck is true in RoomsAndRates response",
+      "Before proceeding to booking to ensure rate accuracy",
+      "To get updated pricing after user selection",
+      "To validate rate availability and current terms"
+    ],
+    "required_parameters": {
+      "hotelId": {
+        "type": "string",
+        "description": "Hotel identifier from search results",
+        "example": "70448191"
+      },
+      "token": {
+        "type": "string", 
+        "description": "Search token from init call",
+        "example": "9bdd5776-cc46-4046-ac30-b3a428376bea"
+      },
+      "recommendationId": {
+        "type": "string",
+        "description": "Recommendation ID from RoomsAndRates response",
+        "example": "2e117793-ef21-47c5-9b6d-abe8bee63c9f"
+      }
+    },
+    "required_headers": [
+      "Content-Type: application/json; charset=utf-8",
+      "Accept-Encoding: gzip, deflate",
+      "accountId: Your ZentrumHub account identifier",
+      "customer-ip: Customer's IP address",
+      "correlationId: Same correlation ID from search init",
+      "apiKey: Your API authentication key"
+    ],
+    "example_request": {
+      "method": "GET",
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/70448191/9bdd5776-cc46-4046-ac30-b3a428376bea/price/recommendation/2e117793-ef21-47c5-9b6d-abe8bee63c9f",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      }
+    },
+    "curl_example": "curl --location --request GET 'https://nexus.prod.zentrumhub.com/api/hotel/70448191/9bdd5776-cc46-4046-ac30-b3a428376bea/price/recommendation/2e117793-ef21-47c5-9b6d-abe8bee63c9f' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: d2ca03b0-f5a4-ce7b-0642-3d7c961573e7' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc'",
+    "response_structure": {
+      "token": {
+        "type": "string",
+        "description": "Search token from init call",
+        "example": "9bdd5776-cc46-4046-ac30-b3a428376bea"
+      },
+      "currency": {
+        "type": "string",
+        "description": "Currency code for all rates",
+        "example": "USD"
+      },
+      "hotel": {
+        "type": "object",
+        "description": "Complete hotel information with updated rates",
+        "properties": {
+          "id": "Hotel identifier",
+          "rooms": "Array of room objects with specifications",
+          "rates": "Array of updated rate objects with current pricing",
+          "fees": "Additional fees array",
+          "discounts": "Available discounts array"
+        }
+      }
+    },
+    "updated_rate_structure": {
+      "id": {
+        "type": "string",
+        "description": "Rate identifier",
+        "example": "035a14ef-3a4f-4328-8247-579f84d8bfd0"
+      },
+      "baseRate": {
+        "type": "number",
+        "description": "Updated base room rate",
+        "example": 22.50
+      },
+      "totalRate": {
+        "type": "number", 
+        "description": "Updated total rate including all charges",
+        "example": 25.80
+      },
+      "taxes": {
+        "type": "array",
+        "description": "Updated tax information with isIncludedInBaseRate field"
+      },
+      "commission": {
+        "type": "object",
+        "description": "Updated commission details"
+      },
+      "otherRateComponents": {
+        "type": "array",
+        "description": "Updated markup and fee information"
+      },
+      "cancellationPolicies": {
+        "type": "string",
+        "description": "Updated cancellation policy details"
+      },
+      "paymentMethods": {
+        "type": "array",
+        "description": "Available payment methods for this rate"
+      }
+    },
+    "workflow_integration": [
+      "1. Get recommendationId from RoomsAndRates API response",
+      "2. Call PriceByRecommendation API to validate current pricing",
+      "3. Compare updated rates with original rates",
+      "4. Proceed to Book API if rates are acceptable",
+      "5. Handle rate changes appropriately in UI"
+    ],
+    "rate_validation_scenarios": {
+      "price_increase": "Rate increased since initial search - inform user and get confirmation",
+      "price_decrease": "Rate decreased - proceed with booking",
+      "rate_unavailable": "Rate no longer available - show alternative options",
+      "same_price": "Rate unchanged - proceed to booking"
+    },
+    "implementation_notes": [
+      "Always call this API before booking when needsPriceCheck is true",
+      "Handle rate changes gracefully in user interface",
+      "Store updated rate information for booking API call",
+      "Maintain same correlationId throughout workflow",
+      "Check availability status in response"
+    ],
+    "reference_links": [
+      "https://zentrumhub-hotel-api.readme.io/reference/get_api-hotel-hotelid-token-price-recommendation-recommendationid"
+    ]
+  },
+  "book_recipe": {
+    "title": "Book API - Final Reservation Step",
+    "description": "The final step in the booking process using the Book API to perform a hotel reservation. This API creates the actual booking with the supplier and returns confirmation details.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/{token}/book",
+    "method": "POST",
+    "purpose": "Create a hotel reservation with passenger information, billing contact, and payment details",
+    "required_information": [
+      "Passenger Information - Guest details for each room",
+      "Billing Contact Information - Lead passenger contact details",
+      "Payment Information - Credit card or payment method details (if required)",
+      "Rate IDs - Selected rate identifiers from previous API calls",
+      "Room Allocations - Guest assignments to specific rooms"
+    ],
+    "required_headers": [
+      "Content-Type: application/json; charset=utf-8",
+      "Accept-Encoding: gzip, deflate",
+      "accountId: Your ZentrumHub account identifier",
+      "customer-ip: Customer's IP address",
+      "correlationId: Same correlation ID from search init",
+      "apiKey: Your API authentication key"
+    ],
+    "example_request": {
+      "method": "POST",
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/70448191/9bdd5776-cc46-4046-ac30-b3a428376bea/book",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      }
+    },
+    "curl_example": "curl --location --request POST 'https://nexus.prod.zentrumhub.com/api/hotel/70448191/9bdd5776-cc46-4046-ac30-b3a428376bea/book' \\\n--header 'Content-Type: application/json; charset=utf-8' \\\n--header 'Accept-Encoding: gzip, deflate' \\\n--header 'accountId: zentrum-demo-account' \\\n--header 'customer-ip: 49.43.4.237' \\\n--header 'correlationId: d2ca03b0-f5a4-ce7b-0642-3d7c961573e7' \\\n--header 'apiKey: 4477a62d-2bb6-4392-896a-3f5270962dbc' \\\n--data-raw '{\"rateIds\": [\"035a14ef-3a4f-4328-8247-579f84d8bfd0\"], \"bookingRefId\": \"7091\", \"specialRequests\": [\"Need a early check-in\"], \"roomsAllocations\": [...], \"billingContact\": {...}, \"creditCard\": {...}}'",
+    "request_body_structure": {
+      "rateIds": {
+        "type": "array",
+        "required": true,
+        "description": "Array of rate identifiers to book",
+        "example": ["035a14ef-3a4f-4328-8247-579f84d8bfd0"]
+      },
+      "bookingRefId": {
+        "type": "string",
+        "required": true,
+        "description": "Your internal booking reference ID",
+        "example": "7091"
+      },
+      "specialRequests": {
+        "type": "array",
+        "required": false,
+        "description": "Array of special requests for the booking",
+        "example": ["Need a early check-in", "High floor room preferred"]
+      },
+      "roomsAllocations": {
+        "type": "array",
+        "required": true,
+        "description": "Guest allocation details for each room"
+      },
+      "billingContact": {
+        "type": "object",
+        "required": true,
+        "description": "Lead passenger billing and contact information"
+      },
+      "creditCard": {
+        "type": "object",
+        "required": false,
+        "description": "Credit card information (if payment required)"
+      }
+    },
+    "rooms_allocations_structure": {
+      "description": "Array of room allocation objects, one per room being booked",
+      "structure": {
+        "roomid": {
+          "type": "string",
+          "required": true,
+          "description": "Room identifier from RoomsAndRates response"
+        },
+        "rateid": {
+          "type": "string", 
+          "required": true,
+          "description": "Rate identifier for this room"
+        },
+        "guests": {
+          "type": "array",
+          "required": true,
+          "description": "Array of guest objects for this room"
+        }
+      },
+      "guest_object": {
+        "type": {
+          "type": "string",
+          "description": "Guest type (Adult, Child, etc.)"
+        },
+        "title": {
+          "type": "string",
+          "description": "Guest title (Mr, Mrs, Ms, etc.)"
+        },
+        "firstname": {
+          "type": "string",
+          "required": true,
+          "description": "Guest first name"
+        },
+        "lastname": {
+          "type": "string",
+          "required": true,
+          "description": "Guest last name"
+        },
+        "middlename": {
+          "type": "string",
+          "description": "Guest middle name"
+        },
+        "suffix": {
+          "type": "string",
+          "description": "Name suffix (Jr, Sr, etc.)"
+        },
+        "age": {
+          "type": "number",
+          "required": true,
+          "description": "Guest age"
+        },
+        "email": {
+          "type": "string",
+          "description": "Guest email address"
+        }
+      }
+    },
+    "billing_contact_structure": {
+      "title": {
+        "type": "string",
+        "description": "Contact title"
+      },
+      "firstName": {
+        "type": "string",
+        "required": true,
+        "description": "Billing contact first name"
+      },
+      "lastName": {
+        "type": "string",
+        "required": true,
+        "description": "Billing contact last name"
+      },
+      "middleName": {
+        "type": "string",
+        "description": "Billing contact middle name"
+      },
+      "suffix": {
+        "type": "string",
+        "description": "Name suffix"
+      },
+      "age": {
+        "type": "number",
+        "required": true,
+        "description": "Contact age"
+      },
+      "contact": {
+        "type": "object",
+        "required": true,
+        "description": "Contact information including phone, email, and address"
+      }
+    },
+    "contact_information_structure": {
+      "phone": {
+        "type": "string",
+        "required": true,
+        "description": "Contact phone number"
+      },
+      "email": {
+        "type": "string",
+        "required": true,
+        "description": "Contact email address"
+      },
+      "address": {
+        "type": "object",
+        "required": true,
+        "description": "Billing address information",
+        "properties": {
+          "line1": "Address line 1",
+          "line2": "Address line 2",
+          "city": "City information with name and code",
+          "state": "State information with name and code",
+          "country": "Country information with name and code",
+          "postalCode": "Postal/ZIP code"
+        }
+      }
+    },
+    "credit_card_structure": {
+      "issuer": {
+        "type": "string",
+        "description": "Card issuer (Visa, MasterCard, etc.)"
+      },
+      "number": {
+        "type": "string",
+        "required": true,
+        "description": "Credit card number"
+      },
+      "cvv": {
+        "type": "string",
+        "required": true,
+        "description": "Card verification value"
+      },
+      "nameoncard": {
+        "type": "string",
+        "required": true,
+        "description": "Name as it appears on card"
+      },
+      "expirymonth": {
+        "type": "string",
+        "required": true,
+        "description": "Card expiry month (MM)"
+      },
+      "expiryyear": {
+        "type": "string",
+        "required": true,
+        "description": "Card expiry year (YYYY)"
+      },
+      "contact": {
+        "type": "object",
+        "required": true,
+        "description": "Cardholder contact and billing address"
+      }
+    },
+    "response_structure": {
+      "token": {
+        "type": "string",
+        "description": "Search token from init call",
+        "example": "9bdd5776-cc46-4046-ac30-b3a428376bea"
+      },
+      "bookingStatus": {
+        "type": "string",
+        "description": "Status of the booking",
+        "values": ["Confirmed", "Pending", "Failed"],
+        "example": "Confirmed"
+      },
+      "bookingId": {
+        "type": "string",
+        "description": "ZentrumHub booking identifier",
+        "example": "123456789abc"
+      },
+      "providerConfirmationNumber": {
+        "type": "string",
+        "description": "Supplier confirmation number",
+        "example": "abcght5678"
+      },
+      "hotelConfirmationNumber": {
+        "type": "string",
+        "description": "Hotel confirmation number",
+        "example": "12345668as"
+      },
+      "cancellationToken": {
+        "type": "string",
+        "description": "Token required for cancellation",
+        "example": "dfdgvsjh67789"
+      }
+    },
+    "example_response": {
+      "token": "9bdd5776-cc46-4046-ac30-b3a428376bea",
+      "bookingStatus": "Confirmed",
+      "bookingId": "123456789abc",
+      "providerConfirmationNumber": "abcght5678",
+      "hotelConfirmationNumber": "12345668as",
+      "cancellationToken": "dfdgvsjh67789"
+    },
+    "booking_workflow": [
+      "1. Complete search and rate selection process",
+      "2. Validate rates using PriceByRecommendation API (if needed)",
+      "3. Collect guest information for all rooms",
+      "4. Collect billing contact information",
+      "5. Collect payment information (if required)",
+      "6. Submit booking request to Book API",
+      "7. Handle booking response and confirmation",
+      "8. Store booking details and confirmation numbers"
+    ],
+    "important_considerations": [
+      "All guest names must match travel documents",
+      "Age information is critical for accurate pricing",
+      "Email addresses are required for booking confirmations",
+      "Phone numbers should include country codes",
+      "Address information must be complete and accurate",
+      "Credit card information is only required for prepaid bookings",
+      "Special requests are not guaranteed but will be noted",
+      "Booking reference ID should be unique in your system"
+    ],
+    "error_handling": [
+      "Rate no longer available - return to rate selection",
+      "Invalid guest information - validate and correct data",
+      "Payment processing failed - retry or use different payment method",
+      "Hotel booking failed - check availability and try alternative",
+      "Timeout errors - retry booking with same information"
+    ],
+    "confirmation_details": {
+      "bookingId": "Store this for future reference and modifications",
+      "providerConfirmationNumber": "Share with guest for hotel check-in",
+      "hotelConfirmationNumber": "Alternative confirmation number from hotel",
+      "cancellationToken": "Required for cancellation API calls"
+    },
+    "post_booking_actions": [
+      "Send confirmation email to guest",
+      "Store booking details in your system",
+      "Provide confirmation numbers to guest",
+      "Set up cancellation reminders if applicable",
+      "Monitor booking status if needed"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/book",
+      "https://zentrumhub-hotel-api.readme.io/reference/post_api-hotel-hotelid-token-book"
+    ]
+  },
+  "cancel_booking_recipe": {
+    "title": "Cancel Booking API",
+    "description": "Use this API to cancel reservations made via the ZentrumHub Booking API. Booking ID and cancellation token are mandatory for cancelling bookings.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}",
+    "method": "DELETE",
+    "purpose": "Cancel confirmed hotel reservations and receive cancellation confirmation",
+    "required_parameters": {
+      "booking_id": {
+        "type": "string",
+        "required": true,
+        "description": "Booking identifier received from Book API response",
+        "example": "tlp91"
+      }
+    },
+    "required_headers": [
+      "accept: application/json",
+      "api-key: Your API authentication key",
+      "user-ip: Customer's IP address (can be 0 for system calls)",
+      "customer-id: Your account identifier",
+      "affiliate-id: Your affiliate identifier",
+      "correlation-id: Unique correlation ID for tracking"
+    ],
+    "example_request": {
+      "method": "DELETE",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/tlp91",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      }
+    },
+    "curl_example": "curl --request DELETE \\\n--url https://hotel-connect.prod.zentrumhub.com/api/v1/book/{{booking_id}} \\\n--header 'accept: application/json' \\\n--header 'api-key: {{your_api_key}}' \\\n--header 'user-ip: 0' \\\n--header 'customer-id: {{account_id}}' \\\n--header 'affiliate-id: {{affiliate_id}}' \\\n--header 'correlation-id: 5d42d7fd-2d3c-0e5f-9819-8b574b19ad34'",
+    "response_structure": {
+      "cancellationStatus": {
+        "type": "string",
+        "description": "Overall cancellation status",
+        "values": ["Cancelled", "Failed", "Pending"],
+        "example": "Cancelled"
+      },
+      "bookingId": {
+        "type": "string",
+        "description": "Original booking identifier",
+        "example": "tlp91"
+      },
+      "providerCancellationNumber": {
+        "type": "string",
+        "description": "Supplier cancellation reference number",
+        "example": "7037179363950"
+      },
+      "hotelCancellationNumber": {
+        "type": "string",
+        "description": "Hotel cancellation reference number",
+        "example": "6037179363950"
+      },
+      "roomCancellation": {
+        "type": "array",
+        "description": "Detailed cancellation information for each room"
+      }
+    },
+    "room_cancellation_structure": {
+      "providerConfirmationNumber": {
+        "type": "string",
+        "description": "Original provider confirmation number for the room",
+        "example": "9037179363951"
+      },
+      "hotelConfirmationNumber": {
+        "type": "string",
+        "description": "Original hotel confirmation number for the room",
+        "example": "9037179363951"
+      },
+      "providerCancellationNumber": {
+        "type": "string",
+        "description": "Provider cancellation number for this room",
+        "example": "7037179363950"
+      },
+      "hotelCancellationNumber": {
+        "type": "string",
+        "description": "Hotel cancellation number for this room",
+        "example": "6037179363950"
+      },
+      "cancellationStatus": {
+        "type": "string",
+        "description": "Cancellation status for this specific room",
+        "example": "Cancelled"
+      }
+    },
+    "example_response": {
+      "cancellationStatus": "Cancelled",
+      "bookingId": "tlp91",
+      "providerCancellationNumber": "7037179363950",
+      "hotelCancellationNumber": "6037179363950",
+      "roomCancellation": [
+        {
+          "providerConfirmationNumber": "9037179363951",
+          "hotelConfirmationNumber": "9037179363951",
+          "providerCancellationNumber": "7037179363950",
+          "hotelCancellationNumber": "6037179363950",
+          "cancellationStatus": "Cancelled"
+        }
+      ]
+    },
+    "cancellation_workflow": [
+      "1. Retrieve booking ID from original booking response",
+      "2. Check cancellation policy and penalties (optional)",
+      "3. Submit cancellation request to Cancel API",
+      "4. Receive cancellation confirmation with reference numbers",
+      "5. Process refunds according to cancellation policy",
+      "6. Notify guest of successful cancellation"
+    ],
+    "important_notes": [
+      "Booking ID is mandatory and must match exactly",
+      "Cancellation token from booking response may be required by some suppliers",
+      "Cancellation policies vary by supplier and rate type",
+      "Some bookings may have cancellation penalties",
+      "Refund processing time depends on original payment method",
+      "Multi-room bookings may have individual room cancellation status"
+    ],
+    "error_scenarios": [
+      "Booking not found - verify booking ID is correct",
+      "Booking already cancelled - check booking status first",
+      "Cancellation not allowed - check cancellation policy",
+      "Supplier error - retry or contact support",
+      "Past cancellation deadline - penalties may apply"
+    ],
+    "best_practices": [
+      "Always check cancellation policy before cancelling",
+      "Store all cancellation reference numbers",
+      "Notify guests immediately upon successful cancellation",
+      "Handle partial cancellations for multi-room bookings",
+      "Implement proper error handling for failed cancellations",
+      "Track cancellation status for reporting purposes"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/cancel-booking"
+    ]
+  },
+  "rate_combinability_recipe": {
+    "title": "ZentrumHub Rate Combinability",
+    "description": "Understanding how to group rates by RateCombinabilityType for multi-room bookings and rate combinations. The Rate object consists of RateCombinabilityId and RateCombinabilityType fields that define rate grouping rules.",
+    "purpose": "Enable proper rate combination logic for multi-room bookings and package deals",
+    "rate_combinability_fields": {
+      "rateCombinabilityId": {
+        "type": "string",
+        "description": "GUID assigned to the rate for grouping purposes",
+        "example": "111"
+      },
+      "rateCombinabilityType": {
+        "type": "string",
+        "description": "Defines the grouping behavior of rates",
+        "values": ["None", "GroupDifferentId", "GroupWithinSameId", "GroupSameId"]
+      }
+    },
+    "combinability_types": {
+      "None": {
+        "description": "Rate cannot be combined with any other rates",
+        "usage": "Standalone rates that must be booked individually",
+        "example": "Special promotional rates or exclusive packages"
+      },
+      "GroupDifferentId": {
+        "description": "Rate can be combined with rates having different RateCombinabilityId values",
+        "usage": "Rates that can mix and match with other rate types",
+        "example": "Standard rates that can combine with different room types"
+      },
+      "GroupWithinSameId": {
+        "description": "Rate can only be combined with other rates having the same RateCombinabilityId",
+        "usage": "Package rates or group rates that must stay together",
+        "example": "Conference packages or group booking rates"
+      },
+      "GroupSameId": {
+        "description": "Rate must be combined with other rates having the same RateCombinabilityId",
+        "usage": "Mandatory package components that require other parts",
+        "example": "Multi-room packages or family packages"
+      }
+    },
+    "example_scenario": {
+      "hotel_id": "123",
+      "token": "abc123",
+      "currency": "USD",
+      "rooms": [
+        {
+          "id": "1",
+          "name": "Standard Double room"
+        },
+        {
+          "id": "2", 
+          "name": "Deluxe Double room"
+        }
+      ],
+      "rates_analysis": {
+        "rate_11": {
+          "id": "11",
+          "type": "None",
+          "combinability_id": null,
+          "rooms": ["1", "1"],
+          "meaning": "Cannot combine with other rates - book independently"
+        },
+        "rate_13_21": {
+          "ids": ["13", "21"],
+          "type": "GroupSameId", 
+          "combinability_id": "111",
+          "rooms": ["1", "2"],
+          "meaning": "Must be booked together as a package"
+        },
+        "rate_12_22": {
+          "ids": ["12", "22"],
+          "type": "GroupDifferentId",
+          "combinability_ids": ["456", "789"],
+          "rooms": ["1", "2"],
+          "meaning": "Can combine despite different IDs"
+        },
+        "rate_23_24_14": {
+          "ids": ["23", "24", "14"],
+          "type": "GroupWithinSameId",
+          "combinability_id": "111",
+          "rooms": ["2", "2", "1"],
+          "meaning": "Can combine only with same ID (111)"
+        }
+      }
+    },
+    "api_endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/rooms",
+    "example_request": {
+      "method": "GET",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/123/rooms",
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    "curl_example": "curl --request GET \\\n--url https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/rooms \\\n--header 'accept: application/json'",
+    "example_response": {
+      "hotelId": "123",
+      "token": "abc123",
+      "currency": "USD",
+      "rooms": [
+        {"id": "1", "name": "Standard Double room"},
+        {"id": "2", "name": "Deluxe Double room"}
+      ],
+      "rates": [
+        {
+          "id": "11",
+          "rateCombinabilityType": "None",
+          "occupancies": [{"roomId": "1"}, {"roomId": "1"}]
+        },
+        {
+          "id": "13",
+          "rateCombinabilityType": "GroupSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "1"}]
+        },
+        {
+          "id": "21",
+          "rateCombinabilityType": "GroupSameId", 
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "12",
+          "rateCombinabilityType": "GroupDifferentId",
+          "rateCombinabilityId": "456",
+          "occupancies": [{"roomId": "1"}]
+        },
+        {
+          "id": "22",
+          "rateCombinabilityType": "GroupDifferentId",
+          "rateCombinabilityId": "789", 
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "23",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "24",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "14",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "1"}]
+        }
+      ]
+    },
+    "implementation_logic": {
+      "step_1": "Parse all rates and group by rateCombinabilityType",
+      "step_2": "For 'None' type rates - present as individual options",
+      "step_3": "For 'GroupSameId' type rates - group by rateCombinabilityId and present as packages",
+      "step_4": "For 'GroupDifferentId' type rates - allow mixing with other GroupDifferentId rates",
+      "step_5": "For 'GroupWithinSameId' type rates - only allow combination within same rateCombinabilityId"
+    },
+    "booking_scenarios": {
+      "single_room": {
+        "description": "Booking one room",
+        "options": ["Rate 11 (None)", "Rate 13 + Rate 21 (GroupSameId package)", "Rate 12 (GroupDifferentId)", "Rates 23/24/14 (GroupWithinSameId)"]
+      },
+      "multi_room": {
+        "description": "Booking multiple rooms",
+        "valid_combinations": [
+          "Rate 13 + Rate 21 (same ID 111)",
+          "Rate 12 + Rate 22 (different IDs allowed)",
+          "Rate 23 + Rate 24 + Rate 14 (same ID 111)",
+          "Multiple Rate 11 (each booked separately)"
+        ],
+        "invalid_combinations": [
+          "Rate 13 + Rate 12 (GroupSameId cannot mix with GroupDifferentId)",
+          "Rate 23 + Rate 12 (different combinability IDs)"
+        ]
+      }
+    },
+    "ui_implementation_guidelines": [
+      "Display 'None' rates as individual booking options",
+      "Group 'GroupSameId' rates as package deals with combined pricing",
+      "Allow flexible selection for 'GroupDifferentId' rates",
+      "Restrict 'GroupWithinSameId' selections to same ID groups",
+      "Validate rate combinations before allowing booking",
+      "Show clear messaging about package requirements"
+    ],
+    "validation_rules": [
+      "Rates with type 'None' cannot be combined with any other rates",
+      "Rates with type 'GroupSameId' must include all rates with same rateCombinabilityId",
+      "Rates with type 'GroupDifferentId' can combine with other GroupDifferentId rates regardless of ID",
+      "Rates with type 'GroupWithinSameId' can only combine with rates having identical rateCombinabilityId"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-rate-combinability"
+    ]
+  },
+  "rate_fields_reference": {
+    "title": "Rate Fields Reference",
+    "description": "Complete reference for rate-related fields",
+    "fields": {
+      "rateId": {
+        "type": "string",
+        "description": "Rate identifier",
+        "example": "577d2972-2f36-4d1c-a7a2-598c95ad5e5c"
+      },
+      "availability": {
+        "type": "string",
+        "description": "Current room availability",
+        "example": "36"
+      },
+      "baseRate": {
+        "type": "number",
+        "description": "Updated base rate",
+        "example": 20.729
+      },
+      "totalRate": {
+        "type": "number",
+        "description": "Updated total rate including all charges",
+        "example": 22.989
+      },
+      "publishedRate": {
+        "type": "number",
+        "description": "Published rate from supplier",
+        "example": 37.05
+      },
+      "taxes": {
+        "type": "array",
+        "description": "Updated tax breakdown",
+        "items": {
+          "amount": "Tax amount",
+          "description": "Tax description",
+          "isIncludedInBaseRate": "Boolean indicating inclusion in base rate"
+        }
+      },
+      "commission": {
+        "type": "object",
+        "description": "Updated commission details",
+        "properties": {
+          "amount": "Commission amount",
+          "description": "Commission description",
+          "isIncludedInBaseRate": "Boolean indicating inclusion in base rate"
+        }
+      },
+      "otherRateComponents": {
+        "type": "array",
+        "description": "Updated additional rate components",
+        "items": {
+          "amount": "Component amount",
+          "description": "Component description",
+          "type": "Component type (Markup, Fee, etc.)",
+          "isIncludedInBaseRate": "Boolean indicating inclusion in base rate"
+        }
+      },
+      "allowedCreditCards": {
+        "type": "array",
+        "description": "Accepted credit card types",
+        "items": {
+          "code": "Credit card type code"
+        }
+      },
+      "cancellationPolicies": {
+        "type": "array",
+        "description": "Updated cancellation policies"
+      },
+      "policies": {
+        "type": "array",
+        "description": "Hotel policies and terms"
+      }
+    },
+    "real_world_example": {
+      "scenario": "Price validation for Deluxe Room booking",
+      "hotel_id": "70448191",
+      "recommendation_id": "2e117793-ef21-47c5-9b6d-abe8bee63c9f",
+      "updated_pricing": {
+        "base_rate": 20.729,
+        "taxes": 2.26,
+        "commission": 0.17,
+        "markup": 1.869,
+        "total_rate": 22.989,
+        "published_rate": 37.05,
+        "savings": "43%",
+        "calculation": "baseRate (20.729) + taxes (2.26) + markup (1.869) = totalRate (22.989)"
+      },
+      "payment_options": {
+        "pay_at_hotel": true,
+        "credit_cards": ["MasterCard", "AmericanExpress", "Visa", "Visa Electron"],
+        "deposit_required": false,
+        "guarantee_required": false
+      },
+      "booking_terms": {
+        "refundable": true,
+        "online_cancellable": false,
+        "special_requests_supported": false,
+        "all_guests_info_required": false
+      }
+    },
+    "key_validation_points": {
+      "rate_changes": {
+        "description": "Compare rates from RoomsAndRates vs Price API",
+        "action": "Alert user if significant price changes detected",
+        "tolerance": "Industry standard is 5-10% variance"
+      },
+      "availability_changes": {
+        "description": "Check if room availability has changed",
+        "action": "Update availability count or show sold out message"
+      },
+      "policy_updates": {
+        "description": "Verify cancellation policies and terms",
+        "action": "Display updated policies to user before booking"
+      },
+      "payment_methods": {
+        "description": "Confirm accepted credit card types",
+        "action": "Validate user's payment method is accepted"
+      }
+    },
+    "important_fields": {
+      "isIncludedInBaseRate": {
+        "description": "Critical field for accurate pricing calculations",
+        "usage": "Always check this field in taxes, commission, and otherRateComponents",
+        "example": {
+          "taxes": [
+            {
+              "amount": 2.26,
+              "description": "tax_and_service_fee",
+              "isIncludedInBaseRate": false
+            }
+          ],
+          "meaning": "Tax must be added to base rate for total calculation"
+        }
+      },
+      "allowedCreditCards": {
+        "description": "Accepted payment methods for this rate",
+        "usage": "Validate user's payment method before proceeding to booking",
+        "example": ["MasterCard", "AmericanExpress", "Visa", "Visa Electron"]
+      },
+      "needsPriceCheck": {
+        "description": "Indicates if this API call was necessary",
+        "usage": "If true in RoomsAndRates, this API call is required before booking"
+      }
+    },
+    "workflow_integration": [
+      "1. Get hotel availability (Hotel Search or Direct Room Rates)",
+      "2. Select desired rates from response",
+      "3. Call Price API to recheck selected rates",
+      "4. Validate updated pricing and policies",
+      "5. Proceed to booking with confirmed rates"
+    ],
+    "implementation_guidelines": [
+      "Always call this API when needsPriceCheck is true",
+      "Compare pricing between RoomsAndRates and Price API responses",
+      "Alert users to significant price changes before booking",
+      "Validate payment method compatibility with allowedCreditCards",
+      "Display updated cancellation policies to users",
+      "Handle rate unavailability gracefully",
+      "Use updated token and rate information for booking API"
+    ],
+    "next_step": "After successful price validation, proceed to Booking API",
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/pricebyrecommendation",
+      "https://zentrumhub-hotel-api.readme.io/reference/get_api-hotel-hotelid-token-price-recommendation-recommendationid"
+    ]
+  },
+  "book_recipe": {
+    "title": "Book API - Final Reservation Step",
+    "description": "The final step in the booking process is using the Book API to perform a reservation. This completes the entire workflow from search to confirmed booking.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/{hotelId}/{token}/book",
+    "method": "POST",
+    "required_information": {
+      "passenger_information": "Guest details for all travelers",
+      "billing_contact_information": "Lead passenger billing and contact details",
+      "payment_information": "Credit card or payment details (if required)"
+    },
+    "example_request": {
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/70448191/9bdd5776-cc46-4046-ac30-b3a428376bea/book",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "4477a62d-2bb6-4392-896a-3f5270962dbc"
+      },
+      "body": {
+        "rateIds": ["035a14ef-3a4f-4328-8247-579f84d8bfd0"],
+        "bookingRefId": "7091",
+        "specialRequests": ["Need a early check-in"],
+        "roomsAllocations": [
+          {
+            "roomid": "{{roomid}}",
+            "rateid": "{{rateid}}",
+            "guests": [
+              {
+                "type": "",
+                "title": "",
+                "firstname": "",
+                "lastname": "",
+                "middlename": "",
+                "suffix": "",
+                "age": 25,
+                "email": ""
+              }
+            ]
+          }
+        ],
+        "billingContact": {
+          "title": "",
+          "firstName": "",
+          "lastName": "",
+          "middleName": "",
+          "suffix": "",
+          "age": 24,
+          "contact": {
+            "phone": "",
+            "address": {
+              "line1": "addr line one",
+              "line2": "addr line two",
+              "city": {"name": "", "code": ""},
+              "state": {"name": "", "code": ""},
+              "country": {"name": "", "code": ""},
+              "postalCode": ""
+            },
+            "email": ""
+          }
+        },
+        "creditCard": {
+          "issuer": "",
+          "number": "",
+          "cvv": "",
+          "nameoncard": "",
+          "expirymonth": "",
+          "expiryyear": "",
+          "contact": {
+            "email": "",
+            "phone": "",
+            "billingaddress": {
+              "line1": "",
+              "line2": "",
+              "country": {"code": "", "name": ""},
+              "city": {"name": ""},
+              "state": {"name": "", "code": ""},
+              "postalcode": ""
+            }
+          }
+        }
+      }
+    },
+    "response_details": {
+      "successful_reservation_includes": [
+        "bookingId - Unique booking identifier",
+        "bookingStatus - Confirmation status",
+        "Room Confirmation Details"
+      ]
+    },
+    "example_response": {
+      "token": "9bdd5776-cc46-4046-ac30-b3a428376bea",
+      "bookingStatus": "Confirmed",
+      "bookingId": "123456789abc",
+      "providerConfirmationNumber": "abcght5678",
+      "hotelConfirmationNumber": "12345668as",
+      "cancellationToken": "dfdgvsjh67789"
+    },
+    "request_structure": {
+      "rateIds": "Array of rate IDs to book",
+      "bookingRefId": "Your internal booking reference",
+      "specialRequests": "Array of special requests (e.g., early check-in)",
+      "roomsAllocations": {
+        "description": "Array of room allocations with guest details",
+        "fields": {
+          "roomid": "Room ID from RoomsAndRates response",
+          "rateid": "Rate ID from RoomsAndRates response",
+          "guests": "Array of guest information for this room"
+        }
+      },
+      "billingContact": {
+        "description": "Lead passenger billing and contact information",
+        "required_fields": ["firstName", "lastName", "email", "phone", "address"]
+      },
+      "creditCard": {
+        "description": "Payment information (if required)",
+        "fields": ["issuer", "number", "cvv", "nameoncard", "expirymonth", "expiryyear", "billingaddress"]
+      }
+    },
+    "response_fields": {
+      "token": "Same token used throughout the booking process",
+      "bookingStatus": "Status of the booking (e.g., Confirmed, Pending)",
+      "bookingId": "Unique identifier for this booking - use for modifications/cancellations",
+      "providerConfirmationNumber": "Confirmation number from the supplier",
+      "hotelConfirmationNumber": "Hotel's internal confirmation number",
+      "cancellationToken": "Token required for cancellation operations"
+    },
+    "complete_workflow": [
+      "1. Search Init - Get search token",
+      "2. Search Results Polling - Get hotel results",
+      "3. RoomsAndRates - Get detailed room/rate info",
+      "4. PriceByRecommendation - Validate current pricing",
+      "5. Book API - Complete the reservation"
+    ],
+    "important_notes": [
+      "This is the final step in the booking workflow",
+      "All guest information must be provided accurately",
+      "The same correlationId must be used throughout the entire process",
+      "Save the bookingId for future reference and cancellations",
+      "Special requests are optional but should be included if needed"
+    ],
+    "reference_link": "https://zentrumhub-hotel-api.readme.io/reference/post_api-hotel-hotelid-token-book"
+  },
+  "blocking_search_recipe": {
+    "title": "Blocking Search API",
+    "description": "In contrast to the Search Init API call, the Blocking Search remains the same in terms of request schema. However, in this case, you receive both the token and the result set in the same response.",
+    "endpoint": "https://nexus.prod.zentrumhub.com/api/hotel/availability",
+    "method": "POST",
+    "key_difference": "Returns both token AND complete results in single response - no polling required",
+    "vs_async_search": {
+      "blocking_search": "Single API call returns complete results immediately",
+      "async_search": "Requires search-init + polling for results",
+      "use_case_blocking": "When you can wait for complete results and don't need progressive display",
+      "use_case_async": "Better user experience with progressive result loading"
+    },
+    "mandatory_headers": [
+      "AccountId",
+      "ApiKey", 
+      "CorrelationId (must remain the same throughout the search to booking process)"
+    ],
+    "example_request": {
+      "url": "https://nexus.prod.zentrumhub.com/api/hotel/availability",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Accept-Encoding": "gzip, deflate",
+        "accountId": "zentrum-demo-account",
+        "customer-ip": "49.43.4.237",
+        "correlationId": "d2ca03b0-f5a4-ce7b-0642-3d7c961573e7",
+        "apiKey": "09182999-580e-4124-bcd6-fc19597532f6"
+      },
+      "body": {
+        "channelId": "demo-channel",
+        "segmentId": null,
+        "currency": "USD",
+        "culture": "en-us",
+        "checkIn": "2024-08-14T00:00:00",
+        "checkOut": "2024-08-15T00:00:00",
+        "occupancies": [
+          {
+            "numOfAdults": 1,
+            "childAges": []
+          }
+        ],
+        "circularRegion": {
+          "centerLat": 25.27063,
+          "centerLong": 55.30037,
+          "radiusInKm": 30
+        },
+        "rectangularRegion": null,
+        "polygonalRegion": null,
+        "multiPolygonalRegion": null,
+        "hotelIds": null,
+        "nationality": "US",
+        "countryOfResidence": "US",
+        "destinationCountryCode": null,
+        "filterBy": null
+      }
+    },
+    "response_structure": {
+      "token": "Search token for subsequent API calls",
+      "currency": "Currency code (e.g., USD)",
+      "hotels": "Complete array of hotel results with rates"
+    },
+    "example_response": {
+      "token": "8db5cb29-2412-467f-ab3f-66190efe27f6",
+      "currency": "USD",
+      "hotels": [
+        {
+          "id": "39707447",
+          "relevanceScore": "0",
+          "rate": {
+            "totalRate": 205.62,
+            "publishedRate": 0,
+            "baseRate": 167.85,
+            "commission": 23.95,
+            "taxes": 37.76,
+            "fees": 0,
+            "discounts": 0,
+            "providerId": "ean-v3-test",
+            "providerName": "EAN",
+            "distributionType": "Unknown",
+            "distributionChannel": "Any",
+            "type": "Published",
+            "payAtHotel": true,
+            "additionalCharges": [
+              {
+                "charge": {
+                  "type": "Fee",
+                  "description": "mandatory_tax",
+                  "frequency": "PerNight",
+                  "unit": "PerPerson",
+                  "amount": 454.69,
+                  "currency": "INR"
+                }
+              }
+            ],
+            "otherRateComponents": [],
+            "cancellationPolicy": "... (cancellation rules)",
+            "isChildConvertedToAdult": false
+          },
+          "isRecommended": false,
+          "options": {
+            "freeBreakfast": false,
+            "freeCancellation": false,
+            "refundable": true,
+            "payAtHotel": true,
+            "contractedRateExists": false,
+            "roomOnly": true,
+            "halfBoard": false,
+            "fullBoard": false,
+            "allInclusive": false
+          }
+        }
+      ]
+    },
+    "hotel_result_fields": {
+      "id": "Hotel ID for subsequent API calls",
+      "relevanceScore": "Relevance score for sorting",
+      "rate": {
+        "totalRate": "Complete rate including all fees and taxes",
+        "baseRate": "Base room rate before taxes/fees",
+        "commission": "Agency commission amount",
+        "taxes": "Tax amount",
+        "fees": "Additional fees",
+        "discounts": "Discount amount",
+        "providerId": "Supplier ID",
+        "providerName": "Supplier name",
+        "distributionType": "Unknown, Optimized, etc.",
+        "payAtHotel": "Boolean - payment method",
+        "additionalCharges": "Array of additional charges with currency",
+        "cancellationPolicy": "Cancellation rules and penalties"
+      },
+      "options": {
+        "freeBreakfast": "Boolean - breakfast included",
+        "freeCancellation": "Boolean - free cancellation available",
+        "refundable": "Boolean - refundable rate",
+        "payAtHotel": "Boolean - pay at hotel option",
+        "roomOnly": "Boolean - room only rate",
+        "halfBoard": "Boolean - half board meal plan",
+        "fullBoard": "Boolean - full board meal plan",
+        "allInclusive": "Boolean - all inclusive rate"
+      }
+    },
+    "search_types_supported": [
+      "Circular Region - centerLat, centerLong, radiusInKm",
+      "Rectangular Region - geographical boundaries",
+      "Polygonal Region - custom polygon coordinates", 
+      "Multi-Polygonal Region - multiple polygon areas",
+      "Hotel IDs - specific hotel list"
+    ],
+    "advantages": [
+      "Single API call - no polling required",
+      "Complete results immediately available",
+      "Simpler implementation for synchronous workflows",
+      "Good for backend integrations where wait time is acceptable"
+    ],
+    "disadvantages": [
+      "Longer response time as it waits for all suppliers",
+      "No progressive result display",
+      "May timeout if suppliers are slow",
+      "Less optimal user experience for frontend applications"
+    ],
+    "when_to_use": [
+      "Backend integrations and batch processing",
+      "When complete results are required upfront",
+      "B2B applications where agents can wait",
+      "Simple implementations without progressive loading"
+    ],
+    "workflow_after_blocking_search": [
+      "1. Receive token and complete hotel results",
+      "2. Display results to user immediately",
+      "3. User selects hotel",
+      "4. Proceed to RoomsAndRates API with hotelId and token",
+      "5. Continue with PriceByRecommendation and Book APIs"
+    ],
+    "reference_link": "https://zentrumhub-hotel-api.readme.io/reference/post_api-hotel-availability"
+  },
+  "zentrum_connect_download_content": {
+    "title": "Zentrum Connect Download Content - Get Hotel IDs",
+    "description": "Get new, modified and removed hotel IDs using lastSync date. Once you get new or updated hotels, use next step to download content.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent/ids",
+    "method": "GET",
+    "purpose": "Retrieve hotel IDs that have been added, modified, or removed since last sync",
+    "id_types": {
+      "New": "Newly mapped hotel ids for your account",
+      "Removed": "Unmapped hotel ids for your account", 
+      "Modified": "Hotel ids for which content is updated after last sync date"
+    },
+    "required_parameters": {
+      "idType": "Type of IDs to retrieve (New, Removed, Modified)",
+      "lastSyncDate": "Date from which to get changes (format: YYYY-MM-DD)"
+    },
+    "mandatory_headers": [
+      "api-key - Your API key",
+      "user-ip - Consumer server IP",
+      "customer-id - Account ID",
+      "affiliate-id - Affiliate ID",
+      "correlation-id - Must remain same throughout download process"
+    ],
+    "example_request": {
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent/ids?idType=New&lastSyncDate=2001-07-04",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      }
+    },
+    "example_response": {
+      "success": true
+    },
+    "pagination": {
+      "description": "For retrieving more results you need to repeat the process with nextKey received in the response",
+      "batch_size": "Returns up to 1000 IDs per request"
+    },
+    "workflow": [
+      "1. Call with lastSyncDate to get changed hotel IDs",
+      "2. Process returned hotel IDs (New/Modified/Removed)",
+      "3. Use nextKey if provided to get more results",
+      "4. For New/Modified IDs, proceed to download actual content"
+    ],
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/reference/get_api-v1-hotelcontent-ids"
+  },
+  "download_hotel_content_recipe": {
+    "title": "Download Hotel Content - Step 2 of Content Download",
+    "description": "Download actual hotel content for up to 200 hotel IDs obtained from Step 1 (Get Hotel IDs). This API provides comprehensive hotel static content including facilities, images, descriptions, and other details.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent",
+    "method": "GET",
+    "purpose": "Download comprehensive hotel static content for specific hotel IDs",
+    "batch_limit": "Up to 200 hotel IDs per request",
+    "required_headers": [
+      "accept: application/json",
+      "api-key: Your API authentication key (mandatory)",
+      "user-ip: Consumer server IP (mandatory)",
+      "customer-id: Your account identifier (mandatory)",
+      "affiliate-id: Your affiliate identifier (mandatory)",
+      "correlation-id: Must remain the same throughout download process (mandatory)"
+    ],
+    "query_parameters": {
+      "hotelIds": {
+        "type": "array",
+        "required": true,
+        "description": "Array of hotel IDs to download content for (max 200 per request)",
+        "example": ["12345", "67890", "11111"]
+      },
+      "contentFields": {
+        "type": "string",
+        "required": false,
+        "description": "Comma-separated list of content fields to retrieve",
+        "options": ["Basic", "All", "Facilities", "Images", "Descriptions", "Policies", "Reviews"],
+        "default": "All"
+      }
+    },
+    "example_request": {
+      "method": "GET",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent?hotelIds=12345,67890,11111&contentFields=All",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      }
+    },
+    "curl_example": "curl --request GET \\\n--url 'https://hotel-connect.prod.zentrumhub.com/api/v1/hotelcontent?hotelIds=12345,67890,11111&contentFields=All' \\\n--header 'accept: application/json' \\\n--header 'api-key: {{your_api_key}}' \\\n--header 'user-ip: 0' \\\n--header 'customer-id: {{account_id}}' \\\n--header 'affiliate-id: {{affiliate_id}}' \\\n--header 'correlation-id: 5d42d7fd-2d3c-0e5f-9819-8b574b19ad34'",
+    "response_structure": {
+      "success": {
+        "type": "boolean",
+        "description": "Indicates if the request was successful",
+        "example": true
+      },
+      "hotels": {
+        "type": "array",
+        "description": "Array of hotel content objects with comprehensive details"
+      },
+      "totalCount": {
+        "type": "number",
+        "description": "Total number of hotels returned"
+      }
+    },
+    "hotel_content_structure": {
+      "basic_fields": {
+        "id": "Hotel unique identifier",
+        "name": "Hotel name",
+        "address": "Complete hotel address",
+        "coordinates": "Latitude and longitude",
+        "starRating": "Hotel star rating",
+        "chainCode": "Hotel chain code",
+        "chainName": "Hotel chain name",
+        "contact": "Phone, email, website information"
+      },
+      "facilities": {
+        "description": "Comprehensive list of hotel amenities and facilities",
+        "includes": ["WiFi", "Pool", "Gym", "Restaurant", "Spa", "Business Center", "Parking"]
+      },
+      "images": {
+        "description": "Hotel and room images with URLs and metadata",
+        "types": ["Exterior", "Lobby", "Rooms", "Facilities", "Dining", "Recreation"]
+      },
+      "descriptions": {
+        "description": "Detailed hotel descriptions in multiple languages",
+        "includes": ["General description", "Location description", "Amenity descriptions"]
+      },
+      "policies": {
+        "description": "Hotel policies and important information",
+        "includes": ["Check-in/out times", "Cancellation policies", "Pet policies", "Age restrictions"]
+      },
+      "reviews": {
+        "description": "Guest reviews and ratings",
+        "includes": ["Overall rating", "Category ratings", "Review summaries"]
+      }
+    },
+    "content_field_options": {
+      "Basic": {
+        "description": "Essential hotel information",
+        "includes": ["ID", "Name", "Address", "Coordinates", "Star Rating", "Contact"]
+      },
+      "All": {
+        "description": "Complete hotel content (equivalent to combining all other fields)",
+        "includes": "All available content fields"
+      },
+      "Facilities": {
+        "description": "Hotel amenities and facilities",
+        "includes": ["WiFi", "Pool", "Gym", "Restaurant", "Business facilities"]
+      },
+      "Images": {
+        "description": "Hotel image gallery",
+        "includes": ["Exterior", "Interior", "Room", "Facility images"]
+      },
+      "Descriptions": {
+        "description": "Detailed hotel descriptions",
+        "includes": ["Property description", "Location details", "Amenity descriptions"]
+      },
+      "Policies": {
+        "description": "Hotel policies and rules",
+        "includes": ["Check-in/out", "Cancellation", "Pet policies", "Age restrictions"]
+      },
+      "Reviews": {
+        "description": "Guest reviews and ratings",
+        "includes": ["Overall ratings", "Category scores", "Review summaries"]
+      }
+    },
+    "workflow_integration": [
+      "1. Call Get Hotel IDs API to retrieve hotel IDs (Step 1)",
+      "2. Process returned hotel IDs (up to 1000 per call)",
+      "3. Batch hotel IDs into groups of 200 for content download",
+      "4. Call Download Hotel Content API for each batch",
+      "5. Process and store comprehensive hotel content",
+      "6. Update local content database with fresh information"
+    ],
+    "best_practices": [
+      "Batch hotel IDs in groups of 200 for optimal performance",
+      "Use appropriate contentFields parameter to get only needed data",
+      "Maintain same correlation-id throughout the download process",
+      "Implement proper error handling for failed content downloads",
+      "Store content with timestamps for future incremental updates",
+      "Process New and Modified IDs to update local content",
+      "Handle rate limiting and retry logic for large batches"
+    ],
+    "performance_considerations": [
+      "Maximum 200 hotel IDs per request for optimal response time",
+      "Use contentFields parameter to reduce payload size if only specific data needed",
+      "Implement parallel processing for multiple batches",
+      "Consider caching downloaded content to reduce API calls",
+      "Monitor API rate limits and implement appropriate delays"
+    ],
+    "error_handling": [
+      "Invalid hotel IDs - verify IDs exist in your account mapping",
+      "Exceeded batch limit - reduce hotel IDs to 200 or fewer per request",
+      "Missing required headers - ensure all mandatory headers are provided",
+      "Rate limit exceeded - implement exponential backoff retry logic",
+      "Content not available - some hotels may have limited content"
+    ],
+    "use_cases": [
+      "Initial content synchronization for new integrations",
+      "Daily incremental content updates",
+      "Bulk content refresh for existing inventory",
+      "Content enrichment for hotel listings",
+      "Populating local content management systems"
+    ],
+    "data_freshness": {
+      "update_frequency": "Content is updated regularly from supplier sources",
+      "sync_strategy": "Use lastSyncDate in Step 1 to get only changed content",
+      "content_versioning": "Track content updates using modification timestamps"
+    },
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-download-content"
+  },
+  "zentrum_connect_hotel_search": {
+    "title": "Zentrum Connect Hotel Search - Check Hotel Availability",
+    "description": "Returns minimum details about the hotels like min rate and other basic details. This API returns token in the response which needs to be passed in room rate request.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels",
+    "method": "GET",
+    "purpose": "Get basic hotel availability and minimum rates for specific hotels",
+    "required_parameters": {
+      "room1AdultCount": "Number of adults in room 1",
+      "culture": "Culture code (e.g., en-US)",
+      "travelPurpose": "Travel purpose (Leisure, Business)",
+      "hotelIds": "Array of specific hotel IDs to check",
+      "currency": "Currency code (e.g., USD)",
+      "nationality": "Guest nationality (e.g., IN)",
+      "countryOfResidence": "Country of residence (e.g., IN)",
+      "checkIn": "Check-in date (YYYY-MM-DD)",
+      "checkOut": "Check-out date (YYYY-MM-DD)"
+    },
+    "mandatory_headers": [
+      "api-key - Your API key",
+      "user-ip - User IP address",
+      "customer-id - Account ID",
+      "affiliate-id - Affiliate ID",
+      "correlation-id - UUID for request tracking"
+    ],
+    "example_request": {
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels?room1AdultCount=1&culture=en-US&travelPurpose=Leisure&hotelIds=38727462&currency=USD&nationality=IN&countryOfResidence=IN&checkIn=2024-07-17&checkOut=2024-07-18&hotelIds=38378267&hotelIds=25771456&hotelIds=15455327",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "{{user_ip}}",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "{{uuid}}"
+      }
+    },
+    "response_structure": {
+      "token": "Token for subsequent room rate requests",
+      "currency": "Response currency",
+      "hotels": "Array of hotel availability results"
+    },
+    "example_response": {
+      "token": "de459428-97d8-45ac-9492-1428e31998b2",
+      "currency": "INR",
+      "hotels": [
+        {
+          "id": "78932",
+          "rooms": [
+            {
+              "id": "1996c4a1-c010-4c88-8e64-38bd5d891c83",
+              "name": "DOUBLE DELUXE",
+              "description": "DOUBLE DELUXE",
+              "beds": [
+                {
+                  "type": "King Size",
+                  "description": "King Size bed",
+                  "count": 2
+                }
+              ],
+              "isSmokingAllowed": false,
+              "facilities": [
+                {
+                  "name": "Spa Service",
+                  "description": "Spa facility",
+                  "id": "f8db4c6d-cf7e-4244-9759-4b844c6d04f5"
+                }
+              ],
+              "images": [
+                {
+                  "url": "https://media.architecturaldigest.com/photos/...",
+                  "caption": "Room Image"
+                }
+              ],
+              "maxGuestsAllowed": 4,
+              "maxAdultsAllowed": 2,
+              "maxChildrenAllowed": 2,
+              "area": {
+                "squareMeters": "46.4515",
+                "squareFeet": "500",
+                "text": "Polished Area"
+              },
+              "views": ["Forest", "Mountains"],
+              "type": "Negotiated"
+            }
+          ],
+          "rates": [
+            {
+              "id": "b1faab95-19be-4d0d-a4cd-a6a92109dc81",
+              "baseRate": 6000,
+              "totalRate": 6500,
+              "currency": "INR",
+              "taxes": [
+                {
+                  "amount": 1395.01,
+                  "description": "tax_and_service_fee",
+                  "isIncludedInBaseRate": true
+                }
+              ],
+              "fees": [
+                {
+                  "amount": 10,
+                  "description": "Service charge",
+                  "isIncludedInBaseRate": true
+                }
+              ],
+              "commission": {
+                "amount": 106.7,
+                "description": "Agency Commission",
+                "isIncludedInBaseRate": true
+              },
+              "otherRateComponents": [
+                {
+                  "amount": 10,
+                  "description": "Some Description",
+                  "isIncludedInBaseRate": true
+                }
+              ],
+              "refundability": "Refundable",
+              "payAtHotel": false,
+              "cancellationPolicies": "... (detailed cancellation rules)"
+            }
+          ]
+        }
+      ]
+    },
+    "key_features": [
+      "Returns token for subsequent room rate requests",
+      "Provides minimum hotel details and rates",
+      "Supports multiple hotel IDs in single request",
+      "Includes detailed room information with facilities and images",
+      "Contains isIncludedInBaseRate field for accurate pricing"
+    ],
+    "rate_information": {
+      "baseRate": "Base room rate",
+      "totalRate": "Complete rate including all charges",
+      "taxes": "Tax details with inclusion status",
+      "fees": "Additional fees with inclusion status",
+      "commission": "Agency commission details",
+      "otherRateComponents": "Additional rate components",
+      "isIncludedInBaseRate": "Boolean field indicating if charge is included in base rate"
+    },
+    "next_step": "Use the returned token in room rate requests for detailed pricing",
+    "vs_booking_engine": {
+      "zentrum_connect": "Direct supplier connection, specific hotel IDs required",
+      "booking_engine": "Aggregated search across multiple suppliers, geographical search"
+    }
+  },
+  "zentrum_connect_room_rates": {
+    "title": "Zentrum Connect Room Rates - Direct Room Access",
+    "description": "User can use this API to get rooms of specific hotels without searching same hotel via Search API. Direct access to room rates for known hotel IDs. Provides two approaches: Direct with Search parameters or By Token from previous search.",
+    "approaches": {
+      "direct_with_search": {
+        "title": "1. Direct with Search",
+        "description": "Get room rates directly using hotel ID and search parameters without prior search",
+        "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/directrooms",
+        "method": "GET",
+        "advantage": "Bypass search step when you already know the hotel ID"
+      },
+      "by_token": {
+        "title": "2. By Token", 
+        "description": "Get room rates using token from hotel search response. Token has validity of one hour.",
+        "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/rooms",
+        "method": "GET",
+        "advantage": "Use existing search token to get detailed room information"
+      }
+    },
+    "direct_with_search_details": {
+      "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/directrooms",
+      "method": "GET",
+      "purpose": "Get detailed room information and rates for a specific hotel without prior search",
+      "required_parameters": {
+        "hotelId": "Specific hotel ID in the URL path (e.g., 38727462)",
+        "nationality": "Guest nationality (e.g., IN)",
+        "countryOfResidence": "Country of residence (e.g., IN)",
+        "room1AdultCount": "Number of adults in room 1",
+        "currency": "Currency code (e.g., USD)",
+        "checkIn": "Check-in date (YYYY-MM-DD)",
+        "checkOut": "Check-out date (YYYY-MM-DD)"
+      },
+      "mandatory_headers": [
+        "accept: application/json",
+        "api-key: Your API key",
+        "user-ip: User IP address",
+        "customer-id: Account ID",
+        "affiliate-id: Affiliate ID",
+        "correlation-id: UUID for request tracking"
+      ],
+      "example_request": {
+        "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/38727462/directrooms?nationality=IN&countryOfResidence=IN&room1AdultCount=1&currency=USD&checkIn=2024-08-17&checkOut=2024-08-18",
+        "headers": {
+          "accept": "application/json",
+          "api-key": "{{your_api_key}}",
+          "user-ip": "0",
+          "customer-id": "{{account_id}}",
+          "affiliate-id": "{{affiliate_id}}",
+          "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+        }
+      }
+    },
+    "by_token_details": {
+      "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/rooms",
+      "method": "GET",
+      "purpose": "Get detailed room information using token from previous hotel search response",
+      "token_validity": "Token has validity of one hour from search response",
+      "required_parameters": {
+        "hotelId": "Hotel ID in the URL path",
+        "searchResponseToken": "Token from hotel search response"
+      },
+      "mandatory_headers": [
+        "accept: application/json",
+        "api-key: Your API key",
+        "user-ip: User IP address",
+        "customer-id: Account ID",
+        "affiliate-id: Affiliate ID",
+        "correlation-id: UUID for request tracking"
+      ],
+      "example_request": {
+        "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{{hotel_id}}/rooms?searchResponseToken={{token_from_search_response}}",
+        "headers": {
+          "accept": "application/json",
+          "api-key": "{{your_api_key}}",
+          "user-ip": "0",
+          "customer-id": "{{account_id}}",
+          "affiliate-id": "{{affiliate_id}}",
+          "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+        }
+      }
+    },
+    "response_structure": {
+      "token": "Token for subsequent API calls",
+      "currency": "Response currency",
+      "rooms": "Array of available rooms with details",
+      "rates": "Array of available rates",
+      "rateCombinabilityType": "Rate combination type for multi-room bookings"
+    },
+    "example_response": {
+      "token": "471fbd08-9552-435c-bb02-dd6f59212eb6",
+      "currency": "INR",
+      "rooms": [
+        {
+          "id": "8b06acc8-ebf1-4b86-95ea-f3c54f637983",
+          "name": "DOUBLE DELUXE",
+          "description": "DOUBLE DELUXE",
+          "beds": [
+            {
+              "type": "King Size",
+              "description": "King Size bed",
+              "count": 2
+            }
+          ],
+          "isSmokingAllowed": false,
+          "facilities": [
+            {
+              "name": "Spa Service",
+              "description": "Spa facility",
+              "id": "72be82e3-14b4-47b0-ba0d-5b5eec7d3036"
+            }
+          ],
+          "images": [
+            {
+              "url": "https://media.architecturaldigest.com/photos/...",
+              "caption": "Room Image"
+            }
+          ],
+          "maxGuestsAllowed": 4,
+          "maxAdultsAllowed": 2,
+          "maxChildrenAllowed": 2,
+          "area": {
+            "squareMeters": "46.4515",
+            "squareFeet": "500",
+            "text": "Polished Area"
+          },
+          "views": ["Forest", "Mountains"],
+          "type": "Negotiated"
+        }
+      ],
+      "rates": [
+        {
+          "id": "d44214c6-5804-485b-b71e-149beca0fc83",
+          "rateCombinabilityId": "0cf2e89e-252c-48ec-aeb5-ea23c904f853",
+          "availability": 1,
+          "description": "SOME DESCRIPTION",
+          "needsPriceCheck": true,
+          "isPackageRate": false,
+          "isContractedRate": false,
+          "type": "Negotiated",
+          "baseRate": 6000,
+          "totalRate": 6500,
+          "minSellingRate": 6720,
+          "publishedRate": 6720,
+          "currency": "INR",
+          "taxes": [
+            {
+              "amount": 1395.01,
+              "description": "tax_and_service_fee",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "fees": [
+            {
+              "amount": 10,
+              "description": "Service charge",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "discounts": [
+            {
+              "amount": 92,
+              "description": "Children Discount",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "commission": {
+            "amount": 106.7,
+            "description": "Agency Commission",
+            "isIncludedInBaseRate": true
+          },
+          "otherRateComponents": [
+            {
+              "amount": 10,
+              "description": "Some Description",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "refundability": "Refundable",
+          "payAtHotel": false,
+          "allowedCreditCards": [
+            {"type": "VISA", "code": "VI"},
+            {"type": "MasterCard", "code": "MC"}
+          ],
+          "cancellationPolicies": [
+            {
+              "text": "All times are in the local timezone of the hotel",
+              "rules": [
+                {
+                  "value": 100,
+                  "valueType": "Percentage",
+                  "estimatedValue": 6500,
+                  "start": "2023-12-21T10:35:15.9144747+00:00",
+                  "end": "2023-12-22T00:00:00+00:00"
+                }
+              ]
+            }
+          ],
+          "additionalCharges": [
+            {
+              "charge": {
+                "type": "Tax",
+                "description": "Service Tax",
+                "frequency": "PerNight",
+                "unit": "PerRoom",
+                "amount": 100,
+                "currency": "USD"
+              },
+              "text": "Service Tax"
+            }
+          ],
+          "policies": [
+            {"type": "Check-out", "text": "Check-out before 12:00 PM"},
+            {"type": "Know Before You Go", "text": "Pool access available from 6 AM to 8 PM. No pets allowed."}
+          ],
+          "boardBasis": {"description": "Room Only", "type": "RoomOnly"},
+          "offers": [
+            {
+              "title": "Promotion",
+              "description": "50% Kids meal discount per day",
+              "type": "PercentageDiscount",
+              "discountOffer": 10,
+              "percentageDiscountOffer": 50
+            }
+          ],
+          "dailyRates": [
+            {
+              "amount": 6000,
+              "date": "2023-12-22T00:00:00",
+              "taxIncluded": false,
+              "discount": 10,
+              "tax": 0
+            }
+          ]
+        }
+      ],
+      "rateCombinabilityType": "GroupDifferentId"
+    },
+    "key_features": [
+      "Two approaches: Direct access or using search token",
+      "Comprehensive room details with facilities and images",
+      "Rate combinability information for multi-room bookings",
+      "Detailed pricing with isIncludedInBaseRate fields",
+      "Token generation for subsequent API calls",
+      "Daily rate breakdown available",
+      "Comprehensive cancellation policies and hotel policies"
+    ],
+    "room_information": {
+      "facilities": "Detailed room amenities with IDs",
+      "images": "Room images with URLs and captions",
+      "beds": "Bed type, description, and count",
+      "area": "Room size in square meters and feet",
+      "views": "Array of room views (Forest, Mountains, etc.)",
+      "capacity": "Maximum guests, adults, and children allowed"
+    },
+    "rate_details": {
+      "rateCombinabilityId": "ID for combining rates in multi-room bookings",
+      "baseRate": "Base room rate before taxes and fees",
+      "totalRate": "Complete rate including all charges",
+      "minSellingRate": "Minimum selling rate",
+      "publishedRate": "Published rate from supplier",
+      "taxes": "Tax details with isIncludedInBaseRate status",
+      "fees": "Additional fees with inclusion status",
+      "discounts": "Applied discounts with inclusion status",
+      "commission": "Agency commission details",
+      "otherRateComponents": "Additional rate components",
+      "allowedCreditCards": "Accepted payment methods",
+      "dailyRates": "Day-by-day rate breakdown"
+    },
+    "special_fields": {
+      "rateCombinabilityId": "Unique identifier for rate combination logic",
+      "rateCombinabilityType": "Type of rate combination (e.g., GroupDifferentId)",
+      "isIncludedInBaseRate": "Boolean field indicating if charges are included in base rate",
+      "needsPriceCheck": "Boolean indicating if price recheck is required before booking",
+      "minSellingRate": "Minimum rate that can be sold to customers",
+      "publishedRate": "Original published rate from supplier"
+    },
+    "approach_comparison": {
+      "direct_with_search": {
+        "pros": ["No prior search required", "Direct access with hotel ID", "Fresh rate information"],
+        "cons": ["Requires all search parameters", "More parameters to manage"],
+        "use_case": "When you know the hotel ID and want fresh rates"
+      },
+      "by_token": {
+        "pros": ["Uses existing search context", "Fewer parameters required", "Consistent with search results"],
+        "cons": ["Requires prior search", "Token expires in 1 hour"],
+        "use_case": "When you have search results and want detailed room information"
+      }
+    },
+    "use_cases": [
+      "When you already know the specific hotel ID",
+      "Direct integration with hotel inventory systems",
+      "Bypassing search when hotel is pre-selected",
+      "Getting detailed room information for known properties",
+      "Using search tokens to get comprehensive room details"
+    ],
+    "workflow": [
+      "Option 1: Call directrooms API with hotel ID and search criteria",
+      "Option 2: Use search token from previous hotel search",
+      "Receive token, room details, and rates",
+      "Use rateCombinabilityId for multi-room scenarios",
+      "Proceed with price check if needsPriceCheck is true",
+      "Continue to booking using the token"
+    ],
+    "reference_links": [
+      "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-room-rates"
+    ]
+  },
+  "zentrum_connect_price": {
+    "title": "Zentrum Connect Price - Recheck Rates Price",
+    "description": "This API is used for rechecking the price of selected rates from room rates response. This API returns latest price, cancellation policies and other details.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/price",
+    "method": "GET",
+    "purpose": "Validate current pricing and get updated rate information before booking",
+    "important_note": "You are supposed to pass only compatible rates in the price request",
+    "required_parameters": {
+      "hotelId": "Hotel ID in the URL path (e.g., 38727462)",
+      "rateIds": "Rate IDs to recheck (from room rates response)",
+      "roomsResponseToken": "Token from previous room rates response"
+    },
+    "mandatory_headers": [
+      "accept - application/json"
+    ],
+    "example_request": {
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/38727462/price?rateIds=068166df-6975-41ff-8bb6-8d824d796784&roomsResponseToken=99ed2371-23d9-432f-ad37-a708d88f2da6",
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    "response_structure": {
+      "token": "Updated token for subsequent API calls",
+      "currency": "Response currency",
+      "rooms": "Array of room details (same as room rates response)",
+      "rates": "Array of updated rates with current pricing",
+      "rateCombinabilityType": "Rate combination type"
+    },
+    "example_response": {
+      "token": "471fbd08-9552-435c-bb02-dd6f59212eb6",
+      "currency": "INR",
+      "rooms": [
+        {
+          "id": "8b06acc8-ebf1-4b86-95ea-f3c54f637983",
+          "name": "DOUBLE DELUXE",
+          "description": "DOUBLE DELUXE",
+          "beds": [
+            {
+              "type": "King Size",
+              "description": "King Size bed",
+              "count": 2
+            }
+          ],
+          "facilities": [
+            {
+              "name": "Spa Service",
+              "description": "Spa facility",
+              "id": "72be82e3-14b4-47b0-ba0d-5b5eec7d3036"
+            }
+          ],
+          "area": {
+            "squareMeters": "46.4515",
+            "squareFeet": "500",
+            "text": "Polished Area"
+          },
+          "views": ["Forest", "Mountains"]
+        }
+      ],
+      "rates": [
+        {
+          "id": "d44214c6-5804-485b-b71e-149beca0fc83",
+          "rateCombinabilityId": "0cf2e89e-252c-48ec-aeb5-ea23c904f853",
+          "baseRate": 6000,
+          "totalRate": 6500,
+          "currency": "INR",
+          "taxes": [
+            {
+              "amount": 1395.01,
+              "description": "tax_and_service_fee",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "fees": [
+            {
+              "amount": 10,
+              "description": "Service charge",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "discounts": [
+            {
+              "amount": 92,
+              "description": "Children Discount",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "commission": {
+            "amount": 106.7,
+            "description": "Agency Commission",
+            "isIncludedInBaseRate": true
+          },
+          "otherRateComponents": [
+            {
+              "amount": 10,
+              "description": "Some Description",
+              "isIncludedInBaseRate": true
+            }
+          ],
+          "refundability": "Refundable",
+          "payAtHotel": false,
+          "cancellationPolicies": [
+            {
+              "text": "All times are in the local timezone of the hotel",
+              "rules": [
+                {
+                  "value": 100,
+                  "valueType": "Percentage",
+                  "estimatedValue": 6500,
+                  "start": "2023-12-21T10:35:15.9144747+00:00",
+                  "end": "2023-12-22T00:00:00+00:00"
+                }
+              ]
+            }
+          ],
+          "allowedCreditCards": [
+            {"type": "VISA", "code": "VI"},
+            {"type": "MasterCard", "code": "MC"}
+          ]
+        }
+      ],
+      "rateCombinabilityType": "GroupDifferentId"
+    },
+    "key_features": [
+      "Validates current pricing before booking",
+      "Returns updated cancellation policies",
+      "Provides latest rate information from supplier",
+      "Includes all pricing components with isIncludedInBaseRate fields",
+      "Essential step before proceeding to booking"
+    ],
+    "rate_validation": {
+      "baseRate": "Current base room rate",
+      "totalRate": "Updated total rate including all charges",
+      "taxes": "Current tax amounts with inclusion status",
+      "fees": "Updated fees with inclusion status",
+      "discounts": "Applied discounts with inclusion status",
+      "commission": "Agency commission details",
+      "otherRateComponents": "Additional rate components"
+    },
+    "pricing_accuracy": {
+      "purpose": "Ensure pricing accuracy before booking",
+      "importance": "Rates can change between initial search and booking",
+      "validation": "Always check isIncludedInBaseRate for each component",
+      "calculation_example": {
+        "baseRate": 6000,
+        "taxes": 1395.01,
+        "fees": 10,
+        "discounts": -92,
+        "otherComponents": 10,
+        "totalRate": 6500,
+        "note": "All components show isIncludedInBaseRate: true, meaning they're already included in the totalRate"
+      }
+    },
+    "rate_compatibility": {
+      "requirement": "Pass only compatible rates in the price request",
+      "rateCombinabilityId": "Use this ID to ensure rate compatibility",
+      "rateCombinabilityType": "Indicates how rates can be combined (e.g., GroupDifferentId)"
+    },
+    "workflow_position": [
+      "1. Get hotel availability (Hotel Search or Direct Room Rates)",
+      "2. Select desired rates from response",
+      "3. Call Price API to recheck selected rates",
+      "4. Validate updated pricing and policies",
+      "5. Proceed to booking with confirmed rates"
+    ],
+    "important_considerations": [
+      "Always recheck prices before booking",
+      "Only pass compatible rates based on rateCombinabilityId",
+      "Check updated cancellation policies",
+      "Validate all pricing components",
+      "Use updated token for booking API"
+    ]
+  },
+  "api_field_definitions": {
+    "title": "API Field Definitions",
+    "description": "Detailed definitions of important fields used across ZentrumHub APIs",
+    "search_results_fields": {
+      "isIncludedInBaseRate": {
+        "field_name": "isIncludedInBaseRate",
+        "type": "boolean",
+        "description": "Indicates whether a particular fee, tax, or charge is already included in the base rate price displayed to the user.",
+        "usage": "This field appears in search results and rate responses to help you understand pricing structure and display accurate total costs to users.",
+        "values": {
+          "true": "The fee/tax/charge is already included in the displayed base rate - no additional cost to add",
+          "false": "The fee/tax/charge is NOT included in the base rate - must be added to calculate total price"
+        },
+        "common_use_cases": [
+          "City taxes that may or may not be included in room rate",
+          "Resort fees that are sometimes pre-included",
+          "Service charges that vary by supplier",
+          "VAT/GST taxes that may be included or excluded",
+          "Agency commissions and markups",
+          "Property fees and additional charges"
+        ],
+        "real_world_example": {
+          "context": "In RoomsAndRates API response, you'll see this field in multiple places:",
+          "examples": [
+            {
+              "location": "taxes array",
+              "example": "{ \"amount\": 2.26, \"description\": \"tax_and_service_fee\", \"isIncludedInBaseRate\": false }",
+              "meaning": "This $2.26 tax is NOT included in the base rate and must be added to the total"
+            },
+            {
+              "location": "commission object", 
+              "example": "{ \"amount\": 0.17, \"description\": \"Agency Commission\", \"isIncludedInBaseRate\": false }",
+              "meaning": "This $0.17 commission is NOT included in the base rate"
+            },
+            {
+              "location": "otherRateComponents array",
+              "example": "{ \"amount\": 1.869, \"description\": \"Agency Markup\", \"type\": \"Markup\", \"isIncludedInBaseRate\": false }",
+              "meaning": "This $1.869 markup is NOT included in the base rate"
+            }
+          ]
+        },
+        "implementation_notes": [
+          "Always check this field when calculating total booking cost",
+          "Use this to determine whether to add fees to displayed price",
+          "Important for accurate price comparison between rates",
+          "Helps avoid surprising users with unexpected additional costs",
+          "In the example above, baseRate: 20.729 + taxes (2.26) = totalRate: 22.989"
+        ],
+        "related_fields": [
+          "baseRate - The base room rate amount (e.g., 20.729)",
+          "totalRate - The complete rate including all fees (e.g., 22.989)",
+          "taxes - Tax amounts and details",
+          "fees - Additional fee amounts and details",
+          "commission - Agency commission details",
+          "otherRateComponents - Additional markups and fees"
+        ],
+        "api_endpoints": [
+          "Search Results API - /api/hotel/search",
+          "Rooms and Rates API - /api/hotel/{hotelId}/roomsandrates/{token}",
+          "Price API - /api/hotel/{hotelId}/price/{recommendationId}"
+        ]
+      }
+    },
+    "rate_fields": {
+      "baseRate": "The fundamental room rate before taxes and fees",
+      "totalRate": "Complete rate including all applicable taxes and fees",
+      "publishedRate": {
+        "field_name": "publishedRate",
+        "type": "number",
+        "description": "Published rate from supplier - the original rate published by the hotel or supplier before any markups, discounts, or negotiations",
+        "usage": "This field appears in search results and rate responses to show the supplier's original published rate",
+        "examples": [
+          {
+            "scenario": "Standard published rate",
+            "value": 307.971,
+            "meaning": "The supplier's original published rate is $307.971"
+          },
+          {
+            "scenario": "Negotiated rate (no published rate)",
+            "value": 0,
+            "meaning": "This is a negotiated rate with no published rate available"
+          },
+          {
+            "scenario": "Discounted rate",
+            "value": 184.60,
+            "meaning": "The supplier's published rate is $184.60, but you may be getting a discounted rate"
+          }
+        ],
+        "common_scenarios": [
+          "Standard hotel rates published on supplier websites",
+          "Rack rates that hotels publish publicly",
+          "Original rates before any agency markups or discounts",
+          "Reference rates for comparison with negotiated rates"
+        ],
+        "implementation_notes": [
+          "When publishedRate is 0, it typically indicates a negotiated or special rate",
+          "Compare publishedRate with totalRate to show savings to customers",
+          "Use for displaying 'You Save X%' messaging",
+          "May be higher or equal to totalRate depending on rate type"
+        ],
+        "related_fields": [
+          "baseRate - The base room rate before taxes and fees",
+          "totalRate - The complete rate including all charges",
+          "type - Rate type (Published, Negotiated, etc.)",
+          "distributionType - How the rate is distributed"
+        ]
+      },
+      "currency": "Three-letter currency code (USD, EUR, GBP, etc.)",
+      "rateKey": "Unique identifier for this specific rate - required for booking",
+      "commission": {
+        "field_name": "commission",
+        "type": "object",
+        "description": "Agency commission details - the amount earned by the travel agency or booking platform for facilitating the reservation",
+        "usage": "This field appears in search results and rate responses to show commission information for travel agents and booking platforms",
+        "structure": {
+          "amount": {
+            "type": "number",
+            "description": "Commission amount in the specified currency",
+            "example": 0.17
+          },
+          "description": {
+            "type": "string", 
+            "description": "Description of the commission",
+            "example": "Agency Commission"
+          },
+          "isIncludedInBaseRate": {
+            "type": "boolean",
+            "description": "Indicates whether the commission is already included in the base rate",
+            "values": {
+              "true": "Commission is already included in the base rate",
+              "false": "Commission is separate from the base rate"
+            }
+          }
+        },
+        "examples": [
+          {
+            "scenario": "Standard agency commission",
+            "value": {
+              "amount": 0.17,
+              "description": "Agency Commission",
+              "isIncludedInBaseRate": false
+            },
+            "meaning": "Agency earns $0.17 commission, not included in base rate"
+          },
+          {
+            "scenario": "High commission rate",
+            "value": {
+              "amount": 106.7,
+              "description": "Agency Commission", 
+              "isIncludedInBaseRate": true
+            },
+            "meaning": "Agency earns $106.70 commission, already included in base rate"
+          },
+          {
+            "scenario": "No commission",
+            "value": 0,
+            "meaning": "No commission available for this rate"
+          }
+        ],
+        "common_scenarios": [
+          "Travel agency bookings with commission structure",
+          "OTA (Online Travel Agency) commission rates",
+          "Corporate booking platform commissions",
+          "Affiliate partner commission arrangements"
+        ],
+        "implementation_notes": [
+          "Always check isIncludedInBaseRate to understand pricing structure",
+          "Commission may be 0 for net rates or direct bookings",
+          "Use for calculating agency earnings and profit margins",
+          "Important for B2B travel platforms and agencies"
+        ],
+        "related_fields": [
+          "baseRate - The base room rate before taxes and fees",
+          "totalRate - The complete rate including all charges",
+          "taxes - Tax amounts with inclusion status",
+          "otherRateComponents - Additional markups and fees"
+        ]
+      }
+    },
+    "booking_fields": {
+      "bookingId": "Unique identifier for the booking - used for modifications and cancellations",
+      "confirmationNumber": "Hotel confirmation number provided by the supplier",
+      "status": "Current booking status (Confirmed, Pending, Cancelled, etc.)"
+    }
+  },
+  "zentrum_connect_cancel_booking_recipe": {
+    "title": "Zentrum Connect Cancel Booking API",
+    "description": "Cancel reservations made via Zentrum Connect Booking API using booking ID and cancellation token",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}",
+    "method": "DELETE",
+    "purpose": "Cancel confirmed bookings made through Zentrum Connect API",
+    "required_parameters": [
+      "booking_id - Unique booking identifier from Book API response",
+      "cancellation_token - Token required for cancellation authorization"
+    ],
+    "required_headers": [
+      "accept: application/json",
+      "api-key: Your API key",
+      "user-ip: Customer IP address (can be 0 for testing)",
+      "customer-id: Your account ID",
+      "affiliate-id: Your affiliate ID", 
+      "correlation-id: Unique correlation ID for tracking"
+    ],
+    "example_request": {
+      "method": "DELETE",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/tlp91",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      }
+    },
+    "response_structure": {
+      "cancellationStatus": "Overall cancellation status (Cancelled, Failed, etc.)",
+      "bookingId": "Original booking ID that was cancelled",
+      "providerCancellationNumber": "Cancellation reference from supplier",
+      "hotelCancellationNumber": "Cancellation reference from hotel",
+      "roomCancellation": "Array of individual room cancellation details"
+    },
+    "room_cancellation_details": {
+      "providerConfirmationNumber": "Original confirmation number from supplier",
+      "hotelConfirmationNumber": "Original confirmation number from hotel",
+      "providerCancellationNumber": "Cancellation reference from supplier",
+      "hotelCancellationNumber": "Cancellation reference from hotel", 
+      "cancellationStatus": "Status of this specific room cancellation"
+    },
+    "example_response": {
+      "cancellationStatus": "Cancelled",
+      "bookingId": "tlp91",
+      "providerCancellationNumber": "7037179363950",
+      "hotelCancellationNumber": "6037179363950",
+      "roomCancellation": [
+        {
+          "providerConfirmationNumber": "9037179363951",
+          "hotelConfirmationNumber": "9037179363951",
+          "providerCancellationNumber": "7037179363950",
+          "hotelCancellationNumber": "6037179363950",
+          "cancellationStatus": "Cancelled"
+        }
+      ]
+    },
+    "key_features": [
+      "Cancels bookings made via Zentrum Connect Book API",
+      "Requires both booking ID and cancellation token for security",
+      "Returns detailed cancellation references from both supplier and hotel",
+      "Supports multi-room booking cancellations",
+      "Provides individual room cancellation status"
+    ],
+    "important_notes": [
+      "Booking ID and cancellation token are mandatory",
+      "Cancellation policies may apply - check before cancelling",
+      "Some bookings may be non-refundable",
+      "Cancellation fees may be charged by supplier/hotel",
+      "Always save cancellation reference numbers for records"
+    ],
+    "workflow_integration": [
+      "1. Customer requests booking cancellation",
+      "2. Retrieve booking ID from original booking response", 
+      "3. Call Cancel API with booking ID and required headers",
+      "4. Process cancellation response and save reference numbers",
+      "5. Notify customer of cancellation status and any applicable fees",
+      "6. Update internal booking records with cancellation details"
+    ],
+    "error_handling": [
+      "Invalid booking ID - verify booking exists and is cancellable",
+      "Missing cancellation token - ensure token is provided",
+      "Booking already cancelled - check current booking status",
+      "Cancellation not allowed - review booking policies",
+      "Supplier error - retry or contact support with correlation ID"
+    ],
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/cancel-booking"
+  },
+  "zentrum_connect_rate_combinability_recipe": {
+    "title": "Zentrum Connect Rate Combinability API",
+    "description": "Understanding rate combinability types for multi-room bookings in Zentrum Connect API",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/{hotelId}/rooms",
+    "method": "GET",
+    "purpose": "Group rates by combinability rules to determine which rates can be booked together for multi-room reservations",
+    "rate_combinability_fields": {
+      "rateCombinabilityId": "GUID assigned to the rate for grouping purposes",
+      "rateCombinabilityType": "Defines how rates can be combined together"
+    },
+    "combinability_types": {
+      "None": {
+        "description": "Rate cannot be combined with any other rates",
+        "usage": "Standalone rates only - no multi-room booking allowed",
+        "example": "Special promotional rates that must be booked individually"
+      },
+      "GroupSameId": {
+        "description": "Rates with the same rateCombinabilityId can be combined together",
+        "usage": "Rates sharing the same ID can be booked together in multi-room scenarios",
+        "example": "Standard rates from same rate plan that can be combined"
+      },
+      "GroupDifferentId": {
+        "description": "Rates with different rateCombinabilityIds can be combined together",
+        "usage": "Mix and match different rate types in single booking",
+        "example": "Combining standard and deluxe room rates in one reservation"
+      },
+      "GroupWithinSameId": {
+        "description": "Multiple rates with the same rateCombinabilityId can be selected, but only within that ID group",
+        "usage": "Multiple rooms from same rate category can be booked together",
+        "example": "Booking multiple standard rooms under same rate plan"
+      }
+    },
+    "example_request": {
+      "method": "GET",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/hotels/123/rooms",
+      "headers": {
+        "accept": "application/json"
+      }
+    },
+    "example_response": {
+      "hotelId": "123",
+      "token": "abc123",
+      "currency": "USD",
+      "rooms": [
+        {
+          "id": "1",
+          "name": "Standard Double room"
+        },
+        {
+          "id": "2", 
+          "name": "Deluxe Double room"
+        }
+      ],
+      "rates": [
+        {
+          "id": "11",
+          "rateCombinabilityType": "None",
+          "occupancies": [
+            {"roomId": "1"},
+            {"roomId": "1"}
+          ]
+        },
+        {
+          "id": "13",
+          "rateCombinabilityType": "GroupSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "1"}]
+        },
+        {
+          "id": "21",
+          "rateCombinabilityType": "GroupSameId", 
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "12",
+          "rateCombinabilityType": "GroupDifferentId",
+          "rateCombinabilityId": "456",
+          "occupancies": [{"roomId": "1"}]
+        },
+        {
+          "id": "22",
+          "rateCombinabilityType": "GroupDifferentId",
+          "rateCombinabilityId": "789", 
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "23",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "24",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111", 
+          "occupancies": [{"roomId": "2"}]
+        },
+        {
+          "id": "14",
+          "rateCombinabilityType": "GroupWithinSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "1"}]
+        }
+      ]
+    },
+    "practical_examples": {
+      "scenario_1": {
+        "description": "Customer wants to book 2 standard rooms",
+        "solution": "Use rates with rateCombinabilityType: 'GroupSameId' and same rateCombinabilityId",
+        "example_rates": ["Rate 13 and Rate 21 (both have rateCombinabilityId: '111')"]
+      },
+      "scenario_2": {
+        "description": "Customer wants 1 standard + 1 deluxe room with different rate plans",
+        "solution": "Use rates with rateCombinabilityType: 'GroupDifferentId'",
+        "example_rates": ["Rate 12 (ID: '456') and Rate 22 (ID: '789')"]
+      },
+      "scenario_3": {
+        "description": "Customer wants multiple rooms from same rate category",
+        "solution": "Use rates with rateCombinabilityType: 'GroupWithinSameId' and same rateCombinabilityId",
+        "example_rates": ["Rates 23, 24, and 14 (all have rateCombinabilityId: '111')"]
+      },
+      "scenario_4": {
+        "description": "Special promotional rate that cannot be combined",
+        "solution": "Rate with rateCombinabilityType: 'None' - book individually only",
+        "example_rates": ["Rate 11 - must be booked alone"]
+      }
+    },
+    "implementation_guidelines": [
+      "Always check rateCombinabilityType before allowing multi-room selections",
+      "Group rates by rateCombinabilityId for easier user interface design",
+      "Validate rate combinations before proceeding to booking",
+      "Display clear messaging about which rates can be combined",
+      "Handle 'None' type rates separately as single-room bookings only"
+    ],
+    "workflow_integration": [
+      "1. Fetch room rates using this API",
+      "2. Parse rateCombinabilityType and rateCombinabilityId for each rate",
+      "3. Group compatible rates for multi-room booking options",
+      "4. Present grouped options to user in booking interface",
+      "5. Validate selected rate combinations before booking",
+      "6. Pass compatible rate combinations to booking API"
+    ],
+    "key_benefits": [
+      "Enables complex multi-room booking scenarios",
+      "Provides flexibility in rate combination rules",
+      "Supports different supplier rate policies",
+      "Allows for promotional and restricted rate handling",
+      "Simplifies multi-room booking logic implementation"
+    ],
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-rate-combinability"
+  },
+  "zentrum_connect_book_recipe": {
+    "title": "ZentrumHub Connect Book API - Book Priced Rates",
+    "description": "Book priced rates and pass details like Guests, Payment and Billing Contact based on priced rate. This is the final step in the ZentrumHub Connect booking workflow.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/book",
+    "method": "POST",
+    "purpose": "Create hotel reservations using priced rates from the Connect API workflow",
+    "prerequisite": "Must have completed price check using Price API to get priceResponseToken",
+    "required_headers": [
+      "accept: application/json",
+      "api-key: Your API authentication key",
+      "user-ip: Customer IP address (can be 0 for testing)",
+      "customer-id: Your account identifier",
+      "affiliate-id: Your affiliate identifier",
+      "correlation-id: Unique correlation ID for tracking"
+    ],
+    "request_body_structure": {
+      "priceResponseToken": {
+        "type": "string",
+        "required": true,
+        "description": "Token from Price API response",
+        "example": "ed41f0f4-d97d-4622-b11f-7dce667c2b07"
+      },
+      "bookingId": {
+        "type": "string",
+        "required": true,
+        "description": "Your internal booking reference ID",
+        "example": "api-out-test-3"
+      },
+      "hotelId": {
+        "type": "string",
+        "required": true,
+        "description": "Hotel identifier",
+        "example": "38727462"
+      },
+      "checkInDate": {
+        "type": "string",
+        "required": true,
+        "format": "ISO 8601 datetime",
+        "description": "Check-in date and time",
+        "example": "2024-07-17T00:00:00"
+      },
+      "checkOutDate": {
+        "type": "string",
+        "required": true,
+        "format": "ISO 8601 datetime",
+        "description": "Check-out date and time",
+        "example": "2024-07-18T00:00:00"
+      },
+      "leadPassenger": {
+        "type": "object",
+        "required": true,
+        "description": "Primary guest information"
+      },
+      "billingInformation": {
+        "type": "object",
+        "required": true,
+        "description": "Billing contact and address information"
+      },
+      "roomsAllocations": {
+        "type": "array",
+        "required": true,
+        "description": "Array of room allocations with guest assignments"
+      }
+    },
+    "lead_passenger_structure": {
+      "title": {
+        "type": "string",
+        "required": true,
+        "description": "Guest title (Mr, Mrs, Ms, etc.)",
+        "example": "Mr"
+      },
+      "firstName": {
+        "type": "string",
+        "required": true,
+        "description": "Guest first name",
+        "example": "Hrushikesh"
+      },
+      "lastName": {
+        "type": "string",
+        "required": true,
+        "description": "Guest last name",
+        "example": "Zade"
+      },
+      "middleName": {
+        "type": "string",
+        "required": false,
+        "description": "Guest middle name",
+        "example": "Ramesh"
+      },
+      "suffix": {
+        "type": "string",
+        "required": false,
+        "description": "Name suffix",
+        "example": "Mr"
+      },
+      "age": {
+        "type": "number",
+        "required": true,
+        "description": "Guest age",
+        "example": 28
+      },
+      "type": {
+        "type": "string",
+        "required": true,
+        "description": "Guest type (Adult, Child)",
+        "example": "Adult"
+      },
+      "email": {
+        "type": "string",
+        "required": true,
+        "description": "Guest email address",
+        "example": "hrushikesh@zentrumhub.com"
+      }
+    },
+    "billing_information_structure": {
+      "phone": {
+        "type": "string",
+        "required": true,
+        "description": "Contact phone number",
+        "example": "8806855082"
+      },
+      "email": {
+        "type": "string",
+        "required": true,
+        "description": "Billing email address",
+        "example": "hrushikesh@zentrumhub.com"
+      },
+      "billingAddress": {
+        "type": "object",
+        "required": true,
+        "description": "Complete billing address information",
+        "properties": {
+          "line1": "Address line 1",
+          "line2": "Address line 2",
+          "city": "City information with code",
+          "state": "State information with name and code",
+          "country": "Country information with name and code",
+          "postalCode": "Postal/ZIP code"
+        }
+      }
+    },
+    "rooms_allocations_structure": {
+      "description": "Array of room allocation objects, one per room being booked",
+      "structure": {
+        "roomId": {
+          "type": "string",
+          "required": true,
+          "description": "Room identifier from room rates response",
+          "example": "92706122-27fe-48d5-aeff-238b52178206"
+        },
+        "rateId": {
+          "type": "string",
+          "required": true,
+          "description": "Rate identifier for this room",
+          "example": "068166df-6975-41ff-8bb6-8d824d796784"
+        },
+        "guests": {
+          "type": "array",
+          "required": true,
+          "description": "Array of guest objects for this room"
+        }
+      }
+    },
+    "guest_object_structure": {
+      "title": "Guest title (Mr, Mrs, Ms, etc.)",
+      "firstName": "Guest first name",
+      "lastName": "Guest last name",
+      "middleName": "Guest middle name (optional)",
+      "suffix": "Name suffix (optional)",
+      "age": "Guest age",
+      "type": "Guest type (Adult, Child)",
+      "email": "Guest email address",
+      "panCardNumber": "PAN card number (for Indian guests, optional)",
+      "passportDetail": "Passport information (optional)"
+    },
+    "example_request": {
+      "method": "POST",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/book",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      },
+      "body": {
+        "priceResponseToken": "ed41f0f4-d97d-4622-b11f-7dce667c2b07",
+        "billingInformation": {
+          "phone": "8806855082",
+          "billingAddress": {
+            "line1": "1st Floor",
+            "line2": "62 Janjikar Street",
+            "city": {"code": "MH"},
+            "state": {"name": "Maharashtra", "code": "MH"},
+            "country": {"name": "India", "code": "IN"},
+            "postalCode": "400003"
+          },
+          "email": "hrushikesh@zentrumhub.com"
+        },
+        "bookingId": "api-out-test-3",
+        "hotelId": "38727462",
+        "roomsAllocations": [
+          {
+            "guests": [
+              {
+                "title": "Mr",
+                "firstName": "Hrushikesh",
+                "lastName": "Zade",
+                "suffix": "Mr",
+                "age": 28,
+                "type": "Adult",
+                "email": "hrushikesh@zentrumhub.com"
+              }
+            ],
+            "roomId": "92706122-27fe-48d5-aeff-238b52178206",
+            "rateId": "068166df-6975-41ff-8bb6-8d824d796784"
+          }
+        ],
+        "checkInDate": "2024-07-17T00:00:00",
+        "checkOutDate": "2024-07-18T00:00:00",
+        "leadPassenger": {
+          "title": "Mr",
+          "firstName": "Hrushikesh",
+          "lastName": "Zade",
+          "middleName": "Ramesh",
+          "suffix": "Mr",
+          "age": 28,
+          "type": "Adult",
+          "email": "hrushikesh@zentrumhub.com"
+        }
+      }
+    },
+    "curl_example": "curl --request POST \\\n--url https://hotel-connect.prod.zentrumhub.com/api/v1/book \\\n--header 'accept: application/json' \\\n--header 'api-key: {{your_api_key}}' \\\n--header 'user-ip: 0' \\\n--header 'customer-id: {{account_id}}' \\\n--header 'affiliate-id: {{affiliate_id}}' \\\n--header 'correlation-id: 5d42d7fd-2d3c-0e5f-9819-8b574b19ad34' \\\n--data-raw '{\"priceResponseToken\": \"ed41f0f4-d97d-4622-b11f-7dce667c2b07\", \"bookingId\": \"api-out-test-3\", \"hotelId\": \"38727462\", \"roomsAllocations\": [...], \"billingInformation\": {...}, \"leadPassenger\": {...}}'",
+    "response_structure": {
+      "bookingStatus": {
+        "type": "string",
+        "description": "Overall booking status",
+        "values": ["Confirmed", "Pending", "Failed"],
+        "example": "Confirmed"
+      },
+      "bookingId": {
+        "type": "string",
+        "description": "ZentrumHub booking identifier",
+        "example": "tlp91"
+      },
+      "providerConfirmationNumber": {
+        "type": "string",
+        "description": "Supplier confirmation number",
+        "example": "9037179363951"
+      },
+      "hotelConfirmationNumber": {
+        "type": "string",
+        "description": "Hotel confirmation number",
+        "example": "9037179363951"
+      },
+      "roomConfirmation": {
+        "type": "array",
+        "description": "Detailed confirmation information for each room"
+      },
+      "cancellationToken": {
+        "type": "string",
+        "description": "Token required for cancellation",
+        "example": "QUtCQVItQU8yMzMwNTgyMDV8aG90ZWxzdXBwb3J0QGFrYmFydHJhdmVsc29ubGluZS5jb20="
+      }
+    },
+    "room_confirmation_structure": {
+      "rateId": "Rate identifier for this room",
+      "roomId": "Room identifier",
+      "providerConfirmationNumber": "Supplier confirmation number for this room",
+      "hotelConfirmationNumber": "Hotel confirmation number for this room",
+      "bookingStatus": "Booking status for this specific room",
+      "guests": "Array of guest details with additional information"
+    },
+    "guest_confirmation_details": {
+      "basic_info": "Title, firstName, lastName, middleName, suffix, age, type",
+      "panCardNumber": "PAN card number (for Indian bookings)",
+      "passportDetail": {
+        "passportNo": "Passport number",
+        "passportIssueDate": "Passport issue date",
+        "passportExpDate": "Passport expiry date"
+      }
+    },
+    "example_response": {
+      "bookingStatus": "Confirmed",
+      "bookingId": "tlp91",
+      "providerConfirmationNumber": "9037179363951",
+      "hotelConfirmationNumber": "9037179363951",
+      "roomConfirmation": [
+        {
+          "rateId": "867532e4-933f-40ec-bb82-a6057a8bc1fe",
+          "roomId": "b45ba777-25be-45c0-9645-f4c18b62c598",
+          "providerConfirmationNumber": "9037179363951",
+          "hotelConfirmationNumber": "9037179363951",
+          "bookingStatus": "Confirmed",
+          "guests": [
+            {
+              "title": "Mr",
+              "firstName": "Paul",
+              "lastName": "Anderson",
+              "middleName": "Test",
+              "suffix": "Test",
+              "age": 28,
+              "type": "Adult",
+              "panCardNumber": "PANZZ1234C",
+              "passportDetail": {
+                "passportNo": "Test",
+                "passportIssueDate": "2024-06-28T06:58:56.515418+00:00",
+                "passportExpDate": "2024-12-25T06:58:56.5154184+00:00"
+              }
+            }
+          ]
+        }
+      ],
+      "cancellationToken": "QUtCQVItQU8yMzMwNTgyMDV8aG90ZWxzdXBwb3J0QGFrYmFydHJhdmVsc29ubGluZS5jb20="
+    },
+    "booking_workflow": [
+      "1. Complete hotel search (Hotel Search API or Direct Room Rates)",
+      "2. Get detailed room information (Room Rates API)",
+      "3. Validate pricing (Price API) to get priceResponseToken",
+      "4. Collect guest information for all rooms",
+      "5. Collect billing contact information",
+      "6. Submit booking request to Book API",
+      "7. Handle booking response and confirmation",
+      "8. Store booking details and confirmation numbers"
+    ],
+    "key_features": [
+      "Uses priceResponseToken from Price API for rate validation",
+      "Supports multi-room bookings with individual guest assignments",
+      "Comprehensive guest information collection",
+      "Detailed billing address structure",
+      "Individual room confirmation details",
+      "Cancellation token for future cancellations",
+      "Support for Indian compliance (PAN card, passport details)"
+    ],
+    "important_considerations": [
+      "Must use priceResponseToken from Price API response",
+      "All guest names must match travel documents",
+      "Age information is critical for accurate pricing",
+      "Email addresses are required for booking confirmations",
+      "Complete billing address is mandatory",
+      "bookingId should be unique in your system",
+      "Store cancellationToken for future cancellation requests"
+    ],
+    "indian_compliance_features": {
+      "panCardNumber": "PAN card number for Indian tax compliance",
+      "passportDetail": "Passport information for international guests",
+      "gst_support": "GST information handling for Indian bookings"
+    },
+    "error_handling": [
+      "Invalid priceResponseToken - ensure token is from recent Price API call",
+      "Rate no longer available - rates may have changed since pricing",
+      "Invalid guest information - validate all required fields",
+      "Booking failed at supplier - retry or contact support",
+      "Missing required fields - ensure all mandatory data is provided"
+    ],
+    "confirmation_details": {
+      "bookingId": "Store this for future reference and modifications",
+      "providerConfirmationNumber": "Share with guest for hotel check-in",
+      "hotelConfirmationNumber": "Alternative confirmation number from hotel",
+      "cancellationToken": "Required for cancellation API calls",
+      "roomConfirmation": "Individual room booking details and guest assignments"
+    },
+    "post_booking_actions": [
+      "Send confirmation email to guest with all confirmation numbers",
+      "Store booking details in your system",
+      "Provide confirmation numbers to guest for check-in",
+      "Set up cancellation reminders if applicable",
+      "Monitor booking status if needed"
+    ],
+    "vs_booking_engine": {
+      "zentrum_connect": {
+        "token_source": "priceResponseToken from Connect Price API",
+        "workflow": "Hotel Search → Room Rates → Price → Book",
+        "guest_details": "Comprehensive guest information with compliance fields"
+      },
+      "booking_engine": {
+        "token_source": "Token from Booking Engine workflow",
+        "workflow": "Search Init → Search Results → RoomsAndRates → Price → Book",
+        "guest_details": "Standard guest information"
+      }
+    },
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-book"
+  },
+  "zentrum_connect_retrieve_booking_recipe": {
+    "title": "ZentrumHub Connect Retrieve Booking API - Get Booking by ID",
+    "description": "This API gives you details about the booked hotel rate including hotel content and latest confirmation details. You are supposed to show these details in booking voucher as it is. You can use this API to get latest hotel confirmation details also.",
+    "endpoint": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/{booking_id}",
+    "method": "GET",
+    "purpose": "Retrieve comprehensive booking details including hotel content and latest confirmation information for booking vouchers and management",
+    "required_parameters": {
+      "booking_id": {
+        "type": "string",
+        "required": true,
+        "description": "Booking identifier from Book API response",
+        "location": "URL path",
+        "example": "tlp91"
+      }
+    },
+    "required_headers": [
+      "accept: application/json",
+      "api-key: Your API authentication key",
+      "user-ip: Customer IP address (can be 0 for testing)",
+      "customer-id: Your account identifier",
+      "affiliate-id: Your affiliate identifier",
+      "correlation-id: Unique correlation ID for tracking"
+    ],
+    "example_request": {
+      "method": "GET",
+      "url": "https://hotel-connect.prod.zentrumhub.com/api/v1/book/tlp91",
+      "headers": {
+        "accept": "application/json",
+        "api-key": "{{your_api_key}}",
+        "user-ip": "0",
+        "customer-id": "{{account_id}}",
+        "affiliate-id": "{{affiliate_id}}",
+        "correlation-id": "5d42d7fd-2d3c-0e5f-9819-8b574b19ad34"
+      }
+    },
+    "curl_example": "curl --request GET \\\n--url https://hotel-connect.prod.zentrumhub.com/api/v1/book/{{booking_id}} \\\n--header 'accept: application/json' \\\n--header 'api-key: {{your_api_key}}' \\\n--header 'user-ip: 0' \\\n--header 'customer-id: {{account_id}}' \\\n--header 'affiliate-id: {{affiliate_id}}' \\\n--header 'correlation-id: 5d42d7fd-2d3c-0e5f-9819-8b574b19ad34'",
+    "comprehensive_response_structure": {
+      "booking_details": {
+        "bookingId": "ZentrumHub booking identifier",
+        "bookingStatus": "Current booking status (Confirmed, Cancelled, etc.)",
+        "providerConfirmationNumber": "Supplier confirmation number",
+        "hotelConfirmationNumber": "Hotel confirmation number",
+        "hotelCancellationNumber": "Hotel cancellation number (if applicable)",
+        "providerCancellationNumber": "Provider cancellation number (if applicable)"
+      },
+      "dates_and_timeline": {
+        "creationDate": "Booking creation timestamp",
+        "cancellationDate": "Cancellation timestamp (if cancelled)",
+        "tripStartDate": "Trip start date",
+        "tripEndDate": "Trip end date"
+      },
+      "room_confirmation": {
+        "roomConfirmationDetails": "Array of detailed room confirmation information",
+        "structure": {
+          "rateId": "Rate identifier for this room",
+          "roomId": "Room identifier",
+          "providerConfirmationNumber": "Provider confirmation for this room",
+          "hotelConfirmationNumber": "Hotel confirmation for this room",
+          "bookingStatus": "Status for this specific room",
+          "guests": "Array of guest details with compliance information"
+        }
+      },
+      "hotel_information": {
+        "complete_hotel_object": "Comprehensive hotel details for voucher display",
+        "includes": [
+          "Hotel name, address, contact information",
+          "Facilities, images, and descriptions",
+          "Policies, fees, and reviews",
+          "Check-in/out information and instructions",
+          "Room details with facilities and images",
+          "Nearby attractions and neighborhood info"
+        ]
+      },
+      "guest_information": {
+        "leadPassenger": "Primary guest details",
+        "room_guests": "Individual guest details per room",
+        "compliance_data": "PAN card and passport information"
+      },
+      "financial_information": {
+        "totalRate": "Total booking amount",
+        "currency": "Booking currency"
+      },
+      "cancellation_info": {
+        "cancellationToken": "Token required for cancellation"
+      }
+    },
+    "detailed_hotel_object": {
+      "basic_info": {
+        "id": "Hotel unique identifier",
+        "name": "Hotel name",
+        "starRating": "Hotel star rating",
+        "category": "Hotel category",
+        "type": "Hotel type",
+        "chainCode": "Hotel chain code",
+        "chainName": "Hotel chain name",
+        "website": "Hotel website URL"
+      },
+      "location_details": {
+        "geoCode": "Latitude and longitude coordinates",
+        "neighbourhoods": "Array of neighborhood names",
+        "contact": "Complete contact information including address"
+      },
+      "content_details": {
+        "descriptions": "Hotel descriptions with type and text",
+        "facilities": "Hotel facilities with names, descriptions, and IDs",
+        "images": "Hotel images with URLs, links, and captions",
+        "nearByAttractions": "Nearby attractions with distance and descriptions",
+        "heroImage": "Main hotel image"
+      },
+      "policies_and_info": {
+        "policies": "Hotel policies (check-out, know before you go, etc.)",
+        "fees": "Additional fees information",
+        "reviews": "Guest reviews with provider, count, rating, and URL",
+        "checkinInfo": "Check-in details with times, instructions, and age requirements",
+        "checkoutInfo": "Check-out time information"
+      },
+      "room_details": {
+        "rooms": "Array of room objects with complete details",
+        "room_structure": {
+          "basic_info": "ID, name, description, type",
+          "bed_info": "Bed types, descriptions, and counts",
+          "facilities": "Room-specific facilities",
+          "images": "Room images",
+          "capacity": "Maximum guests, adults, and children allowed",
+          "area": "Room size in square meters and feet",
+          "views": "Array of room views",
+          "smoking": "Smoking policy for the room"
+        }
+      }
+    },
+    "guest_details_structure": {
+      "basic_info": {
+        "title": "Guest title (Mr, Mrs, etc.)",
+        "firstName": "Guest first name",
+        "lastName": "Guest last name",
+        "middleName": "Guest middle name",
+        "suffix": "Name suffix",
+        "age": "Guest age",
+        "type": "Guest type (Adult, Child)"
+      },
+      "compliance_info": {
+        "panCardNumber": "PAN card number for Indian compliance",
+        "passportDetail": {
+          "passportNo": "Passport number",
+          "passportIssueDate": "Passport issue date",
+          "passportExpDate": "Passport expiry date"
+        }
+      }
+    },
+    "example_response": {
+      "bookingId": "tlp91",
+      "bookingStatus": "Confirmed",
+      "providerConfirmationNumber": "9037179363951",
+      "hotelConfirmationNumber": "9037179363951",
+      "hotelCancellationNumber": "6037179363950",
+      "providerCancellationNumber": "7037179363950",
+      "creationDate": "2024-06-28T06:58:56.5208254+00:00",
+      "cancellationDate": "2024-07-03T06:58:56.5208009+00:00",
+      "tripStartDate": "2024-07-08T06:58:56.5207903+00:00",
+      "tripEndDate": "2024-07-13T06:58:56.5207775+00:00",
+      "totalRate": 1420.8,
+      "currency": "INR",
+      "hotel": {
+        "id": "c5cab093-a8d9-4bba-885f-a228b350d5da",
+        "name": "Hotel Sky Blue",
+        "starRating": 4,
+        "contact": {
+          "phone": "1234567890",
+          "email": "Test@gmail.com",
+          "address": {
+            "line1": "1st Floor",
+            "line2": "62 Janjikar Street",
+            "city": {"name": "Mumbai", "code": "MH"},
+            "state": {"name": "Maharashtra", "code": "MH"},
+            "country": {"name": "India", "code": "IN"},
+            "postalCode": "400003"
+          }
+        },
+        "facilities": [
+          {
+            "name": "Spa Service",
+            "description": "Spa facility",
+            "id": "aa2c4757-7a24-428f-a2c9-1b88e7395d78"
+          }
+        ],
+        "checkinInfo": {
+          "beginTime": "07/08/2024 06:58:56",
+          "endTime": "07/13/2024 06:58:56",
+          "instructions": ["Service charges may apply"],
+          "specialInstructions": ["Maintain proper care"],
+          "minAge": 18
+        }
+      },
+      "roomConfirmationDetails": [
+        {
+          "rateId": "8077b9ad-61d9-48c1-8a37-5d91113be041",
+          "roomId": "6210c725-635d-4040-9ad7-01c59efdbebe",
+          "bookingStatus": "Confirmed",
+          "guests": [
+            {
+              "title": "Mr",
+              "firstName": "Paul",
+              "lastName": "Anderson",
+              "age": 28,
+              "type": "Adult",
+              "panCardNumber": "PANZZ1234C",
+              "passportDetail": {
+                "passportNo": "Test",
+                "passportIssueDate": "2024-06-28T06:58:56.5219486+00:00",
+                "passportExpDate": "2024-12-25T06:58:56.5219488+00:00"
+              }
+            }
+          ]
+        }
+      ],
+      "cancellationToken": "QUtCQVItQU8yMzMwNTgyMDV8aG90ZWxzdXBwb3J0QGFrYmFydHJhdmVsc29ubGluZS5jb20="
+    },
+    "key_features": [
+      "Comprehensive booking details for voucher generation",
+      "Complete hotel content including images, facilities, and policies",
+      "Latest confirmation details from suppliers",
+      "Individual room confirmation information",
+      "Guest details with compliance information",
+      "Financial information (total rate and currency)",
+      "Cancellation token for future cancellations",
+      "Timeline information (creation, cancellation, trip dates)"
+    ],
+    "use_cases": [
+      "Generate booking vouchers with complete hotel information",
+      "Display booking confirmations to customers",
+      "Retrieve latest confirmation details from suppliers",
+      "Customer service and booking management",
+      "Mobile app booking details display",
+      "Email confirmation generation",
+      "Booking modification workflows",
+      "Cancellation preparation (using cancellation token)"
+    ],
+    "voucher_display_guidelines": {
+      "instruction": "You are supposed to show these details in booking voucher as it is",
+      "recommended_sections": [
+        "Booking confirmation numbers and status",
+        "Hotel information with contact details",
+        "Room details and guest assignments",
+        "Check-in/out information and instructions",
+        "Hotel policies and important information",
+        "Guest details and compliance information",
+        "Total rate and currency",
+        "Cancellation information if applicable"
+      ]
+    },
+    "data_freshness": {
+      "purpose": "Get latest hotel confirmation details",
+      "benefit": "Ensures vouchers contain most current information",
+      "updates": "Reflects any changes in confirmation numbers or hotel details"
+    },
+    "workflow_integration": [
+      "1. Customer requests booking details or voucher",
+      "2. Call Retrieve Booking API with booking ID",
+      "3. Receive comprehensive booking and hotel information",
+      "4. Generate voucher or display booking details using response data",
+      "5. Use cancellation token if cancellation is needed"
+    ],
+    "error_handling": [
+      "Invalid booking ID - verify booking exists in your system",
+      "Booking not found - check booking ID format and existence",
+      "Access denied - ensure correct account credentials",
+      "Booking cancelled - handle cancelled booking display appropriately"
+    ],
+    "important_considerations": [
+      "Response contains complete hotel content suitable for voucher display",
+      "All confirmation numbers are included for customer reference",
+      "Guest compliance information (PAN, passport) is preserved",
+      "Cancellation token is provided for future cancellation needs",
+      "Timeline information helps track booking lifecycle",
+      "Hotel policies and instructions should be prominently displayed"
+    ],
+    "comparison_with_book_response": {
+      "book_api_response": {
+        "focus": "Immediate booking confirmation",
+        "content": "Basic confirmation details and numbers",
+        "hotel_info": "Minimal hotel information"
+      },
+      "retrieve_booking_response": {
+        "focus": "Comprehensive booking details for vouchers",
+        "content": "Complete booking and hotel information",
+        "hotel_info": "Full hotel content with images, facilities, policies"
+      }
+    },
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-retreive-booking"
+  },
   "troubleshooting": {
     "no_results": [
       "Check if location coordinates are correct",
@@ -550,5 +4652,73 @@
       "Verify API key hasn't expired",
       "Check if account is active"
     ]
+  },
+  "rate_combinability_types": {
+    "title": "Rate Combinability Types",
+    "description": "Different types of rate combinability for multi-room bookings",
+    "types": {
+      "None": {
+        "description": "Rate cannot be combined with any other rates",
+        "usage": "Standalone rates only",
+        "example": "Special promotional rates"
+      },
+      "GroupSameId": {
+        "description": "Rate can only be combined with other rates having the same rateCombinabilityId",
+        "usage": "Package rates that must be booked together",
+        "example": "Conference packages where all rooms must be from same package"
+      },
+      "GroupDifferentId": {
+        "description": "Rate can be combined with other GroupDifferentId rates regardless of rateCombinabilityId",
+        "usage": "Flexible combination rates",
+        "example": "Different room types or rate plans that can be combined"
+      },
+      "GroupWithinSameId": {
+        "description": "Rates can only be combined with other rates having the same rateCombinabilityId",
+        "usage": "Package rates that must stay within same group",
+        "example": "Conference packages where all rooms must be from same package"
+      }
+    },
+    "example_response": {
+      "hotelId": "123",
+      "token": "abc123",
+      "currency": "USD",
+      "rooms": [
+        {"id": "1", "name": "Standard Double room"},
+        {"id": "2", "name": "Deluxe Double room"}
+      ],
+      "rates": [
+        {
+          "id": "11",
+          "rateCombinabilityType": "None",
+          "occupancies": [{"roomId": "1"}, {"roomId": "1"}]
+        },
+        {
+          "id": "13",
+          "rateCombinabilityType": "GroupSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "1"}]
+        },
+        {
+          "id": "21",
+          "rateCombinabilityType": "GroupSameId",
+          "rateCombinabilityId": "111",
+          "occupancies": [{"roomId": "2"}]
+        }
+      ]
+    },
+    "implementation_logic": [
+      "Parse rates and group by rateCombinabilityType",
+      "For 'None' type - present as individual options only",
+      "For 'GroupSameId' - group by rateCombinabilityId",
+      "For 'GroupDifferentId' - allow mixing with other GroupDifferentId rates",
+      "For 'GroupWithinSameId' - restrict to same rateCombinabilityId only"
+    ],
+    "validation_rules": [
+      "Rates with 'None' type cannot be combined with any other rates",
+      "Rates with 'GroupSameId' must include all rates with same rateCombinabilityId",
+      "Rates with 'GroupDifferentId' can combine regardless of rateCombinabilityId",
+      "Rates with 'GroupWithinSameId' can only combine with identical rateCombinabilityId"
+    ],
+    "reference_link": "https://docs-hotel.prod.zentrumhub.com/recipes/zentrum-connect-rate-combinability"
   }
 }

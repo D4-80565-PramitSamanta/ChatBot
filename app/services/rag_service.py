@@ -81,10 +81,12 @@ class RAGService:
         
         results = []
         
-        # Knowledge base files to search
+        # Knowledge base files to search - SEARCH ALL FILES
         kb_files = [
             'knowledge-base.json',
-            'knowledge-base-extended.json', 
+            'knowledge-base-extended.json',
+            'knowledge-base-dynamic.json',
+            'knowledge-base-rooms-rates.json',
             'data/knowledge-base.json',
             'data/knowledge-base-extended.json',
             'data/complete-documentation.json'
@@ -92,8 +94,10 @@ class RAGService:
         
         for kb_file in kb_files:
             try:
+                print(f"🔍 Searching in {kb_file}")
                 with open(kb_file, 'r', encoding='utf-8') as f:
                     kb_data = json.load(f)
+                    print(f"✓ Loaded {len(kb_data)} entries from {kb_file}")
                     
                     # Handle different file structures
                     if kb_file == 'data/complete-documentation.json':
@@ -109,35 +113,47 @@ class RAGService:
                         description = value.get('description', '')
                         content = json.dumps(value, indent=2)
                         
-                        # Calculate score with NEW SCORING SYSTEM
+                        # Normalize text for searching
+                        key_normalized = key.lower().replace('_', ' ').replace('-', ' ')
+                        title_normalized = title.lower()
+                        
+                        # Calculate score with COMPREHENSIVE SEARCH
                         score = 0
                         
+                        # Search in ALL content, not just keys and titles
+                        search_text = f"{key_normalized} {title_normalized} {description.lower()} {content.lower()}"
+                        
                         # 15 points if document KEY matches query (e.g., "cancel_api")
-                        key_normalized = key.lower().replace('_', ' ').replace('-', ' ')
                         if any(word in key_normalized for word in question_words):
                             score += 15
                             
                         # 10 points if document TITLE matches query
-                        title_normalized = title.lower()
                         if any(word in title_normalized for word in question_words):
                             score += 10
                             
-                        # 2 points per word match (was 1)
+                        # 2 points per word match in any field
                         for word in question_words:
-                            if word in key_normalized:
-                                score += 2
-                            if word in title_normalized:
-                                score += 2
-                            if word in description.lower():
+                            if word in search_text:
                                 score += 2
                                 
-                        # 20 points for exact phrase match (was 10)
-                        search_text = f"{key_normalized} {title_normalized} {description.lower()}"
+                        # 20 points for exact phrase match anywhere in content
                         if question_lower in search_text:
                             score += 20
                             
+                        # PRIORITY OVERRIDE: For field queries, heavily prioritize api_field_definitions
+                        if any(field_term in question_lower for field_term in ['what is', 'commission', 'taxes', 'publishedrate', 'baserate', 'totalrate', 'isincludedinbaserate']):
+                            if key == 'api_field_definitions':
+                                score += 1000  # Massive boost to ensure this wins
+                            elif 'field' in key_normalized or 'definition' in key_normalized:
+                                score += 500  # High boost for other field-related docs
+                        
+                        # PRIORITY OVERRIDE: For workflow/API queries, prioritize workflow documents
+                        if any(workflow_term in question_lower for workflow_term in ['blocking search', 'async search', 'search workflow', 'polling', 'search init']):
+                            if any(workflow_key in key_normalized for workflow_key in ['blocking_search', 'async_search', 'search_workflow', 'polling', 'search_init']):
+                                score += 1000  # Massive boost for workflow documents
+                            
                         # Special boost for cancel-related queries
-                        if 'cancel' in question_lower and 'cancel' in key_normalized:
+                        if 'cancel' in question_lower and 'cancel' in search_text:
                             score += 25
                             
                         if score > 0:
@@ -150,6 +166,7 @@ class RAGService:
                             })
                             
             except (FileNotFoundError, json.JSONDecodeError) as e:
+                print(f"✗ Error loading {kb_file}: {e}")
                 continue
         
         # Sort by score (highest first)
@@ -157,8 +174,10 @@ class RAGService:
         
         if results:
             print(f"📚 Local KB search results:")
-            for i, result in enumerate(results[:3]):  # Show top 3
+            for i, result in enumerate(results[:5]):  # Show top 5 results
                 print(f"  {i+1}. {result['key']} (score: {result['score']}) from {result['file']}")
+        else:
+            print(f"📚 No local KB results found for: {question}")
         
         return results
     
@@ -320,6 +339,28 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         
         return prompt
     
+    def _is_not_found_response(self, answer: str) -> bool:
+        """
+        Check if the answer indicates information was not found
+        
+        Returns True if the answer contains phrases indicating missing information
+        """
+        not_found_phrases = [
+            "not available in the current documentation",
+            "not mentioned",
+            "not defined",
+            "not found",
+            "information is not available",
+            "does not contain",
+            "is not provided",
+            "not detailed",
+            "not specified",
+            "not included in the documentation"
+        ]
+        
+        answer_lower = answer.lower()
+        return any(phrase in answer_lower for phrase in not_found_phrases)
+    
     async def generate_answer(self, question: str) -> Dict[str, Any]:
         """
         Complete RAG pipeline - HYBRID mode with caching
@@ -341,19 +382,22 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         # First, search local knowledge base files with improved scoring
         local_docs = self._search_local_knowledge_base(question)
         
-        if local_docs and local_docs[0]['score'] >= 15:  # Good match threshold
+        # ALWAYS use local knowledge base if ANY results found, ignore scoring threshold
+        if local_docs:
             print(f"✓ Found in local knowledge base: {local_docs[0]['title']} (score: {local_docs[0]['score']})")
             
-            # Use local knowledge base
-            context_docs = [{
-                "text": f"{local_docs[0]['title']}\n{local_docs[0]['content']}",
-                "metadata": {
-                    "source": "local_knowledge_base",
-                    "file": local_docs[0]['file'],
-                    "title": local_docs[0]['title'],
-                    "key": local_docs[0]['key']
-                }
-            }]
+            # Use ALL top results for better context, not just the first one
+            context_docs = []
+            for i, doc in enumerate(local_docs[:3]):  # Use top 3 results
+                context_docs.append({
+                    "text": f"{doc['title']}\n{doc['content']}",
+                    "metadata": {
+                        "source": "local_knowledge_base",
+                        "file": doc['file'],
+                        "title": doc['title'],
+                        "key": doc['key']
+                    }
+                })
             
             source_type = "local_knowledge_base"
         else:
@@ -401,6 +445,17 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         # Generate answer using Gemini 2.5 Pro
         answer = await self.llm_client.generate(prompt)
         
+        # Check if this is a "not found" response - don't cache these
+        if self._is_not_found_response(answer):
+            print(f"⚠️ Not caching 'not found' response for: {question}")
+            return {
+                "answer": answer,
+                "confidence": "low",  # Set confidence to low for not found responses
+                "sources": [doc.get("metadata", {}) for doc in context_docs],
+                "relevant_docs": len(context_docs),
+                "source_type": source_type
+            }
+        
         # Prepare response
         response = {
             "answer": answer,
@@ -410,7 +465,7 @@ PROVIDE YOUR ERROR EXPLANATION:"""
             "source_type": source_type
         }
         
-        # Cache the response
+        # Cache the response (only if it's not a "not found" response)
         self.cache_service.set_response(question, response, "question")
         
         return response
@@ -456,7 +511,18 @@ PROVIDE YOUR ERROR EXPLANATION:"""
         # Generate explanation using Gemini 2.5 Pro
         answer = await self.llm_client.generate(prompt)
         
-        # Return response
+        # Check if this is a "not found" response - don't cache these
+        if self._is_not_found_response(answer):
+            print(f"⚠️ Not caching 'not found' error explanation for: {error_content}")
+            return {
+                "answer": answer,
+                "confidence": "low",  # Set confidence to low for not found responses
+                "sources": [doc.get("metadata", {}) for doc in context_docs],
+                "relevant_docs": len(context_docs),
+                "source_type": "live_documentation"
+            }
+        
+        # Return response (only cache if it's not a "not found" response)
         return {
             "answer": answer,
             "confidence": "high",
