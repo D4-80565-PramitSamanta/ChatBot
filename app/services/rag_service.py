@@ -4,15 +4,17 @@ from typing import List, Dict, Any
 from app.config import config
 from app.llm.llm_client import LLMClient
 from app.services.doc_fetcher import DocumentationFetcher
+from app.services.cache_service import CacheService
 
 
 class RAGService:
-    """RAG Service - Always fetches from live documentation"""
+    """RAG Service - Hybrid mode with caching"""
     
     def __init__(self, llm_client: LLMClient):
         self.llm_client = llm_client
         self.doc_fetcher = DocumentationFetcher()
-        print("✓ RAG Service initialized - Using LIVE documentation only (no static knowledge base)")
+        self.cache_service = CacheService()
+        print("✓ RAG Service initialized - HYBRID mode with caching enabled")
     
     def _load_documents(self):
         """Load documents from JSON files into vector store"""
@@ -228,29 +230,46 @@ PROVIDE YOUR ERROR EXPLANATION:"""
     
     async def generate_answer(self, question: str) -> Dict[str, Any]:
         """
-        Complete RAG pipeline - ALWAYS uses live documentation
+        Complete RAG pipeline - HYBRID mode with caching
         
         Flow:
-        1. Fetch from live documentation (https://docs-hotel.prod.zentrumhub.com/docs)
-        2. Generate answer from fresh content
-        3. No static knowledge base - always current
+        1. Check response cache first
+        2. If cache miss, fetch from live documentation (with doc caching)
+        3. Generate answer and cache it
+        4. Return cached or fresh response
         """
-        # ALWAYS fetch from live documentation
-        print(f"🔍 Fetching LIVE documentation for: {question}")
-        live_doc = await self.doc_fetcher.fetch_documentation(question)
+        # Check response cache first
+        cached_response = self.cache_service.get_response(question, "question")
+        if cached_response:
+            return cached_response
+        
+        # Cache miss - fetch documentation (with doc caching)
+        print(f"🔍 Fetching documentation for: {question}")
+        
+        # Check documentation cache
+        cached_doc = self.cache_service.get_documentation(question)
+        if cached_doc:
+            live_doc = cached_doc
+        else:
+            # Fetch from live documentation
+            live_doc = await self.doc_fetcher.fetch_documentation(question)
+            if live_doc:
+                # Cache the documentation
+                self.cache_service.set_documentation(question, live_doc)
         
         if not live_doc:
-            return {
+            response = {
                 "answer": "I couldn't fetch the latest documentation. Please ensure the question is about ZentrumHub Hotel API or visit https://docs-hotel.prod.zentrumhub.com/docs directly.",
                 "confidence": "low",
                 "sources": [],
                 "relevant_docs": 0,
                 "source_type": "none"
             }
+            return response
         
-        print(f"✓ Fetched live documentation: {live_doc['title']} from {live_doc['url']}")
+        print(f"✓ Using documentation: {live_doc['title']} from {live_doc['url']}")
         
-        # Use live documentation as context
+        # Use documentation as context
         context_docs = [{
             "text": f"{live_doc['title']}\n{live_doc['content']}",
             "metadata": {
@@ -260,20 +279,25 @@ PROVIDE YOUR ERROR EXPLANATION:"""
             }
         }]
         
-        # Build prompt with live context
+        # Build prompt with context
         prompt = self.build_prompt(question, context_docs)
         
         # Generate answer using Gemini 2.5 Pro
         answer = await self.llm_client.generate(prompt)
         
-        # Return response with live documentation source
-        return {
+        # Prepare response
+        response = {
             "answer": answer,
             "confidence": "high",
             "sources": [doc.get("metadata", {}) for doc in context_docs],
             "relevant_docs": len(context_docs),
-            "source_type": "live_documentation"
+            "source_type": "hybrid_cached" if cached_doc else "live_documentation"
         }
+        
+        # Cache the response
+        self.cache_service.set_response(question, response, "question")
+        
+        return response
     
     async def explain_error(self, error_content: str) -> Dict[str, Any]:
         """
