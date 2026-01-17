@@ -1,0 +1,14 @@
+{{- if .Values.data.persistentVolume }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "chatbot.fullname" . }}-pvc
+  labels:
+    {{- include "chatbot.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.data.volumeSize }}
+{{- end }}

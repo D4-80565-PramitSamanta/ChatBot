@@ -1,0 +1,16 @@
+apiVersion: v2
+name: chatbot
+description: ZentrumHub Documentation Assistant - FastAPI Chatbot with Gemini 2.5 Pro
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - chatbot
+  - fastapi
+  - gemini
+  - rag
+maintainers:
+  - name: ZentrumHub Team
+    email: team@zentrumhub.com
+home: https://github.com/D4-80565-PramitSamanta/ChatBot
+icon: https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png
