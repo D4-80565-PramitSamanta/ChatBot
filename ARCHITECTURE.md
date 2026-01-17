@@ -11,7 +11,7 @@ ZentrumHub Chatbot is a 3-layer architecture with live documentation fetching an
                              │ HTTP Requests
                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    LAYER 1: CONTROLLER                           │
+│                    LAYER 1: CONTROLLER                           │ 
 │                  (app/controllers/chat_controller.py)            │
 │                                                                   │
 │  Endpoints:                                                       │
